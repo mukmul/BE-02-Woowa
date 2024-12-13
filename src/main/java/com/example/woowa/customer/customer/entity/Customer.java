@@ -53,7 +53,7 @@ public class Customer extends BaseLoginEntity {
     @JoinColumn(name = "customer_grade_id", nullable = true)
     private CustomerGrade customerGrade;
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
     private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
