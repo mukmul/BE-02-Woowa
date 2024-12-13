@@ -51,12 +51,15 @@ public class AdvertisementService {
     public void updateAdvertisementById(Long advertisementId, AdvertisementUpdateRequest advertisementUpdateRequest) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         advertisementMapper.updateEntity(advertisementUpdateRequest, advertisement);
+        // 응답 데이터 반환하는게 낫지 않나.(클라이언트에서 결과 확인용)
     }
 
     @Transactional
     public void deleteAdvertisementById(Long advertisementId) {
         advertisementRepository.deleteById(advertisementId);
     }
+    // deleteAdvertisementById에서 ID 존재 여부를 먼저 확인하여 예외 발생 방지.
+    // 물리 삭제 대신 논리 삭제로 변경하고, 삭제된 데이터를 처리하는 로직 추가 필요.
 
     @Transactional
     public void includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
@@ -64,6 +67,8 @@ public class AdvertisementService {
         Restaurant restaurant = findRestaurantEntityById(restaurantId);
 
         RestaurantAdvertisement restaurantAdvertisement = new RestaurantAdvertisement(restaurant, advertisement);
+        // includeRestaurantInAdvertisement 메서드에서 생성된 RestaurantAdvertisement를 저장소에 저장하도록 수정.
+        // 추가 성공 여부를 클라이언트에 알리려면 결과 데이터를 반환하거나 상태 메시지를 전달하면 좋다.
     }
 
     @Transactional
@@ -74,9 +79,11 @@ public class AdvertisementService {
         RestaurantAdvertisement restaurantAdvertisement = restaurantAdvertisementRepository.findById(
                 new RestaurantAdvertisementId(restaurantId, advertisementId))
             .orElseThrow(() -> new NotFoundException("가게(" + restaurantId + ")가 광고(" + restaurantId + ")에 포함되어 있지 않습니다."));
+        // String.format 사용해서 가독성 up
 
         advertisement.removeRestaurantAdvertisement(restaurantAdvertisement);
         restaurant.getRestaurantAdvertisements().remove(restaurantAdvertisement);
+        // 삭제 성공 여부 전달.(성공/실패를 명확히 알릴 수 있도록 수정.)
     }
 
     public Advertisement findAdvertisementEntityById(Long advertisementId) {
@@ -89,4 +96,18 @@ public class AdvertisementService {
             .orElseThrow(() -> new NotFoundException("존재하지 않는 restaurantId 입니다."));
     }
 
+    /* 공통적인 예외 처리 로직을 유틸 메서드로 추출하는 방향 제안
+    public <T> T findEntityById(Long id, JpaRepository<T, Long> repository, String entityName) {
+    return repository.findById(id)
+        .orElseThrow(() -> new NotFoundException("존재하지 않는 " + entityName + " 입니다."));
+    }
+
+    public Advertisement findAdvertisementEntityById(Long advertisementId) {
+        return findEntityById(advertisementId, advertisementRepository, "광고");
+    }
+
+    public Restaurant findRestaurantEntityById(Long restaurantId) {
+        return findEntityById(restaurantId, restaurantRepository, "레스토랑");
+    }
+     */
 }

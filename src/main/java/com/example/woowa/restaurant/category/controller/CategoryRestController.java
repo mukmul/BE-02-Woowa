@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryRestController {
 
     private final CategoryService categoryService;
-
+    // 모든 URL을 통일되게 작성 필요. ex) categoryId 앞 슬레시 여부
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryCreateResponse> createCategory(final @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
         CategoryCreateResponse newCategory = categoryService.createCategory(categoryCreateRequest);

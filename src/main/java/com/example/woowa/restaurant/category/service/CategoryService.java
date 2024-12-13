@@ -51,6 +51,7 @@ public class CategoryService {
     public void deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
+    // 삭제 전에 존재 여부를 확인하고, 없을 경우 NotFoundException + 논리 삭제
 
     public Category findCategoryEntityById(Long categoryId) {
         return categoryRepository.findById(categoryId)
