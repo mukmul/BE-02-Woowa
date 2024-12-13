@@ -37,11 +37,11 @@ public class CustomerAddress extends BaseTimeEntity {
     @Column(nullable = false, length = 45)
     private String nickname;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // LAZY, 단반향 줄이기를 통해 쿼리 응답 속도를 개선함.
     @JoinColumn(nullable = false)
     private Customer customer;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY) // LAZY,
     private AreaCode areaCode;
 
     @Column

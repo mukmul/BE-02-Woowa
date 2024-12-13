@@ -56,17 +56,17 @@ public class Customer extends BaseLoginEntity {
     @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
     private List<CustomerAddress> customerAddresses = new ArrayList<>();
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true) // 단방향 사용 줄어보기
     private List<Voucher> vouchers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
     private List<Order> orders = new ArrayList<>();
 
-    public Customer(String loginId, String loginPassword, LocalDate birthdate,
-        CustomerGrade customerGrade) {
+    public Customer(final String loginId, String loginPassword, LocalDate birthdate,
+        CustomerGrade customerGrade) { // 리스트에 불변성을 보장해줘야함
         super(loginId, loginPassword, "", "");
         this.orderPerMonth = 0;
         this.orderPerLastMonth = 0;
@@ -139,7 +139,7 @@ public class Customer extends BaseLoginEntity {
         recentCustomerAddresses.addAll(orderCustomerAddresses);
         recentCustomerAddresses.addAll(notOrderCustomerAddresses);
         return recentCustomerAddresses;
-    }
+    } // 가독성 향상을 위해 분리, 최근 주문한 주소를 상위로 분리하는, 리펙토링
 
     public void addCustomerAddress(CustomerAddress customerAddress) {
         this.customerAddresses.add(customerAddress);
@@ -160,4 +160,5 @@ public class Customer extends BaseLoginEntity {
     public void addOrder(Order order) {
         this.customerAddresses.remove(order);
     }
+    //이거 잘못 쓰
 }
