@@ -107,6 +107,7 @@ public class Restaurant extends BaseTimeEntity {
             description, address);
     }
 
+    // 오픈 시간이 마감 시간보다 무조건 빠르도록 설정
     public void updateBusinessHours(LocalTime openingTime, LocalTime closingTime)
         throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
@@ -139,10 +140,12 @@ public class Restaurant extends BaseTimeEntity {
         this.reviewCount = reviewCount;
     }
 
+    // 배달 구역 양방향 처리
     public void addDeliveryArea(DeliveryArea deliveryArea) {
         deliveryAreas.add(deliveryArea);
     }
 
+    // 사용 안 함
     public void addRestaurantCategory(RestaurantCategory restaurantCategory) {
         restaurantCategory.setRestaurant(this);
     }
@@ -151,6 +154,7 @@ public class Restaurant extends BaseTimeEntity {
         this.isPermitted = true;
     }
 
+    // 양방향 처리
     public void setOwner(Owner owner) {
         if (Objects.nonNull(this.owner)) {
             this.owner.getRestaurants().remove(this);
@@ -159,10 +163,21 @@ public class Restaurant extends BaseTimeEntity {
         this.owner.getRestaurants().add(this);
     }
 
+//    public void setOwner(Owner owner) {
+//        if (Objects.nonNull(this.owner)) {
+//            this.owner.getRestaurants().remove(this);
+//        }
+//        this.owner = owner;
+//        if (!this.owner.getRestaurants().contains(this)) {
+//            this.owner.getRestaurants().add(this);
+//        }
+//    }
+
+    // 여기에 오픈 시간이 마감 시간보다 빠르도록 하는 validation 추가하면 될 듯
     private static void validateBusinessHours(LocalTime openingTime, LocalTime closingTime)
         throws IllegalArgumentException {
         if (closingTime.equals(openingTime)) {
-            throw new IllegalArgumentException("openingTime 과 closingTime 은 같을 수 없습니다.");
+            throw new IllegalArgumentException("openingTime과 closingTime 은 같을 수 없습니다.");
         }
     }
 }

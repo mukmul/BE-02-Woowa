@@ -48,6 +48,7 @@ public class RestaurantService {
             restaurantMapper.toEntity(restaurantCreateRequest));
         restaurantCreateRequest.getCategoryIds().forEach(categoryId -> {
             Category category = categoryService.findCategoryEntityById(categoryId);
+            // 안 쓰고 있음
             RestaurantCategory restaurantCategory = new RestaurantCategory(restaurant, category);
         });
         owner.addRestaurant(restaurant);
@@ -89,6 +90,7 @@ public class RestaurantService {
         Owner owner = ownerService.findOwnerEntityById(ownerId);
         Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
 
+        // ! 논리 삭제로 변경
         owner.removeRestaurant(restaurant);
     }
 
@@ -137,6 +139,7 @@ public class RestaurantService {
         restaurantCategoryRepository.delete(restaurantCategory);
     }
 
+    // 사장님이 가게를 가지고 있는지 확인하는 validation
     public Restaurant findRestaurantEntityByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {
         return ownerService.findOwnerEntityById(ownerId).getRestaurants().stream().
             filter(r -> r.getId() == restaurantId).

@@ -30,6 +30,7 @@ public class RestaurantRestController {
 
     private final RestaurantService restaurantService;
 
+    // 가게 생성
     @PostMapping(value = "owners/{ownerId}/restaurants", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantCreateResponse> createRestaurantByOwnerId(final @PathVariable Long ownerId,
         final @Valid @RequestBody RestaurantCreateRequest restaurantCreateRequest) {
@@ -38,12 +39,14 @@ public class RestaurantRestController {
         return new ResponseEntity<>(newRestaurant, HttpStatus.CREATED);
     }
 
+    // 사장님 아이디로 가게 전체 조회
     @GetMapping(value = "owners/{ownerId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByOwnerId(final @PathVariable Long ownerId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByOwnerId(ownerId);
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 변경
     @PutMapping(value = "owners/{ownerId}/restaurants/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateRestaurantByOwnerIdAndRestaurantId(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
         final @Valid @RequestBody RestaurantUpdateRequest restaurantUpdateRequest) {
@@ -51,6 +54,7 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 가게 삭제 (사장님 아이디 + 레스토랑 아이디)
     @DeleteMapping(value = "owners/{ownerId}/restaurants/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteRestaurantByOwnerIdAndRestaurantId(final @PathVariable Long ownerId,
         final @PathVariable Long restaurantId) {
@@ -58,18 +62,23 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 광고 아이디로 가게 전체 조회
     @GetMapping(value = "advertisements/{advertisementId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByAdvertisementId(final @PathVariable Long advertisementId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByAdvertisementId(advertisementId);
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 카테고리 아이디로 가게 전체 조회
     @GetMapping(value = "categories/{categoryId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByCategoryId(final @PathVariable Long categoryId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByCategoryId(categoryId);
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 전체 조회
+    // areaCodeId == null -> 전체 가게 목록 조회
+    // areaCodeId != null -> 특정 지역 가게 조회
     @GetMapping(value = "restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurants(@RequestParam(required = false) Long areaCodeId) {
         if (Objects.nonNull(areaCodeId)) {
@@ -79,12 +88,14 @@ public class RestaurantRestController {
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 단건 조회 (가게 하나만 조회)
     @GetMapping(value = "restaurants/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantFindResponse> findRestaurantById(final @PathVariable Long restaurantId) {
         RestaurantFindResponse restaurant = restaurantService.findRestaurantById(restaurantId);
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
+    // 가게 문 열기/닫기
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}")
     public ResponseEntity<Void> changeRestaurantState(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
         final @RequestParam(value = "isOpen") Boolean isOpen) {
@@ -97,6 +108,7 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 가게에 카테고리 추가
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/add")
     public ResponseEntity<Void> addCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
         final @RequestParam String categoryId) {
@@ -104,11 +116,14 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 가게에 카테고리 삭제
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/remove")
     public ResponseEntity<Void> removeCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
+        // 오타 수정
         final @RequestParam String cateogoryId) {
         restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(cateogoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // api 명세서에는 "가게에 배달지역 추가" api가 있는데 코드에 없음
 }
