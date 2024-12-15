@@ -33,11 +33,13 @@ public class OwnerService {
 
     @Transactional
     public OwnerCreateResponse createOwner(OwnerCreateRequest ownerCreateRequest) {
+        // 사장님 엔티티에 저장
         Owner owner = ownerRepository.save(ownerMapper.toEntity(ownerCreateRequest));
         owner.changePassword(passwordEncoder.encode(owner.getPassword()));
+        // 사용자 엔티티에 분류를 사장님으로 넣어서 저장
         userRepository.save(new User(owner.getLoginId(), owner.getPassword(), owner.getName(),
-            owner.getPhoneNumber(),
-            List.of(roleRepository.findByName(UserRole.ROLE_OWNER.toString()))));
+                owner.getPhoneNumber(),
+                List.of(roleRepository.findByName(UserRole.ROLE_OWNER.toString()))));
         return ownerMapper.toCreateResponse(owner);
     }
 
@@ -54,6 +56,7 @@ public class OwnerService {
     @Transactional
     public void deleteOwnerById(Long ownerId) {
         Owner owner = findOwnerEntityById(ownerId);
+        // ! 논리 삭제로 바꾸기
         userRepository.deleteByLoginId(owner.getLoginId());
         ownerRepository.deleteById(ownerId);
     }

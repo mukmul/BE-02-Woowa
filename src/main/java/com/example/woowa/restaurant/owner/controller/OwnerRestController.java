@@ -27,35 +27,39 @@ public class OwnerRestController {
 
     private final OwnerService ownerService;
 
+    // 사장님 생성
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OwnerCreateResponse> createOwner(final @Valid @RequestBody OwnerCreateRequest ownerCreateRequest) {
         OwnerCreateResponse owner = ownerService.createOwner(ownerCreateRequest);
         return new ResponseEntity<>(owner, HttpStatus.CREATED);
     }
 
+    // 사장님 전체 조회
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<OwnerFindResponse>> findAllOwners() {
         List<OwnerFindResponse> owners = ownerService.findOwners();
         return new ResponseEntity<>(owners, HttpStatus.OK);
     }
 
+    // 사장님 단건 조회
     @GetMapping(value = "/{ownerId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OwnerFindResponse> findOwnerById(final @PathVariable Long ownerId) {
         OwnerFindResponse owner = ownerService.findOwnerById(ownerId);
         return new ResponseEntity<>(owner, HttpStatus.OK);
     }
 
+    // 사장님 삭제
     @DeleteMapping(value = "/{ownerId}")
     public ResponseEntity<Void> deleteOwnerById(final @PathVariable Long ownerId) {
         ownerService.deleteOwnerById(ownerId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 사장님 변경
     @PutMapping(value = "/{ownerId}")
     public ResponseEntity<Void> updateOwnerById(final @PathVariable Long ownerId,
         final @Valid @RequestBody OwnerUpdateRequest ownerUpdateRequest) {
         ownerService.updateOwnerById(ownerId, ownerUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }
