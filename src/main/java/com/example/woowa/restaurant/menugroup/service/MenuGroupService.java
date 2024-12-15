@@ -24,6 +24,7 @@ public class MenuGroupService {
     private final RestaurantService restaurantService;
     private final MenuGroupMapper mapper;
 
+    // menuGroupId 예외 처리
     public MenuGroup findMenuGroupEntityById(Long menuGroupId) {
         return menuGroupRepository.findById(menuGroupId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_MENU_GROUP.getMessage()));
@@ -54,6 +55,7 @@ public class MenuGroupService {
     @Transactional
     public void deleteMenuGroup(Long menuGroupId) {
         MenuGroup findMenuGroup = findMenuGroupEntityById(menuGroupId);
+        // ! 논리 삭제로 바꾸기
         menuGroupRepository.delete(findMenuGroup);
     }
 }

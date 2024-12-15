@@ -37,6 +37,9 @@ public class MenuGroup extends BaseTimeEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    // 메뉴 그룹이 삭제되면 그 그룹 안에 있던 메뉴들도 같이 삭제된다.
+    // ! 이 부분 논리 삭제로 바꾸고
+    // ! 같이 삭제되는 거는 고민을 해봐야 할 듯
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.REMOVE)
     private List<Menu> menus = new ArrayList<>();
 
@@ -55,6 +58,7 @@ public class MenuGroup extends BaseTimeEntity {
     public static MenuGroup createMenuGroup(Restaurant restaurant, String title,
             String description) {
         MenuGroup menuGroup = new MenuGroup(restaurant, title, getStoreDescription(description));
+        // 두 엔티티 menuGroup 동기화
         restaurant.getMenuGroups().add(menuGroup);
         return menuGroup;
     }
@@ -68,6 +72,7 @@ public class MenuGroup extends BaseTimeEntity {
         return StringUtils.hasText(description) ? description : null;
     }
 
+    // ! 양방향 처리
     public void addMenu(Menu menu) {
         menus.add(menu);
     }
