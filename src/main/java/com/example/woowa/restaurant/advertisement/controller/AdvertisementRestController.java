@@ -6,7 +6,7 @@ import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementCrea
 import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementFindResponse;
 import com.example.woowa.restaurant.advertisement.service.AdvertisementService;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
