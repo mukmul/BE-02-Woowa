@@ -6,8 +6,6 @@ import com.example.woowa.admin.dto.AdminFindResponse;
 import com.example.woowa.admin.entity.Admin;
 import java.util.regex.Pattern;
 
-// 중복된 가능성이 있으므로 유지 여부를 검토...? / gpt
-
 public class AdminConverter {
   // AdminCreateRequest DTO를 Admin 엔티티로 변환
   public static Admin toAdmin(AdminCreateRequest adminCreateRequest) {

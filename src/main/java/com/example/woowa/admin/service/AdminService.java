@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-// 딱히 고칠게 X
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)

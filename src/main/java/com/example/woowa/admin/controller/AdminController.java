@@ -26,7 +26,8 @@ public class AdminController {
 
   // 관리자 생성
   @PostMapping
-  // ResponseEntity<AdminFindResponse> 이런식으로 바꾸라는데... + 명확한 예외 처리
+  // ResponseEntity<>로 감싸기
+  // 예외처리 추가하기
   public AdminFindResponse createAdmin(@RequestBody @Valid AdminCreateRequest adminCreateRequest) {
     return adminService.createAdmin(adminCreateRequest);
   }
@@ -35,18 +36,21 @@ public class AdminController {
   public AdminFindResponse findAdmin(@PathVariable String loginId) {
     return adminService.findAdmin(loginId);
   }
-  // 특정 로그인 아이디의 관리자 정보를 수정
+
+  // 특정 로그인 아이디의 관리자 정보를 수정 (비밀번호)
   @PutMapping("/{loginId}")
   public AdminFindResponse updateAdmin(@PathVariable String loginId, @RequestBody @Valid
       AdminUpdateRequest adminUpdateRequest) {
     return adminService.updateAdmin(loginId, adminUpdateRequest);
   }
+
   // 특정 로그인 아이디의 관리자를 삭제
   @DeleteMapping("/{loginId}")
   public String deleteAdmin(@PathVariable String loginId) {
     adminService.deleteAdmin(loginId);
     return "delete id - " + loginId;
   }
+
   // 특정 식당에 권한을 부여
   @PatchMapping("/permit/restaurants/{restaurantId}")
   public String permitRestaurant(@PathVariable Long restaurantId) {
