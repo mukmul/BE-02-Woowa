@@ -44,6 +44,7 @@ public class MenuGroup extends BaseTimeEntity {
     private List<Menu> menus = new ArrayList<>();
 
     @Column(nullable = false)
+    // ! length 500 제한 걸기
     private String title;
 
     @Column(length = 500)
