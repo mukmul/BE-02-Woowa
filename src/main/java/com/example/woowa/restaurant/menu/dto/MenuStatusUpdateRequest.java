@@ -2,7 +2,7 @@ package com.example.woowa.restaurant.menu.dto;
 
 import com.example.woowa.restaurant.menu.enums.MenuStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter

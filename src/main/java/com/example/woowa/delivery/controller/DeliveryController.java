@@ -2,8 +2,8 @@ package com.example.woowa.delivery.controller;
 
 import com.example.woowa.delivery.dto.DeliveryResponse;
 import com.example.woowa.delivery.service.DeliveryService;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

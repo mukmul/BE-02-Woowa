@@ -5,7 +5,7 @@ import com.example.woowa.customer.voucher.dto.VoucherFindResponse;
 import com.example.woowa.customer.voucher.service.VoucherService;
 
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;

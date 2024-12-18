@@ -1,6 +1,6 @@
 package com.example.woowa.delivery.dto;
 
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
