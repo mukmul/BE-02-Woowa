@@ -30,7 +30,7 @@ public class Rider extends BaseLoginEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isDelivery;
+    private boolean isDelivery;
 
     @Builder
     private Rider(String loginId, String loginPassword, String name, String phoneNumber) {
@@ -52,10 +52,9 @@ public class Rider extends BaseLoginEntity {
     }
 
 
-    public void removeRiderAreaCode(RiderAreaCode riderAreaCode) {
-        if (riderAreaCodeList.contains(riderAreaCode)) {
+    public void removeRiderAreaCode(RiderAreaCode riderAreaCode)
+    {
             this.riderAreaCodeList.remove(riderAreaCode);
-        }
     }
 
     public void addRiderAreaCode(RiderAreaCode riderAreaCode) {

@@ -38,6 +38,10 @@ public class AreaCode {
         this.isAbolish = isAbolish;
     }
 
+    public List<DeliveryArea> getDeliveryAreas()
+    {
+        return this.deliveryAreaList;
+    }
     public void addDeliveryArea(DeliveryArea deliveryArea) {
         this.deliveryAreaList.add(deliveryArea);
     }
