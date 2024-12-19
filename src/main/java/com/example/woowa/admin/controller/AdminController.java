@@ -18,37 +18,49 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admins")
 public class AdminController {
+  // 로그 추가
+  private static final Logger log = LoggerFactory.getLogger(AdminController.class);
   private final AdminService adminService;
 
   // 관리자 생성
   @PostMapping
   public ResponseEntity<AdminFindResponse> createAdmin(@RequestBody @Valid AdminCreateRequest adminCreateRequest) {
+    log.info("Received request to create admin with loginId: {}", adminCreateRequest.getLoginId());
     AdminFindResponse response = adminService.createAdmin(adminCreateRequest);
+    log.info("Successfully created admin with loginId: {}", adminCreateRequest.getLoginId());
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
   // 특정 로그인 아이디에 해당하는 관리자 조회
   @GetMapping("/{loginId}")
   public ResponseEntity<AdminFindResponse> getAdminInfoByLoginId(@PathVariable String loginId) {
+    log.info("Fetching admin info for loginId: {}", loginId);
     AdminFindResponse response = adminService.getAdminInfoByLoginId(loginId);
+    log.info("Successfully fetched admin info for loginId: {}", loginId);
     return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자 정보를 수정 (비밀번호)
   @PutMapping("/{loginId}")
   public ResponseEntity<AdminFindResponse> updateAdminPassword(@PathVariable String loginId, @RequestBody @Valid AdminUpdateRequest adminUpdateRequest) {
+    log.info("Received request to update password for admin with loginId: {}", loginId);
     AdminFindResponse response = adminService.updateAdminPassword(loginId, adminUpdateRequest);
+    log.info("Successfully updated password for admin with loginId: {}", loginId);
     return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자를 삭제
   @DeleteMapping("/{loginId}")
   public ResponseEntity<String> removeAdminByLoginId(@PathVariable String loginId) {
+    log.info("Received request to delete admin with loginId: {}", loginId);
     adminService.removeAdminByLoginId(loginId);
+    log.info("Successfully deleted admin with loginId: {}", loginId);
     return ResponseEntity.ok("delete id - " + loginId);
   }
 
@@ -56,7 +68,9 @@ public class AdminController {
   // 특정 식당에 권한을 부여
   @PatchMapping("/permit/restaurants/{restaurantId}")
   public ResponseEntity<String> authorizeRestaurant(@PathVariable Long restaurantId) {
+    log.info("Received request to authorize restaurant with id: {}", restaurantId);
     adminService.authorizeRestaurant(restaurantId);
+    log.info("Successfully authorized restaurant with id: {}", restaurantId);
     return ResponseEntity.ok("restaurant id(" + restaurantId + ") permitted.");
   }
 
