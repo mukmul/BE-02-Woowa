@@ -6,7 +6,7 @@ import com.example.woowa.customer.customer.dto.CustomerAddressFindResponse;
 import com.example.woowa.customer.customer.service.CustomerAddressService;
 
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;

@@ -2,13 +2,9 @@ package com.example.woowa.admin.entity;
 // 관리자 엔티티로, 데이터베이스의 admin 테이블과 연결됨
 
 import com.example.woowa.common.base.BaseLoginEntity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
+
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

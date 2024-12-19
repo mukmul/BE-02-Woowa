@@ -6,7 +6,7 @@ import com.example.woowa.restaurant.owner.dto.response.OwnerCreateResponse;
 import com.example.woowa.restaurant.owner.dto.response.OwnerFindResponse;
 import com.example.woowa.restaurant.owner.service.OwnerService;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

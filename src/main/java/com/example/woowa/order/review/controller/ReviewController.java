@@ -6,7 +6,7 @@ import com.example.woowa.order.review.dto.ReviewUpdateRequest;
 import com.example.woowa.order.review.service.ReviewService;
 
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
