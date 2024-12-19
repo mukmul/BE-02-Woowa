@@ -183,7 +183,7 @@ public class BDDTest {
     void _4() {
         List<RestaurantFindResponse> restauransNotPermitted = restaurantService.findRestaurantsIsPermittedIsFalse();
         Long newRestaurant = restauransNotPermitted.get(0).getId();
-        adminService.permitRestaurant(newRestaurant);
+        adminService.authorizeRestaurant(newRestaurant);
     }
 
     @Test

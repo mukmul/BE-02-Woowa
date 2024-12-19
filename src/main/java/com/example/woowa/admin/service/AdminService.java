@@ -29,30 +29,35 @@ public class AdminService {
         return adminMapper.toAdminDto(admin);
     }
     // 로그인 아이디로 관리자 조회 - 컨트롤러를 통해 클라이언트에게 데이터 반환
-    public AdminFindResponse findAdmin(String loginId) {
-        Admin admin = findAdminEntity(loginId);
+    // findAdmin -> getAdminInfoByLoginId
+    public AdminFindResponse getAdminInfoByLoginId(String loginId) {
+        Admin admin = getAdminByLoginId(loginId);
         return adminMapper.toAdminDto(admin);
     }
     // 로그인 아이디로 관리자를 찾아 비밀번호를 업데이트
+    // updateAdmin -> updateAdminPassword
     @Transactional
-    public AdminFindResponse updateAdmin(String loginId, AdminUpdateRequest adminUpdateRequest) {
-        Admin admin = findAdminEntity(loginId);
+    public AdminFindResponse updateAdminPassword(String loginId, AdminUpdateRequest adminUpdateRequest) {
+        Admin admin = getAdminByLoginId(loginId);
         admin.changePassword(adminUpdateRequest.getLoginPassword());
         return adminMapper.toAdminDto(admin);
     }
     // 로그인 아이디로 관리자를 삭제
+    // deleteAdmin -> removeAdminByLoginId
     @Transactional
-    public void deleteAdmin(String loginId) {
-        Admin admin = findAdminEntity(loginId);
+    public void removeAdminByLoginId(String loginId) {
+        Admin admin = getAdminByLoginId(loginId);
         adminRepository.delete(admin);
     }
     // 로그인 아이디로 관리자 정보를 조회 - 비즈니스 로직에서 엔티티 조작에 사용 - 외부에 노출되지 않는 내부 처리용
-    private Admin findAdminEntity(String loginId) {
+    // findAdminEntity -> getAdminByLoginId
+    private Admin getAdminByLoginId(String loginId) {
         return adminRepository.findByLoginId(loginId).orElseThrow(()-> new RuntimeException("admin not existed"));
     }
     // 특정 식당에 권한을 부여
+    // permitRestaurant -> authorizeRestaurant
     @Transactional
-    public void permitRestaurant(Long restaurantId) {
+    public void authorizeRestaurant(Long restaurantId) {
         Restaurant restaurant = restaurantService.findRestaurantEntityById(restaurantId);
         restaurant.setPermitted();
     }

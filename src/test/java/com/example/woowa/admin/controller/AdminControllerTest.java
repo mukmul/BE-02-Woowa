@@ -27,10 +27,11 @@ import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+//import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -48,7 +49,8 @@ import org.springframework.test.web.servlet.MockMvc;
     ),
 })
 @Import(RestDocsConfiguration.class)
-@MockBean(JpaMetamodelMappingContext.class)
+//@MockBean(JpaMetamodelMappingContext.class)
+// spring 3.4.0부터 사용중단됨 일단 @Mock으로 대체 ?
 @WithMockUser
 class AdminControllerTest {
 
@@ -60,7 +62,9 @@ class AdminControllerTest {
 
   AdminMapper adminMapper = Mappers.getMapper(AdminMapper.class);
 
-  @MockBean
+//  @MockBean
+// spring 3.4.0부터 사용중단됨 일단 @Mock으로 대체
+  @Mock
   private AdminService adminService;
 
   @Test
@@ -89,10 +93,10 @@ class AdminControllerTest {
   }
 
   @Test
-  void findAdmin() throws Exception {
+  void getAdminInfoByLoginId() throws Exception {
     AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
 
-    given(adminService.findAdmin(any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
+    given(adminService.getAdminInfoByLoginId(any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
 
     mockMvc.perform(
             get("/api/v1/admins/{loginId}",adminCreateRequest.getLoginId())
@@ -115,7 +119,7 @@ class AdminControllerTest {
   void updateAdmin() throws Exception {
     AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
 
-    given(adminService.updateAdmin(anyString(), any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
+    given(adminService.updateAdminPassword(anyString(), any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
 
     AdminUpdateRequest adminUpdateRequest = new AdminUpdateRequest("Programmers123!");
     mockMvc.perform(

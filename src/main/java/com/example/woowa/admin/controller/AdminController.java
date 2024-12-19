@@ -33,30 +33,30 @@ public class AdminController {
   }
   // 특정 로그인 아이디에 해당하는 관리자 조회
   @GetMapping("/{loginId}")
-  public ResponseEntity<AdminFindResponse> findAdmin(@PathVariable String loginId) {
-    AdminFindResponse response = adminService.findAdmin(loginId);
+  public ResponseEntity<AdminFindResponse> getAdminInfoByLoginId(@PathVariable String loginId) {
+    AdminFindResponse response = adminService.getAdminInfoByLoginId(loginId);
     return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자 정보를 수정 (비밀번호)
   @PutMapping("/{loginId}")
-  public ResponseEntity<AdminFindResponse> updateAdmin(@PathVariable String loginId, @RequestBody @Valid AdminUpdateRequest adminUpdateRequest) {
-    AdminFindResponse response = adminService.updateAdmin(loginId, adminUpdateRequest);
+  public ResponseEntity<AdminFindResponse> updateAdminPassword(@PathVariable String loginId, @RequestBody @Valid AdminUpdateRequest adminUpdateRequest) {
+    AdminFindResponse response = adminService.updateAdminPassword(loginId, adminUpdateRequest);
     return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자를 삭제
   @DeleteMapping("/{loginId}")
-  public ResponseEntity<String> deleteAdmin(@PathVariable String loginId) {
-    adminService.deleteAdmin(loginId);
+  public ResponseEntity<String> removeAdminByLoginId(@PathVariable String loginId) {
+    adminService.removeAdminByLoginId(loginId);
     return ResponseEntity.ok("delete id - " + loginId);
   }
 
 
   // 특정 식당에 권한을 부여
   @PatchMapping("/permit/restaurants/{restaurantId}")
-  public ResponseEntity<String> permitRestaurant(@PathVariable Long restaurantId) {
-    adminService.permitRestaurant(restaurantId);
+  public ResponseEntity<String> authorizeRestaurant(@PathVariable Long restaurantId) {
+    adminService.authorizeRestaurant(restaurantId);
     return ResponseEntity.ok("restaurant id(" + restaurantId + ") permitted.");
   }
 

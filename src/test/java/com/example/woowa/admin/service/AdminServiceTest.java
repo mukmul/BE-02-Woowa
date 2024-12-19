@@ -14,16 +14,19 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+//import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 class AdminServiceTest {
   @Autowired
   private AdminService adminService;
 
-  @MockBean
+//  @MockBean
+// spring 3.4.0부터 사용중단됨 일단 @Mock으로 대체
+  @Mock
   private AdminRepository adminRepository;
 
   @Test
@@ -44,33 +47,33 @@ class AdminServiceTest {
         Optional.of(new Admin("dev12", "Programmers12!"))
     );
 
-    AdminFindResponse adminFindResponse = adminService.findAdmin("dev12");
+    AdminFindResponse adminFindResponse = adminService.getAdminInfoByLoginId("dev12");
 
     Assertions.assertThat(adminFindResponse.getLoginId()).isEqualTo("dev12");
   }
 
   @Test
   @DisplayName("관리자 업데이트")
-  void updateAdmin() {
+  void updateAdminPassword() {
     given(adminRepository.findByLoginId(anyString())).willReturn(
         Optional.of(new Admin("dev12", "Programmers12!"))
     );
     AdminUpdateRequest adminUpdateRequest = new AdminUpdateRequest("Programmers123$");
 
-    AdminFindResponse adminFindResponse = adminService.updateAdmin("dev12", adminUpdateRequest);
+    AdminFindResponse adminFindResponse = adminService.updateAdminPassword("dev12", adminUpdateRequest);
 
     Assertions.assertThat(adminFindResponse.getLoginId()).isEqualTo("dev12");
   }
 
   @Test
   @DisplayName("관리자 삭제")
-  void deleteAdmin() {
+  void removeAdminByLoginId() {
     Admin admin = new Admin("dev12", "Programmers12!");
     given(adminRepository.findByLoginId(anyString())).willReturn(
         Optional.of(admin)
     );
 
-    adminService.deleteAdmin("dev12");
+    adminService.removeAdminByLoginId("dev12");
 
     verify(adminRepository).delete(admin);
   }
