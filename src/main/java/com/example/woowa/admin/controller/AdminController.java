@@ -1,12 +1,14 @@
 package com.example.woowa.admin.controller;
 // HTTP 요청을 처리하는 컨트롤러로, 관리자를 생성, 조회, 수정, 삭제, 특정 작업(식당 권한 부여)을 수행할 수 있는 엔드포인트(API)를 제공
-
+// ResponseEntity<> 수정 완료
 import com.example.woowa.admin.dto.AdminCreateRequest;
 import com.example.woowa.admin.dto.AdminFindResponse;
 import com.example.woowa.admin.dto.AdminUpdateRequest;
 import com.example.woowa.admin.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,36 +27,37 @@ public class AdminController {
 
   // 관리자 생성
   @PostMapping
-  // ResponseEntity<>로 감싸기
-  // 예외처리 추가하기
-  public AdminFindResponse createAdmin(@RequestBody @Valid AdminCreateRequest adminCreateRequest) {
-    return adminService.createAdmin(adminCreateRequest);
+  public ResponseEntity<AdminFindResponse> createAdmin(@RequestBody @Valid AdminCreateRequest adminCreateRequest) {
+    AdminFindResponse response = adminService.createAdmin(adminCreateRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
   // 특정 로그인 아이디에 해당하는 관리자 조회
   @GetMapping("/{loginId}")
-  public AdminFindResponse findAdmin(@PathVariable String loginId) {
-    return adminService.findAdmin(loginId);
+  public ResponseEntity<AdminFindResponse> findAdmin(@PathVariable String loginId) {
+    AdminFindResponse response = adminService.findAdmin(loginId);
+    return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자 정보를 수정 (비밀번호)
   @PutMapping("/{loginId}")
-  public AdminFindResponse updateAdmin(@PathVariable String loginId, @RequestBody @Valid
-      AdminUpdateRequest adminUpdateRequest) {
-    return adminService.updateAdmin(loginId, adminUpdateRequest);
+  public ResponseEntity<AdminFindResponse> updateAdmin(@PathVariable String loginId, @RequestBody @Valid AdminUpdateRequest adminUpdateRequest) {
+    AdminFindResponse response = adminService.updateAdmin(loginId, adminUpdateRequest);
+    return ResponseEntity.ok(response);
   }
 
   // 특정 로그인 아이디의 관리자를 삭제
   @DeleteMapping("/{loginId}")
-  public String deleteAdmin(@PathVariable String loginId) {
+  public ResponseEntity<String> deleteAdmin(@PathVariable String loginId) {
     adminService.deleteAdmin(loginId);
-    return "delete id - " + loginId;
+    return ResponseEntity.ok("delete id - " + loginId);
   }
+
 
   // 특정 식당에 권한을 부여
   @PatchMapping("/permit/restaurants/{restaurantId}")
-  public String permitRestaurant(@PathVariable Long restaurantId) {
+  public ResponseEntity<String> permitRestaurant(@PathVariable Long restaurantId) {
     adminService.permitRestaurant(restaurantId);
-    return "restaurant id(" + restaurantId + ") permitted.";
+    return ResponseEntity.ok("restaurant id(" + restaurantId + ") permitted.");
   }
 
 }
