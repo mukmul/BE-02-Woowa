@@ -8,6 +8,8 @@ import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.entity.RiderAreaCode;
 import com.example.woowa.delivery.mapper.RiderMapper;
+import com.example.woowa.delivery.repository.AreaCodeRepository;
+import com.example.woowa.delivery.repository.RiderAreaCodeRepository;
 import com.example.woowa.delivery.repository.RiderRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,10 @@ public class RiderService {
     private final RiderMapper riderMapper;
 
     private final AreaCodeService areaCodeService;
+
+    private final RiderAreaCodeRepository riderAreaCodeRepository;
+
+    private final AreaCodeRepository areaCodeRepository;
 
     @Transactional
     public void deleteAll() {
@@ -72,6 +78,7 @@ public class RiderService {
         Rider rider = findEntityById(riderId);
         AreaCode areaCode = areaCodeService.findEntityById(areaCodeId);
         RiderAreaCode riderAreaCode = new RiderAreaCode(rider, areaCode);
+        riderAreaCodeRepository.save(riderAreaCode);
     }
 
     @Transactional
@@ -79,7 +86,13 @@ public class RiderService {
         Rider rider = findEntityById(riderId);
         List<RiderAreaCode> riderAreaCodeList = rider.getRiderAreaCodeList();
         riderAreaCodeList.stream()
-            .filter(riderAreaCode -> riderAreaCode.getAreaCode().getId() == areaCodeId).findFirst()
-            .ifPresent(riderAreaCodeList::remove);
+                .filter(riderAreaCode -> riderAreaCode.getAreaCode().getId().equals(areaCodeId))
+                .findFirst()
+                .ifPresent(riderAreaCode -> {
+                    rider.removeRiderAreaCode(riderAreaCode);
+                    riderAreaCode.getAreaCode().removeRiderAreaCode(riderAreaCode);
+                    // 중간 엔티티 삭제
+                    riderAreaCodeRepository.delete(riderAreaCode);
+                });
     }
 }

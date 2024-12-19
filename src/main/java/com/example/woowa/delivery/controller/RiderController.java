@@ -68,10 +68,16 @@ public class RiderController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{riderId}/{areaId}")
+    @PostMapping("add/{riderId}/{areaId}")
     public ResponseEntity<Void> addArea(@PathVariable final Long areaId,
         @PathVariable final Long riderId) {
         riderService.addRiderAreaCode(riderId, areaId);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("remove/{riderId}/{areaId}")
+    public ResponseEntity<Void> removeArea(@PathVariable final Long areaId,
+                                        @PathVariable final Long riderId) {
+        riderService.removeRiderAreaCode(riderId, areaId);
         return ResponseEntity.noContent().build();
     }
 }

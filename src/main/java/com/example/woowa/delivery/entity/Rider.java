@@ -51,7 +51,9 @@ public class Rider extends BaseLoginEntity {
         this.deliveryList.add(delivery);
     }
 
-
+    public void removeDelivery(Delivery delivery) {
+        this.deliveryList.remove(delivery);
+    }
     public void removeRiderAreaCode(RiderAreaCode riderAreaCode)
     {
             this.riderAreaCodeList.remove(riderAreaCode);

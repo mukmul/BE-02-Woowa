@@ -49,4 +49,13 @@ public class AreaCode {
     public void addRiderArea(RiderAreaCode riderAreaCode) {
         this.riderAreaCodeList.add(riderAreaCode);
     }
+
+    public void removeRiderAreaCode(RiderAreaCode riderAreaCode)
+    {
+        this.riderAreaCodeList.remove(riderAreaCode);
+    }
+
+    public void addRiderAreaCode(RiderAreaCode riderAreaCode) {
+        this.riderAreaCodeList.add(riderAreaCode);
+    }
 }

@@ -51,6 +51,7 @@ public class DeliveryService {
             throw new RuntimeException(ErrorMessage.ALREADY_RECEIVE_DELIVERY.getMessage());
         }
         Rider rider = riderService.findEntityById(riderId);
+        rider.addDelivery(delivery);
         delivery.accept(rider, deliveryMinute, cookMinute);
     }
 
@@ -67,9 +68,12 @@ public class DeliveryService {
     }
 
     @Transactional
-    public void finish(Long id) {
-        Delivery delivery = findEntityById(id);
+    public void finish(Long deliveryId,Long riderId) {
+        Delivery delivery = findEntityById(deliveryId);
+        Rider rider = riderService.findEntityById(riderId);
         delivery.finish();
+        rider.removeDelivery(delivery);
+        rider.changeIsDelivery(false);
     }
 
     @Transactional

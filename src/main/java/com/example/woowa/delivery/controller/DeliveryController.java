@@ -43,24 +43,23 @@ public class DeliveryController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/delay/{deliveryId}/{riderId}")
+    @PutMapping("/delay/{deliveryId}")
     public ResponseEntity<Void> delayDelivery(@PathVariable Long deliveryId,
-        @PathVariable Long riderId, @RequestParam @NotNull @PositiveOrZero Integer delayMinute) {
+        @RequestParam @NotNull @PositiveOrZero Integer delayMinute) {
         deliveryService.delay(deliveryId, delayMinute);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/pickup/{deliveryId}/{riderId}")
-    public ResponseEntity<Void> pickUpDelivery(@PathVariable Long deliveryId,
-        @PathVariable Long riderId) {
-        deliveryService.pickUp(riderId);
+    @PutMapping("/pickup/{deliveryId}")
+    public ResponseEntity<Void> pickUpDelivery(@PathVariable Long deliveryId) {
+        deliveryService.pickUp(deliveryId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/finish/{deliveryId}/{riderId}")
     public ResponseEntity<Void> finishDelivery(@PathVariable Long deliveryId,
         @PathVariable Long riderId) {
-        deliveryService.finish(riderId);
+        deliveryService.finish(deliveryId,riderId);
         return ResponseEntity.noContent().build();
     }
 }
