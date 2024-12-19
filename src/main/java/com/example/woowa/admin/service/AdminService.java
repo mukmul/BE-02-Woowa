@@ -1,5 +1,6 @@
 package com.example.woowa.admin.service;
 // 비즈니스 로직을 처리하는 서비스 계층으로, 컨트롤러에서 전달받은 요청을 실제로 처리
+// 일반적으로 비즈니스 로직의 결과(엔티티, DTO 등)만 반환) / ResponseEntity 필요 X
 import com.example.woowa.admin.converter.AdminMapper;
 import com.example.woowa.admin.dto.AdminCreateRequest;
 import com.example.woowa.admin.dto.AdminFindResponse;
