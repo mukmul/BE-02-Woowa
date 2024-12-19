@@ -5,7 +5,7 @@ import com.example.woowa.customer.customer.dto.CustomerCreateRequest;
 import com.example.woowa.customer.customer.dto.CustomerFindResponse;
 import com.example.woowa.customer.customer.service.CustomerService;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;

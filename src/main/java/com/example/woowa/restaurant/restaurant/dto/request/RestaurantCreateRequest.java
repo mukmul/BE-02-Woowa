@@ -2,7 +2,7 @@ package com.example.woowa.restaurant.restaurant.dto.request;
 
 import java.time.LocalTime;
 import java.util.List;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

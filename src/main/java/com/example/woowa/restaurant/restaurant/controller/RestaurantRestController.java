@@ -7,7 +7,7 @@ import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindRespon
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
