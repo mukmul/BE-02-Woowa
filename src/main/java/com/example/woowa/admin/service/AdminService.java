@@ -33,7 +33,8 @@ public class AdminService {
         Admin admin = adminMapper.toAdmin(adminCreateRequest);
         admin = adminRepository.save(admin);
         log.info("Successfully created admin with id: {}", admin.getId());
-        return adminMapper.toAdminDto(admin);
+        // return adminMapper.toAdminDto(admin);
+        return mapToDto(admin);
     }
     // 로그인 아이디로 관리자 조회 - 컨트롤러를 통해 클라이언트에게 데이터 반환
     // findAdmin -> getAdminInfoByLoginId
@@ -41,7 +42,8 @@ public class AdminService {
         log.info("Fetching admin info for loginId: {}", loginId);
         Admin admin = getAdminByLoginId(loginId);
         log.info("Successfully fetched admin info for loginId: {}", loginId);
-        return adminMapper.toAdminDto(admin);
+        // return adminMapper.toAdminDto(admin);
+        return mapToDto(admin);
     }
     // 로그인 아이디로 관리자를 찾아 비밀번호를 업데이트
     // updateAdmin -> updateAdminPassword
@@ -51,7 +53,8 @@ public class AdminService {
         Admin admin = getAdminByLoginId(loginId);
         admin.changePassword(adminUpdateRequest.getLoginPassword());
         log.info("Successfully updated password for admin with loginId: {}", loginId);
-        return adminMapper.toAdminDto(admin);
+        // return adminMapper.toAdminDto(admin);
+        return mapToDto(admin);
     }
     // 로그인 아이디로 관리자를 삭제
     // deleteAdmin -> removeAdminByLoginId
@@ -79,5 +82,11 @@ public class AdminService {
         Restaurant restaurant = restaurantService.findRestaurantEntityById(restaurantId);
         restaurant.setPermitted();
         log.info("Successfully authorized restaurant with id: {}", restaurantId);
+    }
+
+    // 메서드 추가
+    // return adminMapper.toAdminDto(admin)의 중복 코드를 제거
+    private AdminFindResponse mapToDto(Admin admin) {
+        return adminMapper.toAdminDto(admin);
     }
 }
