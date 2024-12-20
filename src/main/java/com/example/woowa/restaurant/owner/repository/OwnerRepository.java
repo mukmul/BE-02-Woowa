@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
     Optional<Owner> findOwnerByLoginId(String loginId);
+    Boolean existsOwnerByLoginId(String loginId);
 
 }
