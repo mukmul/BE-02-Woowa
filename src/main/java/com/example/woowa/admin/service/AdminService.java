@@ -30,6 +30,13 @@ public class AdminService {
     @Transactional
     public AdminFindResponse createAdmin(AdminCreateRequest adminCreateRequest) {
         log.info("Start creating admin with loginId: {}", adminCreateRequest.getLoginId());
+
+        // 입력 유효성 검사 추가 - 중복된 loginId 확인
+        if (adminRepository.findByLoginId(adminCreateRequest.getLoginId()).isPresent()) {
+            log.error("Login ID already exists: {}", adminCreateRequest.getLoginId());
+            throw new IllegalArgumentException("Login ID already exists");
+        }
+
         Admin admin = adminMapper.toAdmin(adminCreateRequest);
         admin = adminRepository.save(admin);
         log.info("Successfully created admin with id: {}", admin.getId());
