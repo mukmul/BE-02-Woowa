@@ -37,8 +37,11 @@ public abstract class BaseLoginEntity extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void update(String name, String phoneNumber) {
+    public void changeName(String name) {
         this.name = name;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
