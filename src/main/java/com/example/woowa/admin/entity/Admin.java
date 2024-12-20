@@ -3,7 +3,6 @@ package com.example.woowa.admin.entity;
 
 import com.example.woowa.common.base.BaseLoginEntity;
 
-
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,9 +23,5 @@ public class Admin extends BaseLoginEntity {
         super(loginId, loginPassword, "", "");
     }
 
-// 엔티티 변경 메서드 추가로 가독성 향상 / 비밀번호 수정 메서드 추가
-//    public void changePassword(String newPassword) {
-//        this.setPassword(newPassword);
-//    }
 }
 

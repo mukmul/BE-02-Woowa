@@ -42,8 +42,18 @@ public abstract class BaseLoginEntity extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public void changePassword(String password) {
-        this.password = password;
+//    public void changePassword(String password) {
+//        this.password = password;
+//    }
+
+    // 비밀번호 변경 책임을 DTP->엔티티로 이전
+    // BaseLoginEntity는 공통 로그인 엔티티이기 때문에 Admin, User, Customer 등 다양한 하위 엔티티에서도 재사용할 수 있음
+    public void changePassword(String newPassword) {
+        // 비밀번호 길이 검증 추가
+        if (newPassword == null || newPassword.length() < 8) {
+            throw new IllegalArgumentException("비밀번호는 최소 8자 이상이어야 합니다.");
+        }
+        this.password = newPassword;
     }
 
 }
