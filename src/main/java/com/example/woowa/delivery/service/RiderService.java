@@ -41,7 +41,7 @@ public class RiderService {
     @Transactional
     public Long save(RiderCreateRequest riderCreateRequest) {
         Rider rider = riderMapper.toRider(riderCreateRequest);
-        boolean isId = riderRepository.existsByLoginId(riderCreateRequest.getLoginId());
+        boolean isId = riderRepository.existsByLoginId(riderCreateRequest.loginId());
         if (isId) {
             throw new RuntimeException(ErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
         }
@@ -79,6 +79,7 @@ public class RiderService {
         AreaCode areaCode = areaCodeService.findEntityById(areaCodeId);
         RiderAreaCode riderAreaCode = new RiderAreaCode(rider, areaCode);
         riderAreaCodeRepository.save(riderAreaCode);
+        areaCode.addRiderAreaCode(riderAreaCode);
     }
 
     @Transactional
@@ -90,7 +91,11 @@ public class RiderService {
                 .findFirst()
                 .ifPresent(riderAreaCode -> {
                     rider.removeRiderAreaCode(riderAreaCode);
-                    riderAreaCode.getAreaCode().removeRiderAreaCode(riderAreaCode);
+
+                    AreaCode areaCode=riderAreaCode.getAreaCode();
+                    areaCode.removeRiderAreaCode(riderAreaCode);
+                    areaCodeRepository.save(areaCode);
+
                     // 중간 엔티티 삭제
                     riderAreaCodeRepository.delete(riderAreaCode);
                 });

@@ -1,6 +1,7 @@
 package com.example.woowa.delivery.service;
 
 import com.example.woowa.common.exception.ErrorMessage;
+import com.example.woowa.delivery.dto.DeliveryCreateRequest;
 import com.example.woowa.delivery.dto.DeliveryResponse;
 import com.example.woowa.delivery.entity.Delivery;
 import com.example.woowa.delivery.entity.Rider;
@@ -8,6 +9,7 @@ import com.example.woowa.delivery.enums.DeliveryStatus;
 import com.example.woowa.delivery.mapper.DeliveryMapper;
 import com.example.woowa.delivery.repository.DeliveryRepository;
 import com.example.woowa.order.order.entity.Order;
+import com.example.woowa.order.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,8 @@ public class DeliveryService {
     private final DeliveryMapper deliveryMapper;
 
     private final RiderService riderService;
+
+    private final OrderService orderService;
 
     public Page<DeliveryResponse> findWaitingDelivery(PageRequest pageRequest) {
         return deliveryRepository.findByDeliveryStatus(pageRequest, DeliveryStatus.DELIVERY_WAITING)
@@ -77,10 +81,12 @@ public class DeliveryService {
     }
 
     @Transactional
-    public Long createDelivery(Order order, String restaurantAddress, String customerAddress,
-        int deliveryFee) {
-        Delivery delivery = Delivery.createDelivery(order, restaurantAddress, customerAddress,
-            deliveryFee);
-        return deliveryRepository.save(delivery).getId();
+    public DeliveryResponse createDelivery(DeliveryCreateRequest deliveryCreateRequest) {
+        Order order=orderService.findOrderById(deliveryCreateRequest.orderId());
+        Delivery delivery=Delivery.createDelivery(order,deliveryCreateRequest.restaurantAddress(),
+                deliveryCreateRequest.customerAddress(),deliveryCreateRequest.deliveryFee());
+        order.setDelivery(delivery);
+
+        return deliveryMapper.toResponse(deliveryRepository.save(delivery));
     }
 }

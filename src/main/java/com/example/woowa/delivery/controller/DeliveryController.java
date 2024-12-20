@@ -1,19 +1,16 @@
 package com.example.woowa.delivery.controller;
 
+import com.example.woowa.delivery.dto.DeliveryCreateRequest;
 import com.example.woowa.delivery.dto.DeliveryResponse;
 import com.example.woowa.delivery.service.DeliveryService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/delivery")
@@ -22,6 +19,12 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
+    @PostMapping
+    public ResponseEntity<DeliveryResponse> createDelivery(@RequestBody @Valid DeliveryCreateRequest deliveryCreateRequest)
+    {
+        DeliveryResponse deliveryResponse =  deliveryService.createDelivery(deliveryCreateRequest);
+        return ResponseEntity.ok(deliveryResponse);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<DeliveryResponse> findByDelivery(@PathVariable Long id) {
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(id);

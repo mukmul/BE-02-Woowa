@@ -2,6 +2,7 @@ package com.example.woowa.delivery.dto;
 
 import com.example.woowa.common.base.dto.BaseUserResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
@@ -20,6 +21,6 @@ public class RiderResponse extends BaseUserResponse {
         super(createdAt, updatedAt, loginId, password, name, phoneNumber);
         this.id = id;
         this.isDelivery = isDelivery;
-        this.riderAreaList = riderAreaList;
+        this.riderAreaList = new ArrayList<>(riderAreaList);
     }
 }
