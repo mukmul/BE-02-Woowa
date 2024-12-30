@@ -35,7 +35,7 @@ public class Advertisement extends BaseTimeEntity {
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RestaurantAdvertisement> restaurantAdvertisements = new ArrayList<>();
 
-    @Column(unique = true, nullable = false, length = 10)
+    @Column(unique = true, nullable = false, length = 30)
     private String title;
 
     @Convert(converter = UnitTypeConverter.class)
