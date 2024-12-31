@@ -8,6 +8,7 @@ import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementFind
 import com.example.woowa.restaurant.advertisement.entity.Advertisement;
 import com.example.woowa.restaurant.advertisement.mapper.AdvertisementMapper;
 import com.example.woowa.restaurant.advertisement.repository.AdvertisementRepository;
+import com.example.woowa.restaurant.advertisement.validate.AdvertisementValidator;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
@@ -32,6 +33,9 @@ public class AdvertisementService {
 
     @Transactional
     public AdvertisementCreateResponse createAdvertisement(AdvertisementCreateRequest advertisementCreateRequest) {
+        AdvertisementValidator.validateRate(advertisementCreateRequest.getRate());
+        AdvertisementValidator.validateLimitSize(advertisementCreateRequest.getLimitSize());
+
         Advertisement advertisement = advertisementRepository.save(
             advertisementMapper.toEntity(advertisementCreateRequest));
         return advertisementMapper.toCreateResponse(advertisement);
