@@ -78,17 +78,22 @@ public class AdvertisementService {
     @Transactional
     public void excludeRestaurantOutOfAdvertisement(Long advertisementId, Long restaurantId) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
+        AdvertisementValidator.validateCurrentSizeNotBelowZero(advertisement.getCurrentSize());
+
         Restaurant restaurant = findRestaurantEntityById(restaurantId);
-
         RestaurantAdvertisement restaurantAdvertisement = restaurantAdvertisementRepository.findById(
-                new RestaurantAdvertisementId(restaurantId, advertisementId))
-            .orElseThrow(() -> new NotFoundException("가게(" + restaurantId + ")가 광고(" + restaurantId + ")에 포함되어 있지 않습니다."));
-        // String.format 사용해서 가독성 up
+                        new RestaurantAdvertisementId(restaurantId, advertisementId))
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("레스토랑 ID %d는 광고 ID %d에 포함되어 있지 않습니다.", restaurantId, advertisementId)));
 
-        advertisement.removeRestaurantAdvertisement(restaurantAdvertisement);
+        // 연관 관계 동기화
+        advertisement.getRestaurantAdvertisements().remove(restaurantAdvertisement);
         restaurant.getRestaurantAdvertisements().remove(restaurantAdvertisement);
-        // 삭제 성공 여부 전달.(성공/실패를 명확히 알릴 수 있도록 수정.)
+
+        advertisement.decrementCurrentSize();
+        restaurantAdvertisementRepository.delete(restaurantAdvertisement); // 중간 테이블에서 물리 삭제
     }
+
 
     public Advertisement findAdvertisementEntityById(Long advertisementId) {
         return advertisementRepository.findById(advertisementId)
