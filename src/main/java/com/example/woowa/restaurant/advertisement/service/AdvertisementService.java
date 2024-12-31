@@ -52,10 +52,10 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public void updateAdvertisementById(Long advertisementId, AdvertisementUpdateRequest advertisementUpdateRequest) {
+    public AdvertisementFindResponse updateAdvertisementById(Long advertisementId, AdvertisementUpdateRequest advertisementUpdateRequest) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         advertisementMapper.updateEntity(advertisementUpdateRequest, advertisement);
-        // 응답 데이터 반환하는게 낫지 않나.(클라이언트에서 결과 확인용)
+        return advertisementMapper.toFindResponse(advertisement);
     }
 
     @Transactional
