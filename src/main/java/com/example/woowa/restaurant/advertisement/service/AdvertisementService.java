@@ -64,15 +64,27 @@ public class AdvertisementService {
         restaurantAdvertisementRepository.deleteByAdvertisement(advertisement);
         advertisementRepository.deleteById(advertisement.getId());
     }
-    
+
     @Transactional
-    public void includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
+    public AdvertisementFindResponse includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         Restaurant restaurant = findRestaurantEntityById(restaurantId);
 
+        boolean exists = restaurantAdvertisementRepository.existsByAdvertisementAndRestaurant(advertisement, restaurant);
+        if (exists) {
+            throw new IllegalStateException(
+                    String.format("광고 ID %d와 레스토랑 ID %d의 관계가 이미 존재합니다.", advertisementId, restaurantId));
+        }
+
+        AdvertisementValidator.isAvailable(advertisement.getCurrentSize(), advertisement.getLimitSize());
         RestaurantAdvertisement restaurantAdvertisement = new RestaurantAdvertisement(restaurant, advertisement);
-        // includeRestaurantInAdvertisement 메서드에서 생성된 RestaurantAdvertisement를 저장소에 저장하도록 수정.
-        // 추가 성공 여부를 클라이언트에 알리려면 결과 데이터를 반환하거나 상태 메시지를 전달하면 좋다.
+
+        advertisement.getRestaurantAdvertisements().add(restaurantAdvertisement);
+        advertisement.incrementCurrentSize();
+
+        restaurantAdvertisementRepository.save(restaurantAdvertisement);
+
+        return advertisementMapper.toFindResponse(advertisement);
     }
 
     @Transactional
