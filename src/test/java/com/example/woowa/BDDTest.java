@@ -191,7 +191,7 @@ public class BDDTest {
     @Order(5)
     void _5() {
         AdvertisementCreateRequest ultraCall = new AdvertisementCreateRequest("울트라콜",
-            UnitType.MOTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
+            UnitType.MONTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
         AdvertisementCreateRequest openList = new AdvertisementCreateRequest("오픈리스트",
             UnitType.PER_ORDER.getType(), RateType.PERCENT.getType(), 10, "오픈리스트 광고", 10);
         advertisementService.createAdvertisement(ultraCall);
