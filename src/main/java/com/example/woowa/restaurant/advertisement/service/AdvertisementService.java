@@ -60,11 +60,11 @@ public class AdvertisementService {
 
     @Transactional
     public void deleteAdvertisementById(Long advertisementId) {
-        advertisementRepository.deleteById(advertisementId);
+        Advertisement advertisement = findAdvertisementEntityById(advertisementId);
+        restaurantAdvertisementRepository.deleteByAdvertisement(advertisement);
+        advertisementRepository.deleteById(advertisement.getId());
     }
-    // deleteAdvertisementById에서 ID 존재 여부를 먼저 확인하여 예외 발생 방지.
-    // 물리 삭제 대신 논리 삭제로 변경하고, 삭제된 데이터를 처리하는 로직 추가 필요.
-
+    
     @Transactional
     public void includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
