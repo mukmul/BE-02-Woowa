@@ -40,7 +40,7 @@ class RestaurantAdvertisementRepositoryTest {
             "010-123-4567", "테스트용 임시 레스토랑 생성입니다.", "서울시 종로구"));
 
         Advertisement advertisement = advertisementRepository.save(
-            new Advertisement("울트라콜", UnitType.MOTHLY, RateType.PERCENT, 10, "test ad", 10)
+            new Advertisement("울트라콜", UnitType.MONTHLY, RateType.PERCENT, 10, "test ad", 10)
         );
 
         // When

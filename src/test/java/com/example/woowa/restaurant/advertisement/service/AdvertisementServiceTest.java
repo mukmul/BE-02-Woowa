@@ -58,15 +58,15 @@ class AdvertisementServiceTest {
         AdvertisementService advertisementService = withMockedAdvertisementRepository(mockedAdvertisementRepository);
 
         AdvertisementCreateRequest advertisementCreateRequest =
-            new AdvertisementCreateRequest("울트라콜", UnitType.MOTHLY.getType(), RateType.FLAT.getType(),
+            new AdvertisementCreateRequest("울트라콜", UnitType.MONTHLY.getType(), RateType.FLAT.getType(),
                 88000, "울트라콜 광고", 10);
         AdvertisementCreateResponse advertisementCreateResponse =
-            new AdvertisementCreateResponse(1L, "울트라콜", UnitType.MOTHLY.getType(), RateType.FLAT.getType(),
+            new AdvertisementCreateResponse(1L, "울트라콜", UnitType.MONTHLY.getType(), RateType.FLAT.getType(),
                 88000, "울트라콜 광고", 10, 0, LocalDateTime.now());
-        Advertisement entityConvertedFromDto = new Advertisement("울트라콜", UnitType.MOTHLY, RateType.FLAT,
+        Advertisement entityConvertedFromDto = new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT,
             88000, "울트라콜 광고", 10);
         when(mockedAdvertisementRepository.save(any(Advertisement.class)))
-            .thenReturn(new Advertisement("울트라콜", UnitType.MOTHLY, RateType.FLAT, 88000, "울트라콜 광고", 10));
+            .thenReturn(new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT, 88000, "울트라콜 광고", 10));
 
         // When
         AdvertisementCreateResponse result = advertisementService.createAdvertisement(
@@ -111,7 +111,7 @@ class AdvertisementServiceTest {
         AdvertisementRepository mockedAdvertisementRepository = mock(AdvertisementRepository.class);
         AdvertisementService advertisementService = withMockedAdvertisementRepository(mockedAdvertisementRepository);
 
-        Advertisement tester = new Advertisement("울트라콜", UnitType.MOTHLY, RateType.FLAT,
+        Advertisement tester = new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT,
             88000, "울트라콜 광고", 10);
         AdvertisementFindResponse manualConversion = new AdvertisementFindResponse(
             tester.getId(), tester.getTitle(), tester.getUnitType().getType(),
@@ -136,12 +136,12 @@ class AdvertisementServiceTest {
             new AdvertisementService(restaurantAdvertisementRepository, restaurantRepository,
                 advertisementRepository, advertisementMapper);
         AdvertisementCreateResponse beforeUpdating = advertisementService.createAdvertisement(
-            new AdvertisementCreateRequest("울트라콜", UnitType.MOTHLY.getType(),
+            new AdvertisementCreateRequest("울트라콜", UnitType.MONTHLY.getType(),
                 RateType.FLAT.getType(), 88000, "울트라콜 광고", 10));
 
         // When
         AdvertisementUpdateRequest advertisementUpdateRequest = new AdvertisementUpdateRequest("오픈리스트",
-            UnitType.MOTHLY.getType(), RateType.PERCENT.getType(),
+            UnitType.MONTHLY.getType(), RateType.PERCENT.getType(),
             10, "변경되었습니다.");
         advertisementService.updateAdvertisementById(beforeUpdating.getId(), advertisementUpdateRequest);
         AdvertisementFindResponse afterUpdating = advertisementService.findAdvertisementById(beforeUpdating.getId());
@@ -158,7 +158,7 @@ class AdvertisementServiceTest {
         Restaurant restaurant = restaurantRepository.save(
             Restaurant.createRestaurant("배민가게", "760-15-00993", LocalTime.now(),
                 LocalTime.now().plusHours(1), false, "010-1010-1010", "테스트용", "서울시 종로구"));
-        Advertisement advertisement = advertisementRepository.save(new Advertisement("울트라콜", UnitType.MOTHLY, RateType.FLAT,
+        Advertisement advertisement = advertisementRepository.save(new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT,
             88000, "울트라콜 광고", 10));
         AdvertisementService advertisementService =
             new AdvertisementService(restaurantAdvertisementRepository, restaurantRepository,
@@ -181,7 +181,7 @@ class AdvertisementServiceTest {
         Restaurant restaurant = restaurantRepository.save(
             Restaurant.createRestaurant("배민가게", "760-15-00993", LocalTime.now(),
                 LocalTime.now().plusHours(1), false, "010-1010-1010", "테스트용", "서울시 종로구"));
-        Advertisement advertisement = advertisementRepository.save(new Advertisement("울트라콜", UnitType.MOTHLY, RateType.FLAT,
+        Advertisement advertisement = advertisementRepository.save(new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT,
             88000, "울트라콜 광고", 10));
         restaurantAdvertisementRepository.save(new RestaurantAdvertisement(restaurant, advertisement));
         AdvertisementService advertisementService =
@@ -209,7 +209,7 @@ class AdvertisementServiceTest {
     public List<Advertisement> makeAdvertisements(int n) {
         List<Advertisement> list = new ArrayList<>();
         for (int i = 1; i <= n; i++)
-            list.add(new Advertisement("title" + i, UnitType.MOTHLY, RateType.PERCENT, 10, "description" + i, i));
+            list.add(new Advertisement("title" + i, UnitType.MONTHLY, RateType.PERCENT, 10, "description" + i, i));
         return list;
     }
 
