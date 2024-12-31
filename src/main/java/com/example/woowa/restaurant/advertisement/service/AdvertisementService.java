@@ -97,26 +97,12 @@ public class AdvertisementService {
 
     public Advertisement findAdvertisementEntityById(Long advertisementId) {
         return advertisementRepository.findById(advertisementId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 광고 아이디입니다."));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 광고 ID %d 입니다.", advertisementId)));
     }
 
     public Restaurant findRestaurantEntityById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 restaurantId 입니다."));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 가게 ID %d 입니다.", restaurantId)));
     }
 
-    /* 공통적인 예외 처리 로직을 유틸 메서드로 추출하는 방향 제안
-    public <T> T findEntityById(Long id, JpaRepository<T, Long> repository, String entityName) {
-    return repository.findById(id)
-        .orElseThrow(() -> new NotFoundException("존재하지 않는 " + entityName + " 입니다."));
-    }
-
-    public Advertisement findAdvertisementEntityById(Long advertisementId) {
-        return findEntityById(advertisementId, advertisementRepository, "광고");
-    }
-
-    public Restaurant findRestaurantEntityById(Long restaurantId) {
-        return findEntityById(restaurantId, restaurantRepository, "레스토랑");
-    }
-     */
 }
