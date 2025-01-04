@@ -41,7 +41,7 @@ public class CategoryRestController {
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
-    @GetMapping(value = "{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryFindResponse> findCategoryById(final @PathVariable Long categoryId) {
         CategoryFindResponse category = categoryService.findCategoryById(categoryId);
         return new ResponseEntity<>(category, HttpStatus.OK);
