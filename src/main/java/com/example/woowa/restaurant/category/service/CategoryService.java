@@ -41,7 +41,7 @@ public class CategoryService {
 
     public CategoryFindResponse findCategoryById(Long categoryId) {
         return categoryMapper.toFindResponseDto(categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 카테고리 아이디입니다.")));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 카테고리 ID %d 입니다.", categoryId))));
     }
 
     @Transactional
