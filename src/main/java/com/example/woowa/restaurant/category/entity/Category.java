@@ -2,10 +2,10 @@ package com.example.woowa.restaurant.category.entity;
 
 import com.example.woowa.common.base.BaseTimeEntity;
 import com.example.woowa.restaurant.restaurntat_category.entity.RestaurantCategory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import jakarta.persistence.CascadeType;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,11 +18,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "category")
 @Entity
+@SQLDelete(sql = "UPDATE category SET is_deleted = NOW() WHERE id = ?")
+@SQLRestriction("is_deleted IS NULL")
 public class Category extends BaseTimeEntity {
 
     @Id
@@ -36,7 +40,9 @@ public class Category extends BaseTimeEntity {
     @Column(unique = true, nullable = false, length = 10)
     private String name;
 
-    // DTO 또는 서비스 레이어에서 유효성을 검사하도록 설계하되, 엔티티 레벨에서도 최소한의 데이터 무결성을 보장하도록.
+    @Column(name = "is_deleted", nullable = true)
+    private LocalDateTime isDeleted;
+
     @Builder
     public Category(String name) {
         this.name = name;
