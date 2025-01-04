@@ -4,6 +4,7 @@ import com.example.woowa.common.base.BaseLoginEntity;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
