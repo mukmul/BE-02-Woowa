@@ -45,7 +45,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void updateCategoryById(Long categoryId, CategoryUpdateRequest categoryUpdateRequest) {
+    public CategoryFindResponse updateCategoryById(Long categoryId, CategoryUpdateRequest categoryUpdateRequest) {
         Category category = findCategoryEntityById(categoryId);
         // 이름 중복 방지
         if (!category.getName().equals(categoryUpdateRequest.getName()) &&
