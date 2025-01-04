@@ -48,10 +48,10 @@ public class CategoryRestController {
     }
 
     @PutMapping(value = "/{categoryId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCategoryById(final @PathVariable Long categoryId,
-        final @Valid @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
-        categoryService.updateCategoryById(categoryId, categoryUpdateRequest);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<CategoryFindResponse> updateCategoryById(final @PathVariable Long categoryId,
+                                                                   final @Valid @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
+        CategoryFindResponse category = categoryService.updateCategoryById(categoryId, categoryUpdateRequest);
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{categoryId}")
