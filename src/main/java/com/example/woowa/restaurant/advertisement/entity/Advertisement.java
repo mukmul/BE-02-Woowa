@@ -36,7 +36,7 @@ public class Advertisement extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "advertisement")
     private List<RestaurantAdvertisement> restaurantAdvertisements = new ArrayList<>();
 
     @Column(unique = true, nullable = false, length = 30)
