@@ -32,10 +32,9 @@ public class Category extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // 논리 삭제 시, orphanRemoval = true 설정 삭제 필요.
-    // isDeleted 추가.
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "category")
+    private Set<RestaurantCategory> restaurantCategories = new HashSet<>();
 
     @Column(unique = true, nullable = false, length = 10)
     private String name;
@@ -48,15 +47,13 @@ public class Category extends BaseTimeEntity {
         this.name = name;
     }
 
-    // restaurantCategories.add(restaurantCategory); restaurantCategories 리스트에 실제로 restaurantCategory가 추가 필요.
     public void addRestaurantCategory(RestaurantCategory restaurantCategory) {
-        if (!Objects.equals(restaurantCategory.getCategory().getId(), this.getId())) {
+        if (restaurantCategories.add(restaurantCategory)) {
             restaurantCategory.setCategory(this);
         }
     }
-    // 유효성 검사를 추가하여 잘못된 값이 설정되지 않도록 방지
+
     public void changeName(String name) {
         this.name = name;
     }
-
 }
