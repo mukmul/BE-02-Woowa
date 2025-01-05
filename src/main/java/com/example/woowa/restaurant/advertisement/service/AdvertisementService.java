@@ -82,7 +82,6 @@ public class AdvertisementService {
         advertisement.getRestaurantAdvertisements().add(restaurantAdvertisement);
         advertisement.incrementCurrentSize();
 
-        restaurantAdvertisementRepository.save(restaurantAdvertisement);
 
         return advertisementMapper.toFindResponse(advertisement);
     }
