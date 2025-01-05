@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.woowa.config.JpaAuditingConfiguration;
 import com.example.woowa.restaurant.category.dto.request.CategoryCreateRequest;
 import com.example.woowa.restaurant.category.dto.request.CategoryUpdateRequest;
 import com.example.woowa.restaurant.category.dto.response.CategoryCreateResponse;
@@ -18,12 +19,13 @@ import com.example.woowa.restaurant.category.repository.CategoryRepository;
 import com.example.woowa.restaurant.owner.repository.OwnerRepository;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
 import com.example.woowa.restaurant.restaurntat_category.repository.RestaurantCategoryRepository;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.repository.UserRepository;
+import com.example.woowa.security.role.repository.RoleRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.example.woowa.security.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -31,8 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 @DataJpaTest
+@Import(JpaAuditingConfiguration.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class CategoryServiceTest {
 
@@ -130,7 +134,7 @@ class CategoryServiceTest {
 
     @Test
     @DisplayName("저장된 카테고리명을 요청된 이름으로 변경한다.")
-    void testUdateCategoryById() {
+    void testUpdateCategoryById() {
         // Given
         CategoryService categoryService = new CategoryService(categoryRepository, categoryMapper);
         CategoryCreateResponse beforeUpdating = categoryService.createCategory(
