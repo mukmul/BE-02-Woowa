@@ -18,7 +18,6 @@ import com.example.woowa.restaurant.advertisement.mapper.AdvertisementMapper;
 import com.example.woowa.restaurant.advertisement.repository.AdvertisementRepository;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
-import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
 import com.example.woowa.restaurant.restaurant_advertisement.repository.RestaurantAdvertisementRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -183,11 +182,13 @@ class AdvertisementServiceTest {
                 LocalTime.now().plusHours(1), false, "010-1010-1010", "테스트용", "서울시 종로구"));
         Advertisement advertisement = advertisementRepository.save(new Advertisement("울트라콜", UnitType.MONTHLY, RateType.FLAT,
             88000, "울트라콜 광고", 10));
-        restaurantAdvertisementRepository.save(new RestaurantAdvertisement(restaurant, advertisement));
         AdvertisementService advertisementService =
             new AdvertisementService(restaurantAdvertisementRepository, restaurantRepository,
                 advertisementRepository, advertisementMapper);
 
+        advertisementService.includeRestaurantInAdvertisement(advertisement.getId(), restaurant.getId());
+        boolean isIncluded = restaurantAdvertisementRepository.existsByAdvertisementAndRestaurant(advertisement, restaurant);
+        assertThat(isIncluded).isTrue();
         AdvertisementFindResponse beforeExclusion = advertisementService.findAdvertisementById(
             advertisement.getId());
         assertThat(beforeExclusion.getCurrentSize()).isEqualTo(1);
@@ -196,10 +197,14 @@ class AdvertisementServiceTest {
         advertisementService.excludeRestaurantOutOfAdvertisement(advertisement.getId(), restaurant.getId());
 
         // Then
+        boolean isExcluded = restaurantAdvertisementRepository.existsByAdvertisementAndRestaurant(advertisement, restaurant);
+        assertThat(isExcluded).isFalse();
         AdvertisementFindResponse afterExclusion = advertisementService.findAdvertisementById(
             advertisement.getId());
         assertThat(afterExclusion.getCurrentSize()).isEqualTo(0);
     }
+
+
 
     public AdvertisementService withMockedAdvertisementRepository(AdvertisementRepository mockedAdvertisementRepository) {
         return new AdvertisementService(restaurantAdvertisementRepository, restaurantRepository,
