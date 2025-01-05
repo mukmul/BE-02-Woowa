@@ -7,8 +7,9 @@ import com.example.woowa.restaurant.advertisement.enums.RateType;
 import com.example.woowa.restaurant.advertisement.enums.UnitType;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -36,8 +37,9 @@ public class Advertisement extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "advertisement")
-    private List<RestaurantAdvertisement> restaurantAdvertisements = new ArrayList<>();
+    @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RestaurantAdvertisement> restaurantAdvertisements = new HashSet<>();
+
 
     @Column(unique = true, nullable = false, length = 30)
     private String title;
