@@ -48,14 +48,15 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantCreateReque
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.user.Role;
-import com.example.woowa.security.user.UserRole;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.user.entity.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;

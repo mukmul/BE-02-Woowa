@@ -11,8 +11,10 @@ import com.example.woowa.order.review.dto.ReviewFindResponse;
 import com.example.woowa.order.review.dto.ReviewUpdateRequest;
 import com.example.woowa.order.review.entity.Review;
 import com.example.woowa.order.review.repository.ReviewRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,6 @@ public class ReviewService {
 
         Customer customer = customerService.findCustomerEntity(loginId);
         Order order = orderService.findOrderById(orderId);
-
 
         if (!order.getCustomer().equals(customer)) {
             throw new RuntimeException("사용자가 해당 주문에 접근할 권한이 없습니다.");
@@ -57,12 +58,15 @@ public class ReviewService {
     public List<ReviewFindResponse> findUserReview(String loginId) {
         Customer customer = customerService.findCustomerEntity(loginId);
         return customer.getReviews().stream().map(reviewMapper::toReviewDto)
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public ReviewFindResponse updateReview(Long id, ReviewUpdateRequest reviewUpdateRequest) {
+    public ReviewFindResponse updateReview(String loginId, Long id, ReviewUpdateRequest reviewUpdateRequest) {
+
         Review review = findReviewEntity(id);
+        validateReviewWriter(loginId, review);
+
         if (reviewUpdateRequest.getContent() != null) {
             review.setContent(reviewUpdateRequest.getContent());
         }
@@ -76,12 +80,21 @@ public class ReviewService {
     public void deleteReview(String loginId, Long id) {
         Customer customer = customerService.findCustomerEntity(loginId);
         Review review = findReviewEntity(id);
+
+        validateReviewWriter(loginId, review);
+
         customer.removeReview(review);
         reviewRepository.delete(review);
     }
 
     private Review findReviewEntity(Long id) {
         return reviewRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("review not existed"));
+                .orElseThrow(() -> new RuntimeException("review not existed"));
+    }
+
+    private void validateReviewWriter(String loginId, Review review) {
+        if (!review.getCustomer().getLoginId().equals(loginId)) {
+            throw new RuntimeException("This user is not a review writer");
+        }
     }
 }

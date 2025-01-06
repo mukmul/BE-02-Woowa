@@ -19,9 +19,11 @@ import com.example.woowa.order.review.dto.ReviewUpdateRequest;
 import com.example.woowa.order.review.entity.Review;
 import com.example.woowa.order.review.enums.ScoreType;
 import com.example.woowa.order.review.repository.ReviewRepository;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,104 +31,138 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.stereotype.Service;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
-  @Autowired
-  private ReviewService reviewService;
+    @Autowired
+    private ReviewService reviewService;
 
-  @MockBean
-  private CustomerService customerService;
+    @MockitoBean
+    private CustomerService customerService;
 
-  @MockBean
-  private OrderService orderService;
+    @MockitoBean
+    private OrderService orderService;
 
-  @MockBean
-  private Order order;
+    @MockitoBean
+    private Order order;
 
-  @MockBean
-  private Delivery delivery;
+    @MockitoBean
+    private Delivery delivery;
 
-  @MockBean
-  private ReviewRepository reviewRepository;
+    @MockitoBean
+    private ReviewRepository reviewRepository;
 
-  @Test
-  @DisplayName("리뷰 생성")
-  void createReview() {
-    CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
-    Customer customer = new Customer("dev12","Programmers123!", LocalDate.of(2000,1,1), customerGrade);
-    Review review = new Review("정말정말 맛있습니다.", ScoreType.FIVE, null, null);
-    given(customerService.findCustomerEntity(anyString())).willReturn(customer);
-    given(delivery.getDeliveryStatus()).willReturn(DeliveryStatus.DELIVERY_FINISH);
-    given(order.getDelivery()).willReturn(delivery);
-    given(orderService.findOrderById(anyLong())).willReturn(order);
-    given(reviewRepository.save(any())).willReturn(review);
+    @Test
+    @DisplayName("리뷰 생성")
+    void createReview() {
 
-    ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("정말정말 맛있습니다.", 5);
-    ReviewFindResponse reviewFindResponse = reviewService.createReview("dev12", 1l, reviewCreateRequest);
+        CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
+        Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
+        Review review = new Review("정말정말 맛있습니다.", ScoreType.FIVE, null, null);
 
-    Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛있습니다.");
-    Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
-  }
+        given(customerService.findCustomerEntity(anyString())).willReturn(customer);
+        given(delivery.getDeliveryStatus()).willReturn(DeliveryStatus.DELIVERY_FINISH);
+        given(order.getDelivery()).willReturn(delivery);
+        given(order.getCustomer()).willReturn(customer);
+        given(orderService.findOrderById(anyLong())).willReturn(order);
+        given(reviewRepository.save(any())).willReturn(review);
 
-  @Test
-  @DisplayName("리뷰 조회")
-  void findReview() {
-    given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
-        ScoreType.FIVE, null, null)));
+        ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = reviewService.createReview("test1234", 1L, reviewCreateRequest);
 
-    ReviewFindResponse reviewFindResponse = reviewService.findReview(1l);
+        Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛있습니다.");
+        Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
+    }
 
-    Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛있습니다.");
-    Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
-  }
+    @Test
+    @DisplayName("리뷰 조회")
+    void findReview() {
+        given(reviewRepository.findById(1L)).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, null, null)));
 
-  @Test
-  @DisplayName("유저 리뷰 목록 조회")
-  void findUserReview() {
-    CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
-    Customer customer = new Customer("dev12","Programmers123!", LocalDate.of(2000,1,1), customerGrade);
-    customer.addReview(new Review("정말정말 맛있습니다.",
-        ScoreType.FIVE, null, null));
-    given(customerService.findCustomerEntity(anyString())).willReturn(customer);
+        // 정상적으로 조회가 되는 경우
+        ReviewFindResponse reviewFindResponse = reviewService.findReview(1L);
 
-    List<ReviewFindResponse> reviews = reviewService.findUserReview("dev12");
+        Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛있습니다.");
+        Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
 
-    Assertions.assertThat(reviews.get(0).getContent()).isEqualTo("정말정말 맛있습니다.");
-    Assertions.assertThat(reviews.get(0).getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
-  }
+        // 존재하지 않는 리뷰 id 를 조회하는 경우
+        Assertions.assertThatThrownBy(() -> reviewService.findReview(2L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("review not existed");
+    }
 
-  @Test
-  @DisplayName("리뷰 업데이트")
-  void updateReview() {
-    given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
-        ScoreType.FIVE, null, null)));
+    @Test
+    @DisplayName("유저 리뷰 목록 조회")
+    void findUserReview() {
+        CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
+        Customer customer = new Customer("dev12", "Programmers123!", LocalDate.of(2000, 1, 1), customerGrade);
+        customer.addReview(new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, null, null));
+        given(customerService.findCustomerEntity(anyString())).willReturn(customer);
 
-    ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
-    ReviewFindResponse reviewFindResponse = reviewService.updateReview(1l, reviewUpdateRequest);
+        List<ReviewFindResponse> reviews = reviewService.findUserReview("dev12");
 
-    Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛없습니다.");
-    Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.ONE.getValue());
-  }
+        Assertions.assertThat(reviews.get(0).getContent()).isEqualTo("정말정말 맛있습니다.");
+        Assertions.assertThat(reviews.get(0).getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
+    }
 
-  @Test
-  @DisplayName("리뷰 삭제")
-  void deleteReview() {
-    CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
-    Customer customer = new Customer("dev12","Programmers123!", LocalDate.of(2000,1,1), customerGrade);
-    Review review = new Review("정말정말 맛있습니다.",
-        ScoreType.FIVE, null, null);
-    customer.addReview(review);
-    given(customerService.findCustomerEntity(anyString())).willReturn(customer);
-    given(reviewRepository.findById(anyLong())).willReturn(Optional.of(review));
+    @Test
+    @DisplayName("리뷰 작성자 검증")
+    void validateReviewWriter() {
+        CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
+        Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
 
-    reviewService.deleteReview("dev12", 1l);
+        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, customer, null)));
 
-    verify(reviewRepository).delete(review);
-  }
+        ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
+
+        // 자신이 작성하지 않은 리뷰인 경우 예외
+        Assertions.assertThatThrownBy(() -> reviewService.updateReview("abc1234", 1L, reviewUpdateRequest))
+                .isInstanceOf(RuntimeException.class) // 예외 타입 검증
+                .hasMessage("This user is not a review writer"); // 예외 메시지 검증
+    }
+
+    @Test
+    @DisplayName("리뷰 업데이트")
+    void updateReview() {
+        CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
+        Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
+
+        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, customer, null)));
+
+        ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
+
+        ReviewFindResponse reviewFindResponse = reviewService.updateReview("test1234", 1L, reviewUpdateRequest);
+
+        Assertions.assertThat(reviewFindResponse).isNotNull();
+
+        Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛없습니다.");
+        Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.ONE.getValue());
+    }
+
+    @Test
+    @DisplayName("리뷰 삭제")
+    void deleteReview() {
+        CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
+        Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
+
+        Review review = new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, customer, null);
+
+        customer.addReview(review);
+
+        given(customerService.findCustomerEntity(anyString())).willReturn(customer);
+        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(review));
+
+        reviewService.deleteReview("test1234", 1L);
+
+        verify(reviewRepository).delete(review);
+    }
 }
