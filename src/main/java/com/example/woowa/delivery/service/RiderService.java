@@ -13,9 +13,13 @@ import com.example.woowa.delivery.repository.RiderAreaCodeRepository;
 import com.example.woowa.delivery.repository.RiderRepository;
 import java.util.List;
 
+
+import com.example.woowa.security.user.service.UserService;
+import com.example.woowa.security.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class RiderService {
 
     private final RiderRepository riderRepository;
-
     private final RiderMapper riderMapper;
-
+    private final UserService userService;
     private final AreaCodeService areaCodeService;
 
     private final RiderAreaCodeRepository riderAreaCodeRepository;
@@ -45,6 +48,7 @@ public class RiderService {
             throw new RuntimeException(ErrorMessage.FAIL_TO_DELETE.getMessage());
         }
     }
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long save(RiderCreateRequest riderCreateRequest) {
@@ -55,7 +59,11 @@ public class RiderService {
                 throw new RuntimeException(ErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
             }
 
+            rider.changePassword(passwordEncoder.encode(rider.getPassword()));
             riderRepository.save(rider);
+
+            userService.createUser(rider, UserRole.ROLE_RIDER);
+
             return rider.getId();
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
@@ -67,6 +75,7 @@ public class RiderService {
         try {
             Rider rider = findEntityById(id);
             rider.update(riderUpdateRequest.getName(), riderUpdateRequest.getPhoneNumber());
+            userService.syncUser(rider);
         } catch (RuntimeException e) {
             throw new RuntimeException(ErrorMessage.FAIL_TO_UPDATE.getMessage());
         }
@@ -79,6 +88,15 @@ public class RiderService {
         } catch (RuntimeException e) {
             throw new RuntimeException("배달 상태"+ErrorMessage.FAIL_TO_UPDATE.getMessage());
         }
+    }
+
+    @Transactional
+    public void deleteRider(String loginId) {
+        Rider rider = riderRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 배달기사입니다."));
+
+        riderRepository.delete(rider);
+        userService.deleteUser(rider.getLoginId());
     }
 
     public RiderResponse findResponseById(Long id) {

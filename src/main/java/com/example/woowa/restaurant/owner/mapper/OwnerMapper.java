@@ -19,7 +19,8 @@ public interface OwnerMapper {
     OwnerFindResponse toFindResponse(Owner owner);
 
     default void updateEntity(OwnerUpdateRequest ownerUpdateRequest, @MappingTarget Owner owner) {
-        owner.update(ownerUpdateRequest.getName(), ownerUpdateRequest.getPhoneNumber());
+        owner.changeName(ownerUpdateRequest.getName());
+        owner.changePhoneNumber(ownerUpdateRequest.getPhoneNumber());
         owner.changePassword(ownerUpdateRequest.getPassword());
     }
 

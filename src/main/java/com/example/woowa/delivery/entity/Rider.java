@@ -3,6 +3,7 @@ package com.example.woowa.delivery.entity;
 import com.example.woowa.common.base.BaseLoginEntity;
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,6 +37,10 @@ public class Rider extends BaseLoginEntity {
     private Rider(String loginId, String loginPassword, String name, String phoneNumber) {
         super(loginId, loginPassword, name, phoneNumber);
         this.isDelivery = false;
+    }
+    public void update(String name, String phoneNumber) {
+        changeName(name);
+        changePhoneNumber(phoneNumber);
     }
 
     public static Rider createRider(String loginId, String loginPassword, String name,
