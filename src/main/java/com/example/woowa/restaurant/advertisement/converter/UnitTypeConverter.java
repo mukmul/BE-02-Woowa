@@ -2,8 +2,8 @@ package com.example.woowa.restaurant.advertisement.converter;
 
 import com.example.woowa.common.interfaces.EnumFindable;
 import com.example.woowa.restaurant.advertisement.enums.UnitType;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class UnitTypeConverter implements AttributeConverter<UnitType, String> {

@@ -8,12 +8,11 @@ import com.example.woowa.restaurant.owner.dto.response.OwnerFindResponse;
 import com.example.woowa.restaurant.owner.entity.Owner;
 import com.example.woowa.restaurant.owner.mapper.OwnerMapper;
 import com.example.woowa.restaurant.owner.repository.OwnerRepository;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.repository.UserRepository;
-import com.example.woowa.security.user.User;
-import com.example.woowa.security.user.UserRole;
+import com.example.woowa.security.user.service.UserService;
+import com.example.woowa.security.user.entity.UserRole;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,20 +23,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OwnerService {
 
-    private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
     private final OwnerRepository ownerRepository;
-
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final OwnerMapper ownerMapper;
 
     @Transactional
     public OwnerCreateResponse createOwner(OwnerCreateRequest ownerCreateRequest) {
-        Owner owner = ownerRepository.save(ownerMapper.toEntity(ownerCreateRequest));
+
+        boolean isExist = ownerRepository.existsOwnerByLoginId(ownerCreateRequest.getLoginId());
+        if (isExist) {
+            throw new RuntimeException("이미 존재하는 아이디입니다.");
+        }
+        // loginId 유효성 체크
+        
+        Owner owner = ownerMapper.toEntity(ownerCreateRequest);
         owner.changePassword(passwordEncoder.encode(owner.getPassword()));
-        userRepository.save(new User(owner.getLoginId(), owner.getPassword(), owner.getName(),
-            owner.getPhoneNumber(),
-            List.of(roleRepository.findByName(UserRole.ROLE_OWNER.toString()))));
+        owner = ownerRepository.save(owner);
+
+        userService.createUser(owner, UserRole.ROLE_OWNER);
+
+//        Role ownerRole = roleService.findRole(UserRole.ROLE_OWNER);
+
+//        User user = userMapper.toUser(owner, ownerRole);
+//        User user = new User(owner.getLoginId(), owner.getPassword(), owner.getName(),
+//                owner.getPhoneNumber(), ownerRole);
+
         return ownerMapper.toCreateResponse(owner);
     }
 
@@ -54,7 +65,7 @@ public class OwnerService {
     @Transactional
     public void deleteOwnerById(Long ownerId) {
         Owner owner = findOwnerEntityById(ownerId);
-        userRepository.deleteByLoginId(owner.getLoginId());
+        userService.deleteUser(owner.getLoginId());
         ownerRepository.deleteById(ownerId);
     }
 
@@ -63,6 +74,8 @@ public class OwnerService {
         Owner owner = findOwnerEntityById(ownerId);
         ownerMapper.updateEntity(ownerUpdateRequest, owner);
         owner.changePassword(passwordEncoder.encode(owner.getPassword()));
+
+        userService.syncUser(owner);
     }
 
     public Owner findOwnerEntityById(Long ownerId) {

@@ -1,6 +1,6 @@
 package com.example.woowa.restaurant.owner.dto.request;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.example.woowa.common.base;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +37,11 @@ public abstract class BaseLoginEntity extends BaseTimeEntity {
         this.password = password;
     }
 
-    public void update(String name, String phoneNumber) {
+    public void changeName(String name) {
         this.name = name;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

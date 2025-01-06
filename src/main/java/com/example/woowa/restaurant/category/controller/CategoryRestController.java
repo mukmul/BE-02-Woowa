@@ -6,7 +6,7 @@ import com.example.woowa.restaurant.category.dto.response.CategoryCreateResponse
 import com.example.woowa.restaurant.category.dto.response.CategoryFindResponse;
 import com.example.woowa.restaurant.category.service.CategoryService;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
