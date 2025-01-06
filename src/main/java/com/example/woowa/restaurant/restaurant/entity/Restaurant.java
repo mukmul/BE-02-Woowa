@@ -106,7 +106,6 @@ public class Restaurant extends BaseTimeEntity {
             description, address);
     }
 
-    // 오픈 시간이 마감 시간보다 무조건 빠르도록 설정
     public void updateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
         throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
@@ -134,18 +133,9 @@ public class Restaurant extends BaseTimeEntity {
         this.address = address;
     }
 
-    public void changeReviewInfo(Double averageReviewScore, Integer reviewCount) {
-        this.averageReviewScore = averageReviewScore;
-    }
-
     // 배달 구역 양방향 처리
     public void addDeliveryArea(DeliveryArea deliveryArea) {
         deliveryAreas.add(deliveryArea);
-    }
-
-    // 사용 안 함
-    public void addRestaurantCategory(RestaurantCategory restaurantCategory) {
-        restaurantCategory.setRestaurant(this);
     }
 
     public void setPermitted() {
@@ -160,16 +150,6 @@ public class Restaurant extends BaseTimeEntity {
         this.owner = owner;
         this.owner.getRestaurants().add(this);
     }
-
-//    public void setOwner(Owner owner) {
-//        if (Objects.nonNull(this.owner)) {
-//            this.owner.getRestaurants().remove(this);
-//        }
-//        this.owner = owner;
-//        if (!this.owner.getRestaurants().contains(this)) {
-//            this.owner.getRestaurants().add(this);
-//        }
-//    }
 
     private static void validateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
             throws IllegalArgumentException {
