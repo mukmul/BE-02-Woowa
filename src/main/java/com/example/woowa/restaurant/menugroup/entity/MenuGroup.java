@@ -43,7 +43,7 @@ public class MenuGroup extends BaseTimeEntity {
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.REMOVE)
     private List<Menu> menus = new ArrayList<>();
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 45)
     private String title;
 
     @Column(length = 500)
