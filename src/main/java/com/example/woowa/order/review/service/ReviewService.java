@@ -29,9 +29,16 @@ public class ReviewService {
 
     @Transactional
     public ReviewFindResponse createReview(String loginId, Long orderId,
-        ReviewCreateRequest reviewCreateRequest) {
+                                           ReviewCreateRequest reviewCreateRequest) {
+
         Customer customer = customerService.findCustomerEntity(loginId);
         Order order = orderService.findOrderById(orderId);
+
+
+        if (!order.getCustomer().equals(customer)) {
+            throw new RuntimeException("사용자가 해당 주문에 접근할 권한이 없습니다.");
+        }
+
         if (order.getDelivery().getDeliveryStatus() == DeliveryStatus.DELIVERY_FINISH) {
             Review review = reviewMapper.toReview(reviewCreateRequest, customer, order);
             review = reviewRepository.save(review);

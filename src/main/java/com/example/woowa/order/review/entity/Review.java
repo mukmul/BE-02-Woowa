@@ -32,7 +32,7 @@ public class Review extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScoreType scoreType;
 
