@@ -27,11 +27,15 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "restaurant")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql="UPDATE restaurant SET deleted_at = NOW() WHERE id = ?")
 public class Restaurant extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "restaurant")
@@ -75,6 +79,9 @@ public class Restaurant extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean isPermitted;
 
+    @Column(nullable = true)
+    private LocalDateTime deleteAt;
+
     private String description;
 
     private Double averageReviewScore;
@@ -95,6 +102,7 @@ public class Restaurant extends BaseTimeEntity {
         this.reviewCount = 0;
         this.averageReviewScore = 0.0D;
         this.isPermitted = false;
+        this.deleteAt = null;
     }
 
     public static Restaurant createRestaurant(String name, String businessNumber,
