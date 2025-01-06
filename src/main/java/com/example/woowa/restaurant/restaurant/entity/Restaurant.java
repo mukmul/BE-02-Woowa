@@ -79,6 +79,8 @@ public class Restaurant extends BaseTimeEntity {
 
     private Double averageReviewScore;
 
+    private Integer reviewCount;
+
     private Restaurant(String name, String businessNumber, LocalDateTime openingTime,
         LocalDateTime closingTime,
         Boolean isOpen, String phoneNumber, String description, String address) {
@@ -90,6 +92,7 @@ public class Restaurant extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.address = address;
+        this.reviewCount = 0;
         this.averageReviewScore = 0.0D;
         this.isPermitted = false;
     }
