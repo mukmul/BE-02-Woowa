@@ -43,8 +43,7 @@ public class MenuGroup extends BaseTimeEntity {
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.REMOVE)
     private List<Menu> menus = new ArrayList<>();
 
-    @Column(nullable = false)
-    // ! length 500 제한 걸기
+    @Column(nullable = false, length = 500)
     private String title;
 
     @Column(length = 500)
@@ -73,7 +72,7 @@ public class MenuGroup extends BaseTimeEntity {
         return StringUtils.hasText(description) ? description : null;
     }
 
-    // ! 양방향 처리
+    // ! 이 부분 효민 언니랑 얘기해보기 (menu 양방향 처리)
     public void addMenu(Menu menu) {
         menus.add(menu);
     }
