@@ -7,6 +7,8 @@ import com.example.woowa.restaurant.menugroup.entity.MenuGroup;
 import com.example.woowa.restaurant.owner.entity.Owner;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
 import com.example.woowa.restaurant.restaurntat_category.entity.RestaurantCategory;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +39,10 @@ public class Restaurant extends BaseTimeEntity {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<RestaurantCategory> restaurantCategories = new ArrayList<>();
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-
     private final List<RestaurantAdvertisement> restaurantAdvertisements = new ArrayList<>();
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<DeliveryArea> deliveryAreas = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,17 +51,17 @@ public class Restaurant extends BaseTimeEntity {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 45)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String businessNumber;
 
     @Column(nullable = false)
-    private LocalTime openingTime;
+    private LocalDateTime openingTime;
 
     @Column(nullable = false)
-    private LocalTime closingTime;
+    private LocalDateTime closingTime;
 
     @Column(nullable = false)
     private Boolean isOpen;
@@ -67,20 +69,18 @@ public class Restaurant extends BaseTimeEntity {
     @Column(nullable = false)
     private String phoneNumber;
 
-    private String description;
-
-    private Double averageReviewScore;
-
-    private Integer reviewCount;
-
     @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
     private Boolean isPermitted;
 
-    private Restaurant(String name, String businessNumber, LocalTime openingTime,
-        LocalTime closingTime,
+    private String description;
+
+    private Double averageReviewScore;
+
+    private Restaurant(String name, String businessNumber, LocalDateTime openingTime,
+        LocalDateTime closingTime,
         Boolean isOpen, String phoneNumber, String description, String address) {
         this.name = name;
         this.businessNumber = businessNumber;
@@ -90,13 +90,12 @@ public class Restaurant extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.address = address;
-        this.reviewCount = 0;
         this.averageReviewScore = 0.0D;
         this.isPermitted = false;
     }
 
     public static Restaurant createRestaurant(String name, String businessNumber,
-        LocalTime openingTime, LocalTime closingTime, Boolean isOpen, String phoneNumber,
+      LocalDateTime openingTime, LocalDateTime closingTime, Boolean isOpen, String phoneNumber,
         String description, String address) throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
         if (!CRNValidator.isValid(businessNumber)) {
@@ -108,7 +107,7 @@ public class Restaurant extends BaseTimeEntity {
     }
 
     // 오픈 시간이 마감 시간보다 무조건 빠르도록 설정
-    public void updateBusinessHours(LocalTime openingTime, LocalTime closingTime)
+    public void updateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
         throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
         this.openingTime = openingTime;
@@ -137,7 +136,6 @@ public class Restaurant extends BaseTimeEntity {
 
     public void changeReviewInfo(Double averageReviewScore, Integer reviewCount) {
         this.averageReviewScore = averageReviewScore;
-        this.reviewCount = reviewCount;
     }
 
     // 배달 구역 양방향 처리
@@ -173,11 +171,14 @@ public class Restaurant extends BaseTimeEntity {
 //        }
 //    }
 
-    // 여기에 오픈 시간이 마감 시간보다 빠르도록 하는 validation 추가하면 될 듯
-    private static void validateBusinessHours(LocalTime openingTime, LocalTime closingTime)
-        throws IllegalArgumentException {
+    private static void validateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
+            throws IllegalArgumentException {
         if (closingTime.equals(openingTime)) {
-            throw new IllegalArgumentException("openingTime과 closingTime 은 같을 수 없습니다.");
+            throw new IllegalArgumentException("openingTime과 closingTime은 같을 수 없습니다.");
+        }
+        if (closingTime.isBefore(openingTime)) {
+            throw new IllegalArgumentException("closingTime은 openingTime보다 늦어야 합니다.");
         }
     }
+
 }

@@ -28,7 +28,7 @@ public interface RestaurantMapper {
             restaurantCreateRequest.getName(),
             restaurantCreateRequest.getBusinessNumber(),
             restaurantCreateRequest.getOpeningTime(),
-        restaurantCreateRequest.getClosingTime(),
+            restaurantCreateRequest.getClosingTime(),
             restaurantCreateRequest.getIsOpen(),
             restaurantCreateRequest.getPhoneNumber(),
             restaurantCreateRequest.getDescription(),
