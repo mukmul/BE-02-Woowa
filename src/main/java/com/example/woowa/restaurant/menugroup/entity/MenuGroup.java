@@ -4,6 +4,7 @@ import com.example.woowa.common.base.BaseTimeEntity;
 import com.example.woowa.restaurant.menu.entity.Menu;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
@@ -21,12 +22,16 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "menu_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql="UPDATE menu_groups SET deleted_at = NOW() WHERE id = ?")
 public class MenuGroup extends BaseTimeEntity {
 
     @Id
@@ -38,8 +43,6 @@ public class MenuGroup extends BaseTimeEntity {
     private Restaurant restaurant;
 
     // 메뉴 그룹이 삭제되면 그 그룹 안에 있던 메뉴들도 같이 삭제된다.
-    // ! 이 부분 논리 삭제로 바꾸고
-    // ! 같이 삭제되는 거는 고민을 해봐야 할 듯
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.REMOVE)
     private List<Menu> menus = new ArrayList<>();
 
@@ -49,10 +52,14 @@ public class MenuGroup extends BaseTimeEntity {
     @Column(length = 500)
     private String description;
 
+    @Column(nullable = true)
+    private LocalDateTime deleteAt;
+
     private MenuGroup(Restaurant restaurant, String title, String description) {
         this.restaurant = restaurant;
         this.title = title;
         this.description = description;
+        this.deleteAt = null;
     }
 
     public static MenuGroup createMenuGroup(Restaurant restaurant, String title,
