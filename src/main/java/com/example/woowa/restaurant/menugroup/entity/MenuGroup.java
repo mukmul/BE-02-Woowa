@@ -53,13 +53,13 @@ public class MenuGroup extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = true)
-    private LocalDateTime deleteAt;
+    private LocalDateTime deletedAt;
 
     private MenuGroup(Restaurant restaurant, String title, String description) {
         this.restaurant = restaurant;
         this.title = title;
         this.description = description;
-        this.deleteAt = null;
+        this.deletedAt = null;
     }
 
     public static MenuGroup createMenuGroup(Restaurant restaurant, String title,
@@ -79,7 +79,6 @@ public class MenuGroup extends BaseTimeEntity {
         return StringUtils.hasText(description) ? description : null;
     }
 
-    // ! 이 부분 효민 언니랑 얘기해보기 (menu 양방향 처리)
     public void addMenu(Menu menu) {
         menus.add(menu);
     }
