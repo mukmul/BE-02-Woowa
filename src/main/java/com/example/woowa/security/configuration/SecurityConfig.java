@@ -1,8 +1,8 @@
 package com.example.woowa.security.configuration;
 
-import com.example.woowa.security.filter.CustomerAuthenticationFilter;
-import com.example.woowa.security.filter.CustomerAuthorizationFilter;
-import com.example.woowa.security.user.UserRole;
+import com.example.woowa.security.filter.AuthenticationFilter;
+import com.example.woowa.security.token.service.TokenProvider;
+import com.example.woowa.security.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -23,8 +23,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public AuthenticationManager getAuthenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -32,36 +36,35 @@ public class SecurityConfig {
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-
-        CustomerAuthenticationFilter customerAuthenticationFilter = new CustomerAuthenticationFilter(authenticationManager);
-        customerAuthenticationFilter.setFilterProcessesUrl("/baemin/v1/login");
-
-        http
+        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                .addFilterBefore(
+                        new AuthenticationFilter(tokenProvider),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 //회원가입, 개인정보 동의, 로그인, 로그아웃, 이메일 인증, 아이디 중복 확인, 아이디 및 비밀번호 찾기, 파비콘
-                                .requestMatchers("/baemin/v1/login/**", "/baemin/v1/owners").permitAll()
+                                .requestMatchers("/baemin/v1/login/**", "/baemin/v1/owners",
+                                        "/swagger-ui/**", "/swagger-resources/**",
+                                        "/v3/api-docs/**", "/webjars/**",
+                                        "/api/v1/customers", "/api/v1/rider",
+                                        "/api/v1/owner", "/api/v1/admins").permitAll()
                                 .requestMatchers("/baemin/v1/owners/**")
                                 .hasAnyAuthority(UserRole.ROLE_OWNER.toString())
                                 .anyRequest().authenticated()
-                )
-                .addFilter(customerAuthenticationFilter)
-                .addFilterBefore(new CustomerAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                );
 
-        return http.build();
+        return httpSecurity.build();
     }
 
 }

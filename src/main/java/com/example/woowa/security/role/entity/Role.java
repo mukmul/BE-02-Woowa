@@ -1,4 +1,4 @@
-package com.example.woowa.security.user;
+package com.example.woowa.security.role.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

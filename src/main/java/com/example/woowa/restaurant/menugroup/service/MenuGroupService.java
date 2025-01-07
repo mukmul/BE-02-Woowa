@@ -55,7 +55,6 @@ public class MenuGroupService {
     @Transactional
     public void deleteMenuGroup(Long menuGroupId) {
         MenuGroup findMenuGroup = findMenuGroupEntityById(menuGroupId);
-        // ! 논리 삭제로 바꾸기
         menuGroupRepository.delete(findMenuGroup);
     }
 }

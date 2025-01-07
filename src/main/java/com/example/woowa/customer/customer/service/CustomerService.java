@@ -12,7 +12,10 @@ import com.example.woowa.customer.customer.repository.CustomerAddressRepository;
 import com.example.woowa.customer.customer.repository.CustomerRepository;
 import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.service.AreaCodeService;
+import com.example.woowa.security.user.service.UserService;
+import com.example.woowa.security.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +27,35 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerGradeService customerGradeService;
     private final AreaCodeService areaCodeService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
     private final CustomerMapper customerMapper;
 
     @Transactional
     public CustomerFindResponse createCustomer(CustomerCreateRequest customerCreateRequest) {
-        Customer customer = customerMapper.toCustomer(customerCreateRequest, customerGradeService.findDefaultCustomerGrade());
+
+        boolean isExist = customerRepository.existsCustomerByLoginId(customerCreateRequest.getLoginId());
+        if (isExist) {
+            throw new RuntimeException("이미 존재하는 아이디입니다.");
+        }
+
+        /**
+         * 리팩토링 필요
+         */
+        Customer customer = customerMapper.toCustomer(customerCreateRequest,
+                customerGradeService.findDefaultCustomerGrade());
+
+        customer.changePassword(passwordEncoder.encode(customer.getPassword()));
+
         customerRepository.save(customer);
+
         AreaCode areaCode = areaCodeService.findByAddress(customerCreateRequest.getAddress().getDefaultAddress());
         CustomerAddress customerAddress = customerMapper.toCustomerAddress(areaCode, customerCreateRequest.getAddress(), customer);
         customerAddressRepository.save(customerAddress);
         customer.addCustomerAddress(customerAddress);
+
+        userService.createUser(customer, UserRole.ROLE_CUSTOMER);
+
         return customerMapper.toCustomerDto(customer);
     }
 
@@ -48,6 +70,9 @@ public class CustomerService {
         if (customerUpdateRequest.getLoginPassword() != null) {
             customer.changePassword(customerUpdateRequest.getLoginPassword());
         }
+
+        userService.syncUser(customer);
+
         return customerMapper.toCustomerDto(customer);
     }
 
@@ -55,6 +80,7 @@ public class CustomerService {
     public void deleteCustomer(String loginId) {
         Customer customer = findCustomerEntity(loginId);
         customerRepository.delete(customer);
+        userService.deleteUser(loginId);
     }
 
     public Customer findCustomerEntity(String loginId) {
