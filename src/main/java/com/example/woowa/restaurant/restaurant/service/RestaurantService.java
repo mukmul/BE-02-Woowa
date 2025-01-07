@@ -85,6 +85,17 @@ public class RestaurantService {
             .collect(Collectors.toList());
     }
 
+    public Boolean getRestaurantState(Long ownerId, Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findByIdAndOwnerId(restaurantId, ownerId);
+
+        if (restaurant == null) {
+            throw new IllegalArgumentException("해당 가게가 존재하지 않습니다.");
+        }
+
+        return restaurant.getIsOpen();
+    }
+
+
     @Transactional
     public void deleteRestaurantByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {
         Owner owner = ownerService.findOwnerEntityById(ownerId);

@@ -108,6 +108,29 @@ public class RestaurantRestController {
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
+    // 가게 문 열기/닫기
+    @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}")
+    public ResponseEntity<String> changeRestaurantState(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam(value = "isOpen") Boolean isOpen) {
+
+        Boolean currentIsOpen = restaurantService.getRestaurantState(ownerId, restaurantId);
+
+        if (currentIsOpen.equals(isOpen)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("가게 상태가 이미 "+ (isOpen ? "열림" : "닫힘") + " 상태입니다.");
+        }
+
+        if (isOpen) {
+            restaurantService.openRestaurant(ownerId, restaurantId);
+        } else {
+            restaurantService.closeRestaurant(ownerId, restaurantId);
+        }
+
+        return ResponseEntity.ok("가게 상태가 성공적으로 변경되었습니다.");
+    }
+
     // 가게에 카테고리 추가
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/add")
     public ResponseEntity<Void> addCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,

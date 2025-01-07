@@ -13,6 +13,8 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
     List<Restaurant> findByOwner(Owner owner);
 
+    Restaurant findByIdAndOwnerId(Long id, Long ownerId);
+
     @Query("SELECT r FROM Restaurant r WHERE r.id in "
         + "(SELECT ra.restaurant.id FROM RestaurantAdvertisement ra WHERE ra.advertisement.id = :advertisementId)")
     List<Restaurant> findByAdvertisementId(@Param("advertisementId") Long advertisementId);
