@@ -19,10 +19,10 @@ public class RestaurantCreateRequest {
     private final String businessNumber;
 
     // validate
-    private final LocalDateTime openingTime;
+    private final LocalTime openingTime;
 
     // validate
-    private final LocalDateTime closingTime;
+    private final LocalTime closingTime;
 
     private final Boolean isOpen;
 
