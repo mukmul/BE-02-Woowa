@@ -43,6 +43,9 @@ public class RestaurantRestController {
     @GetMapping(value = "owners/{ownerId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByOwnerId(final @PathVariable Long ownerId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByOwnerId(ownerId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
@@ -66,6 +69,9 @@ public class RestaurantRestController {
     @GetMapping(value = "advertisements/{advertisementId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByAdvertisementId(final @PathVariable Long advertisementId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByAdvertisementId(advertisementId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
@@ -73,6 +79,9 @@ public class RestaurantRestController {
     @GetMapping(value = "categories/{categoryId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByCategoryId(final @PathVariable Long categoryId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByCategoryId(categoryId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
@@ -85,6 +94,9 @@ public class RestaurantRestController {
             return ResponseEntity.ok(restaurantService.findRestaurantByAreaCode(areaCodeId));
         }
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurants();
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
@@ -92,20 +104,8 @@ public class RestaurantRestController {
     @GetMapping(value = "restaurants/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantFindResponse> findRestaurantById(final @PathVariable Long restaurantId) {
         RestaurantFindResponse restaurant = restaurantService.findRestaurantById(restaurantId);
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
-    }
 
-    // 가게 문 열기/닫기
-    @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}")
-    public ResponseEntity<Void> changeRestaurantState(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam(value = "isOpen") Boolean isOpen) {
-        if (isOpen) {
-            restaurantService.openRestaurant(ownerId, restaurantId);
-        }
-        else {
-            restaurantService.closeRestaurant(ownerId, restaurantId);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
     // 가게에 카테고리 추가
@@ -124,6 +124,4 @@ public class RestaurantRestController {
         restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(cateogoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    // api 명세서에는 "가게에 배달지역 추가" api가 있는데 코드에 없음
 }
