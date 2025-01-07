@@ -107,4 +107,8 @@ public class Advertisement extends BaseTimeEntity {
     public void decrementCurrentSize() {
         this.currentSize--;
     }
+
+    public void restore() {
+        this.deletedAt = null;
+    }
 }

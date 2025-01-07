@@ -15,6 +15,7 @@ import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAd
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisementId;
 import com.example.woowa.restaurant.restaurant_advertisement.repository.RestaurantAdvertisementRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,13 @@ public class AdvertisementService {
         AdvertisementValidator.validateRate(advertisementCreateRequest.getRate());
         AdvertisementValidator.validateLimitSize(advertisementCreateRequest.getLimitSize());
 
+        Optional<Advertisement> existingAdvertisement = advertisementRepository.findDeletedAdvertisementByTitle(advertisementCreateRequest.getTitle());
+
+        if (existingAdvertisement.isPresent()) {
+            Advertisement advertisement = existingAdvertisement.get();
+            advertisement.restore();
+            return advertisementMapper.toCreateResponse(advertisement);
+        }
         Advertisement advertisement = advertisementRepository.save(
             advertisementMapper.toEntity(advertisementCreateRequest));
         return advertisementMapper.toCreateResponse(advertisement);
@@ -97,7 +105,6 @@ public class AdvertisementService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("레스토랑 ID %d는 광고 ID %d에 포함되어 있지 않습니다.", restaurantId, advertisementId)));
 
-        // 연관 관계 동기화
         advertisement.getRestaurantAdvertisements().remove(restaurantAdvertisement);
         restaurant.getRestaurantAdvertisements().remove(restaurantAdvertisement);
 
