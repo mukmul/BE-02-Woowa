@@ -38,6 +38,9 @@ public class OwnerRestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<OwnerFindResponse>> findAllOwners() {
         List<OwnerFindResponse> owners = ownerService.findOwners();
+        if (owners.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(owners, HttpStatus.OK);
     }
 
