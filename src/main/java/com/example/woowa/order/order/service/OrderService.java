@@ -8,8 +8,10 @@ import com.example.woowa.customer.voucher.entity.Voucher;
 import com.example.woowa.customer.voucher.service.VoucherEntityService;
 import com.example.woowa.delivery.entity.Delivery;
 import com.example.woowa.delivery.enums.DeliveryStatus;
+import com.example.woowa.delivery.repository.RiderRepository;
 import com.example.woowa.delivery.service.DeliveryAreaService;
 import com.example.woowa.delivery.service.DeliveryEntityService;
+import com.example.woowa.delivery.service.RiderService;
 import com.example.woowa.order.order.dto.customer.OrderCustomerResponse;
 import com.example.woowa.order.order.dto.customer.OrderListCustomerRequest;
 import com.example.woowa.order.order.dto.customer.OrderListCustomerResponse;
@@ -23,6 +25,7 @@ import com.example.woowa.order.order.dto.statistics.OrderStatisticsRequest;
 import com.example.woowa.order.order.dto.statistics.OrderStatisticsResponse;
 import com.example.woowa.order.order.entity.Cart;
 import com.example.woowa.order.order.entity.Order;
+import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.order.order.mapper.CartMapper;
 import com.example.woowa.order.order.mapper.OrderMapper;
 import com.example.woowa.order.order.repository.OrderRepository;
@@ -53,6 +56,7 @@ public class OrderService {
     private final DeliveryEntityService deliveryEntityService;
     private final OrderMapper orderMapper;
     private final CartMapper cartMapper;
+    private final RiderService riderService;
 
 
     @Transactional
@@ -126,7 +130,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void acceptOrder(Long orderId, OrderAcceptRequest request) {
+    public void acceptOrder(Long orderId,OrderAcceptRequest request) {
         Order order = findOrderById(orderId);
         Delivery delivery = deliveryEntityService.saveDelivery(order);
         order.acceptOrder(request.getCookingTime(), delivery);

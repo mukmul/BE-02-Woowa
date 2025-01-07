@@ -8,6 +8,7 @@ import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.enums.DeliveryStatus;
 import com.example.woowa.delivery.mapper.DeliveryMapper;
 import com.example.woowa.delivery.repository.DeliveryRepository;
+import com.example.woowa.delivery.repository.RiderRepository;
 import com.example.woowa.order.order.entity.Order;
 import com.example.woowa.order.order.service.OrderService;
 import jakarta.persistence.LockModeType;
@@ -18,7 +19,6 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +32,7 @@ public class DeliveryService {
     private final RiderService riderService;
 
     private final OrderService orderService;
+    private final RiderRepository riderRepository;
 
     public Page<DeliveryResponse> findWaitingDelivery(PageRequest pageRequest) {
         try {
@@ -122,12 +123,13 @@ public class DeliveryService {
         try {
             Order order = orderService.findOrderById(deliveryCreateRequest.orderId());
             Delivery delivery = Delivery.createDelivery(order,
-                    deliveryCreateRequest.restaurantAddress(),
-                    deliveryCreateRequest.customerAddress(),
-                    deliveryCreateRequest.deliveryFee());
-            order.setDelivery(delivery);
+                  deliveryCreateRequest.restaurantAddress(),
+                  deliveryCreateRequest.customerAddress(),
+                  deliveryCreateRequest.deliveryFee());
+            deliveryRepository.save(delivery);
 
-            return deliveryMapper.toResponse(deliveryRepository.save(delivery));
+            order.setDelivery(delivery);
+            return deliveryMapper.toResponse(delivery);
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
         }

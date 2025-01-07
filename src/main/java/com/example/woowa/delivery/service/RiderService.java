@@ -122,8 +122,8 @@ public class RiderService {
             AreaCode areaCode = areaCodeService.findEntityById(areaCodeId);
 
             RiderAreaCode riderAreaCode = new RiderAreaCode(rider, areaCode);
-            riderAreaCodeRepository.save(riderAreaCode);
             areaCode.addRiderAreaCode(riderAreaCode);
+            rider.addRiderAreaCode(riderAreaCode);
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
         }

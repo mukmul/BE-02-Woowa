@@ -40,11 +40,11 @@ public class Delivery {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rider_id", nullable = false)
+    @JoinColumn(name = "rider_id", nullable = true)
     private Rider rider;
 
     @Builder
-    private Delivery(Order order, String restaurantAddress, String customerAddress, int deliveryFee,
+    private Delivery(Order order,String restaurantAddress, String customerAddress, int deliveryFee,
         DeliveryStatus deliveryStatus) {
         this.order = order;
         this.restaurantAddress = restaurantAddress;
@@ -53,9 +53,9 @@ public class Delivery {
         this.deliveryStatus = deliveryStatus;
     }
 
-    public static Delivery createDelivery(Order order, String restaurantAddress,
+    public static Delivery createDelivery(Order order,String restaurantAddress,
         String customerAddress, int deliveryFee) {
-        return new Delivery(order, restaurantAddress, customerAddress, deliveryFee,
+        return new Delivery(order,restaurantAddress, customerAddress, deliveryFee,
             DeliveryStatus.DELIVERY_WAITING);
     }
 
