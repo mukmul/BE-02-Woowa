@@ -11,7 +11,13 @@ import org.springframework.data.repository.query.Param;
 
 public interface RestaurantAdvertisementRepository extends JpaRepository<RestaurantAdvertisement, RestaurantAdvertisementId> {
     boolean existsByAdvertisementAndRestaurant(Advertisement advertisement, Restaurant restaurant);
+//    @Modifying
+//    @Query("DELETE FROM RestaurantAdvertisement ra WHERE ra.advertisement = :advertisement")
+//    void deleteByAdvertisement(@Param("advertisement") Advertisement advertisement);
     @Modifying
-    @Query("DELETE FROM RestaurantAdvertisement ra WHERE ra.advertisement = :advertisement")
+    @Query("UPDATE RestaurantAdvertisement ra SET ra.deletedAt = CURRENT_TIMESTAMP WHERE ra.advertisement = :advertisement")
     void deleteByAdvertisement(@Param("advertisement") Advertisement advertisement);
+
+    @Query("SELECT ra FROM RestaurantAdvertisement ra WHERE ra.advertisement = :advertisement AND ra.restaurant = :restaurant")
+    RestaurantAdvertisement findByAdvertisementAndRestaurant(@Param("advertisement") Advertisement advertisement, @Param("restaurant") Restaurant restaurant);
 }
