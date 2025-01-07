@@ -110,7 +110,7 @@ public class Restaurant extends BaseTimeEntity {
         String description, String address) throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
         if (!CRNValidator.isValid(businessNumber)) {
-            throw new IllegalArgumentException("잘못된 사업자등록번호입니다.");
+            throw new IllegalArgumentException("잘못된 사업자 등록 번호입니다.");
         }
 
         return new Restaurant(name, businessNumber, openingTime, closingTime, isOpen, phoneNumber,
@@ -144,7 +144,6 @@ public class Restaurant extends BaseTimeEntity {
         this.address = address;
     }
 
-    // 배달 구역 양방향 처리
     public void addDeliveryArea(DeliveryArea deliveryArea) {
         deliveryAreas.add(deliveryArea);
     }
@@ -153,7 +152,6 @@ public class Restaurant extends BaseTimeEntity {
         this.isPermitted = true;
     }
 
-    // 양방향 처리
     public void setOwner(Owner owner) {
         if (Objects.nonNull(this.owner)) {
             this.owner.getRestaurants().remove(this);
