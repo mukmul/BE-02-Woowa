@@ -62,10 +62,10 @@ public class Restaurant extends BaseTimeEntity {
     private String businessNumber;
 
     @Column(nullable = false)
-    private LocalDateTime openingTime;
+    private LocalTime openingTime;
 
     @Column(nullable = false)
-    private LocalDateTime closingTime;
+    private LocalTime closingTime;
 
     @Column(nullable = false)
     private Boolean isOpen;
@@ -88,8 +88,8 @@ public class Restaurant extends BaseTimeEntity {
 
     private Integer reviewCount;
 
-    private Restaurant(String name, String businessNumber, LocalDateTime openingTime,
-        LocalDateTime closingTime,
+    private Restaurant(String name, String businessNumber, LocalTime openingTime,
+                       LocalTime closingTime,
         Boolean isOpen, String phoneNumber, String description, String address) {
         this.name = name;
         this.businessNumber = businessNumber;
@@ -106,7 +106,7 @@ public class Restaurant extends BaseTimeEntity {
     }
 
     public static Restaurant createRestaurant(String name, String businessNumber,
-      LocalDateTime openingTime, LocalDateTime closingTime, Boolean isOpen, String phoneNumber,
+      LocalTime openingTime, LocalTime closingTime, Boolean isOpen, String phoneNumber,
         String description, String address) throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
         if (!CRNValidator.isValid(businessNumber)) {
@@ -117,7 +117,7 @@ public class Restaurant extends BaseTimeEntity {
             description, address);
     }
 
-    public void updateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
+    public void updateBusinessHours(LocalTime openingTime, LocalTime closingTime)
         throws IllegalArgumentException {
         validateBusinessHours(openingTime, closingTime);
         this.openingTime = openingTime;
@@ -162,7 +162,7 @@ public class Restaurant extends BaseTimeEntity {
         this.owner.getRestaurants().add(this);
     }
 
-    private static void validateBusinessHours(LocalDateTime openingTime, LocalDateTime closingTime)
+    private static void validateBusinessHours(LocalTime openingTime, LocalTime closingTime)
             throws IllegalArgumentException {
         if (closingTime.equals(openingTime)) {
             throw new IllegalArgumentException("openingTime과 closingTime은 같을 수 없습니다.");

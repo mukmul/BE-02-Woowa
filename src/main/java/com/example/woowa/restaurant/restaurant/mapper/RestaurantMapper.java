@@ -5,7 +5,10 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantUpdateReque
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface RestaurantMapper {
@@ -13,15 +16,11 @@ public interface RestaurantMapper {
     @Mapping(target = "categories",
             expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
     @Mapping(target = "ownerId", expression = "java(restaurant.getOwner().getId())")
-    @Mapping(target = "openingTime", source = "openingTime", qualifiedByName = "mapLocalDateTimeToLocalTime")
-    @Mapping(target = "closingTime", source = "closingTime", qualifiedByName = "mapLocalDateTimeToLocalTime")
     RestaurantCreateResponse toCreateResponseDto(Restaurant restaurant);
 
     @Mapping(target = "categories",
             expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
     @Mapping(target = "ownerId", expression = "java(restaurant.getOwner().getId())")
-    @Mapping(target = "openingTime", source = "openingTime", qualifiedByName = "mapLocalDateTimeToLocalTime")
-    @Mapping(target = "closingTime", source = "closingTime", qualifiedByName = "mapLocalDateTimeToLocalTime")
     RestaurantFindResponse toFindResponseDto(Restaurant restaurant);
 
     default Restaurant toEntity(RestaurantCreateRequest restaurantCreateRequest) {
@@ -43,9 +42,4 @@ public interface RestaurantMapper {
         restaurant.changeDescription(restaurantUpdateRequest.getDescription());
     }
 
-    // 사용자 정의 매핑 메서드
-    @Named("mapLocalDateTimeToLocalTime")
-    static java.time.LocalTime mapLocalDateTimeToLocalTime(java.time.LocalDateTime dateTime) {
-        return dateTime != null ? dateTime.toLocalTime() : null;
-    }
 }
