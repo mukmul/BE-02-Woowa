@@ -14,7 +14,9 @@ import com.example.woowa.order.order.entity.Order;
 import com.example.woowa.restaurant.menu.entity.Menu;
 import com.example.woowa.restaurant.menugroup.entity.MenuGroup;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
+
 import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -45,6 +47,6 @@ class DeliveryMapperTest {
         assertThat(deliveryResponse.getArrivalTime()).isEqualTo(delivery.getArrivalTime());
         assertThat(deliveryResponse.getCustomerAddress()).isEqualTo(delivery.getCustomerAddress());
         assertThat(deliveryResponse.getRestaurantAddress()).isEqualTo(
-            delivery.getRestaurantAddress());
+                delivery.getRestaurantAddress());
     }
 }
