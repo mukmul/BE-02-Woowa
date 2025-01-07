@@ -60,7 +60,7 @@ public class SecurityConfig {
                                         "/api/v1/customers", "/api/v1/rider",
                                         "/api/v1/owner", "/api/v1/admins").permitAll()
                                 .requestMatchers("/baemin/v1/owners/**")
-                                .hasAnyAuthority(UserRole.ROLE_OWNER.toString())
+                                .hasAnyAuthority(UserRole.ROLE_OWNER.getRoleName())
                                 .anyRequest().authenticated()
                 );
 
