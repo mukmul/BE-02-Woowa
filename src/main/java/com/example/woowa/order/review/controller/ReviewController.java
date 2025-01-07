@@ -9,6 +9,8 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @PostMapping("/{loginId}/{orderId}")
-    public ReviewFindResponse createReview(@PathVariable String loginId, @PathVariable Long orderId, @RequestBody @Valid ReviewCreateRequest reviewCreateRequest) {
+    @PostMapping("/{orderId}")
+    public ReviewFindResponse createReview(@PathVariable Long orderId,
+                                           @RequestBody @Valid ReviewCreateRequest reviewCreateRequest,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+
+        String loginId = userDetails.getUsername();
         return reviewService.createReview(loginId, orderId, reviewCreateRequest);
     }
 
@@ -40,12 +46,19 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    public ReviewFindResponse updateReview(@PathVariable Long id, @RequestBody @Valid ReviewUpdateRequest reviewUpdateRequest) {
-        return reviewService.updateReview(id, reviewUpdateRequest);
+    public ReviewFindResponse updateReview(@AuthenticationPrincipal UserDetails userDetails,
+                                           @PathVariable Long id,
+                                           @RequestBody @Valid ReviewUpdateRequest reviewUpdateRequest) {
+
+        String loginId = userDetails.getUsername();
+        return reviewService.updateReview(loginId, id, reviewUpdateRequest);
     }
 
-    @DeleteMapping("/{loginId}/{id}")
-    public String deleteReview(@PathVariable String loginId, @PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public String deleteReview(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+
+        String loginId = userDetails.getUsername();
+
         reviewService.deleteReview(loginId, id);
         return "delete id - " + id;
     }
