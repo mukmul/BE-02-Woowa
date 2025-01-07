@@ -90,7 +90,6 @@ public class RestaurantService {
         Owner owner = ownerService.findOwnerEntityById(ownerId);
         Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
 
-        // ! 논리 삭제로 변경
         owner.removeRestaurant(restaurant);
     }
 
