@@ -12,8 +12,10 @@ import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.enums.DeliveryStatus;
 import com.example.woowa.delivery.mapper.DeliveryMapper;
 import com.example.woowa.delivery.repository.DeliveryRepository;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,7 +69,7 @@ class DeliveryServiceTest {
         given(deliveryRepository.findById(any())).willReturn(Optional.of(delivery));
 
         assertThrows(RuntimeException.class,
-            () -> deliveryService.acceptDelivery(delivery.getId(), rider.getId(), 10, 10));
+                () -> deliveryService.acceptDelivery(delivery.getId(), rider.getId(), 10, 10));
     }
 
     @Test
