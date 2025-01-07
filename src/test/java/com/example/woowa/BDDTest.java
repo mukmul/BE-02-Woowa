@@ -48,14 +48,16 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantCreateReque
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.user.Role;
-import com.example.woowa.security.user.UserRole;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.user.entity.UserRole;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -137,10 +139,10 @@ public class BDDTest {
         AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
 
-        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_ADMIN.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_RIDER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_ADMIN.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_RIDER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.getRoleName()));
     }
 
     @Test
@@ -159,7 +161,7 @@ public class BDDTest {
     @Order(2)
     void _2() {
         OwnerCreateRequest ownerCreateRequest = new OwnerCreateRequest("tTest@12341234",
-            "tT@1234567890", "사장님", "010-1234-1234");
+                "tT@1234567890", "사장님", "010-1234-1234");
         ownerService.createOwner(ownerCreateRequest);
     }
 
@@ -169,12 +171,12 @@ public class BDDTest {
     void _3() {
         List<OwnerFindResponse> owners = ownerService.findOwners();
         List<Long> categoryIds = categoryService.findCategories().stream()
-            .map(CategoryFindResponse::getId).collect(Collectors.toList());
+                .map(CategoryFindResponse::getId).collect(Collectors.toList());
         RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest("한식",
-            "760-15-00993", LocalTime.now(), LocalTime.now().plusHours(5), true, "010-1111-1234",
-            "테스트용 가게", "서울특별시 동작구 상도동", categoryIds);
+                "760-15-00993", LocalTime.now(), LocalTime.now().plusHours(5), true, "010-1111-1234",
+                "테스트용 가게", "서울특별시 동작구 상도동", categoryIds);
         restaurant = restaurantService.createRestaurantByOwnerId(
-            owners.get(0).getId(), restaurantCreateRequest);
+                owners.get(0).getId(), restaurantCreateRequest);
     }
 
     @Test
@@ -191,9 +193,9 @@ public class BDDTest {
     @Order(5)
     void _5() {
         AdvertisementCreateRequest ultraCall = new AdvertisementCreateRequest("울트라콜",
-            UnitType.MOTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
+                UnitType.MOTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
         AdvertisementCreateRequest openList = new AdvertisementCreateRequest("오픈리스트",
-            UnitType.PER_ORDER.getType(), RateType.PERCENT.getType(), 10, "오픈리스트 광고", 10);
+                UnitType.PER_ORDER.getType(), RateType.PERCENT.getType(), 10, "오픈리스트 광고", 10);
         advertisementService.createAdvertisement(ultraCall);
         advertisementService.createAdvertisement(openList);
     }
@@ -211,9 +213,9 @@ public class BDDTest {
     @Order(7)
     void _7() {
         CustomerGradeCreateRequest customerGradeCreateRequest = new CustomerGradeCreateRequest(5,
-            "일반", 3000, 2);
+                "일반", 3000, 2);
         customerGradeService.createCustomerGrade(
-            customerGradeCreateRequest);
+                customerGradeCreateRequest);
     }
 
 
@@ -222,11 +224,11 @@ public class BDDTest {
     @Order(8)
     void _8() {
         CustomerAddressCreateRequest customerAddressCreateRequest = new CustomerAddressCreateRequest(
-            "서울특별시 동작구 상도동", "빌라 101호", "집");
+                "서울특별시 동작구 상도동", "빌라 101호", "집");
         CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev12",
-            "Programmers123!", "2000-01-01", customerAddressCreateRequest);
+                "Programmers123!", "2000-01-01", customerAddressCreateRequest);
         customer = customerService.createCustomer(
-            customerCreateRequest);
+                customerCreateRequest);
     }
 
     @Test
@@ -250,7 +252,7 @@ public class BDDTest {
     @Order(11)
     void _11() {
         MenuSaveRequest request = new MenuSaveRequest(menuGroupId, "참치 김밥", "맛있는 참치 김밥입니다.",
-            4500);
+                4500);
         menuId = menuService.addMenu(request);
     }
 
@@ -273,11 +275,11 @@ public class BDDTest {
     @Order(14)
     void _14() {
         List<VoucherFindResponse> vouchers = voucherService.findUserVoucher(
-            customer.getLoginId());
+                customer.getLoginId());
         CartSaveRequest cartSaveRequest = new CartSaveRequest(menuId, 3);
         OrderSaveRequest orderSaveRequest = new OrderSaveRequest(customer.getLoginId(),
-            restaurant.getId(), vouchers.get(0).getId(), 0,
-            PaymentType.CREDIT_CARD, "서울특별시 동작구 상도동", Collections.singletonList(cartSaveRequest)
+                restaurant.getId(), vouchers.get(0).getId(), 0,
+                PaymentType.CREDIT_CARD, "서울특별시 동작구 상도동", Collections.singletonList(cartSaveRequest)
         );
 
         orderId = orderService.addOrder(orderSaveRequest);
@@ -297,8 +299,8 @@ public class BDDTest {
     void _16() {
 
         RiderCreateRequest riderCreateRequest = new RiderCreateRequest("testId1234", "passwordA1!",
-            "name",
-            "010-1234-5678");
+                "name",
+                "010-1234-5678");
         riderId = riderService.save(riderCreateRequest);
     }
 
@@ -315,7 +317,7 @@ public class BDDTest {
     void _18() {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<DeliveryResponse> deliveryResponsePage = deliveryService.findWaitingDelivery(
-            pageRequest);
+                pageRequest);
         deliveryId = deliveryResponsePage.stream().findFirst().get().getId();
     }
 
@@ -334,7 +336,7 @@ public class BDDTest {
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
         assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
-            DeliveryStatus.DELIVERY_REGISTRATION);
+                DeliveryStatus.DELIVERY_REGISTRATION);
     }
 
     @Test
@@ -352,7 +354,7 @@ public class BDDTest {
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
         assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
-            DeliveryStatus.DELIVERY_PICKUP);
+                DeliveryStatus.DELIVERY_PICKUP);
     }
 
     @Test
@@ -370,7 +372,7 @@ public class BDDTest {
     @Order(24)
     void _24() {
         OrderListCustomerRequest request = new OrderListCustomerRequest(customer.getLoginId(), 0, 1,
-            LocalDate.now(), LocalDate.now().plusMonths(1));
+                LocalDate.now(), LocalDate.now().plusMonths(1));
         orderService.findOrderByCustomer(request);
     }
 
@@ -379,7 +381,7 @@ public class BDDTest {
     @Order(25)
     void _25() {
         orderService.findDetailOrderForCustomer(
-            orderId);
+                orderId);
     }
 
     @Test
@@ -387,8 +389,8 @@ public class BDDTest {
     @Order(26)
     void _26() {
         OrderListRestaurantRequest request = new OrderListRestaurantRequest(restaurant.getId(), 0,
-            1,
-            LocalDate.now(), LocalDate.now().plusMonths(1));
+                1,
+                LocalDate.now(), LocalDate.now().plusMonths(1));
         orderService.findOrderByRestaurant(request);
     }
 
@@ -404,7 +406,7 @@ public class BDDTest {
     @Order(28)
     void _28() {
         OrderStatisticsRequest request = new OrderStatisticsRequest(restaurant.getId(),
-            LocalDate.now(), LocalDate.now().plusMonths(1));
+                LocalDate.now(), LocalDate.now().plusMonths(1));
         orderService.findOrderStatistics(request);
     }
 
@@ -414,7 +416,7 @@ public class BDDTest {
     void _29() {
         ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("정말정말 맛있습니다.", 5);
         reviewService.createReview("dev12", orderId,
-            reviewCreateRequest);
+                reviewCreateRequest);
     }
 
     @Test
