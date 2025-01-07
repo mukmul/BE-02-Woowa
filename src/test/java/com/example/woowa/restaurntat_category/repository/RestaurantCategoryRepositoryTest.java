@@ -8,6 +8,7 @@ import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
 import com.example.woowa.restaurant.restaurntat_category.entity.RestaurantCategory;
 import com.example.woowa.restaurant.restaurntat_category.entity.RestaurantCategoryId;
+
 import java.time.LocalTime;
 
 import com.example.woowa.restaurant.restaurntat_category.repository.RestaurantCategoryRepository;
@@ -34,8 +35,8 @@ class RestaurantCategoryRepositoryTest {
     public void testSaveRestaurantCategory() {
         // Given
         Restaurant restaurant = restaurantRepository.save(Restaurant.createRestaurant("테스트 레스토랑1", "1234567890",
-        LocalTime.now(), LocalTime.now().plusHours(10), true,
-        "010-123-4567", "테스트용 임시 레스토랑 생성입니다.", "서울시 종로구"));
+                LocalTime.now(), LocalTime.now().plusHours(10), true,
+                "010-123-4567", "테스트용 임시 레스토랑 생성입니다.", "서울시 종로구"));
 
         Category category = categoryRepository.save(new Category("한식"));
 
