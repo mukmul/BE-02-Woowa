@@ -18,14 +18,12 @@ import com.example.woowa.restaurant.category.repository.CategoryRepository;
 import com.example.woowa.restaurant.owner.repository.OwnerRepository;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
 import com.example.woowa.restaurant.restaurntat_category.repository.RestaurantCategoryRepository;
-
+import com.example.woowa.security.repository.RoleRepository;
+import com.example.woowa.security.repository.UserRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import com.example.woowa.security.role.repository.RoleRepository;
-import com.example.woowa.security.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -70,7 +68,7 @@ class CategoryServiceTest {
         CategoryCreateRequest categoryCreateRequest = new CategoryCreateRequest("한식");
         Category korean = makeCategories("한식").get(0);
         CategoryCreateResponse manualConversion = new CategoryCreateResponse(korean.getId(),
-                korean.getName(), korean.getCreatedAt());
+            korean.getName(), korean.getCreatedAt());
         when(mockedCategoryRepository.save(any(Category.class))).thenReturn(korean);
 
         // When
@@ -92,10 +90,10 @@ class CategoryServiceTest {
         // Given
         List<Category> testers = makeCategories("한식", "중식");
         List<CategoryFindResponse> manualConversion = testers.stream()
-                .map(category ->
-                        new CategoryFindResponse(category.getId(), category.getName(),
-                                category.getCreatedAt(), category.getUpdatedAt()))
-                .collect(Collectors.toList());
+            .map(category ->
+                new CategoryFindResponse(category.getId(), category.getName(),
+                    category.getCreatedAt(), category.getUpdatedAt()))
+            .collect(Collectors.toList());
         when(mockedCategoryRepository.findAll()).thenReturn(testers);
 
         // When
@@ -118,7 +116,7 @@ class CategoryServiceTest {
         // Given
         Category korean = makeCategories("한식").get(0);
         CategoryFindResponse manualConversion =
-                new CategoryFindResponse(korean.getId(), korean.getName(), korean.getCreatedAt(), korean.getUpdatedAt());
+            new CategoryFindResponse(korean.getId(), korean.getName(), korean.getCreatedAt(), korean.getUpdatedAt());
         when(mockedCategoryRepository.findById(1L)).thenReturn(Optional.of(korean));
 
         // When
@@ -136,19 +134,19 @@ class CategoryServiceTest {
         // Given
         CategoryService categoryService = new CategoryService(categoryRepository, categoryMapper);
         CategoryCreateResponse beforeUpdating = categoryService.createCategory(
-                new CategoryCreateRequest("한식"));
+            new CategoryCreateRequest("한식"));
 
         // When
         CategoryUpdateRequest categoryUpdateRequest = new CategoryUpdateRequest("중식");
         categoryService.updateCategoryById(beforeUpdating.getId(), categoryUpdateRequest);
         CategoryFindResponse afterUpdating = categoryService.findCategoryById(
-                beforeUpdating.getId());
+            beforeUpdating.getId());
 
         // Then
         assertThat(afterUpdating.getId()).isEqualTo(beforeUpdating.getId());
         assertThat(afterUpdating.getName()).isEqualTo(categoryUpdateRequest.getName());
     }
-
+    
     public static List<Category> makeCategories(String... name) {
         return Arrays.stream(name).map(Category::new).collect(Collectors.toList());
     }

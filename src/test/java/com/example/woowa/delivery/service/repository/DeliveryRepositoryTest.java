@@ -23,9 +23,7 @@ import com.example.woowa.restaurant.menugroup.entity.MenuGroup;
 import com.example.woowa.restaurant.menugroup.repository.MenuGroupRepository;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
-
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,7 +96,7 @@ class DeliveryRepositoryTest {
     @Test
     public void findById() {
         Delivery retrieveDelivery = deliveryRepository.findById(this.delivery.getId())
-                .orElseThrow(RuntimeException::new);
+            .orElseThrow(RuntimeException::new);
 
         assertThat(retrieveDelivery).usingRecursiveComparison().isEqualTo(delivery);
         assertThat(retrieveDelivery.getOrder()).isNotNull();

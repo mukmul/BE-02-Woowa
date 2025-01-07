@@ -16,29 +16,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 @ExtendWith(MockitoExtension.class)
 class ReviewMapperTest {
 
-    @Autowired
-    private ReviewMapper reviewMapper;
+  @Autowired
+  private ReviewMapper reviewMapper;
 
 
-    @Test
-    @DisplayName("리뷰 dto 변환")
-    void toReviewDto() {
-        Review review = new Review("너무너무 맛있어요~~", ScoreType.FIVE, null, null);
+  @Test
+  @DisplayName("리뷰 dto 변환")
+  void toReviewDto() {
+    Review review = new Review("너무너무 맛있어요~~", ScoreType.FIVE, null, null);
 
-        ReviewFindResponse reviewFindResponse = reviewMapper.toReviewDto(review);
+    ReviewFindResponse reviewFindResponse = reviewMapper.toReviewDto(review);
 
-        Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("너무너무 맛있어요~~");
-        Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(5);
-    }
+    Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("너무너무 맛있어요~~");
+    Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(5);
+  }
 
-    @Test
-    @DisplayName("리뷰 엔티티 변환")
-    void toReview() {
-        ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("너무너무 맛있어요~~", ScoreType.FIVE.getValue());
+  @Test
+  @DisplayName("리뷰 엔티티 변환")
+  void toReview() {
+    ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("너무너무 맛있어요~~", ScoreType.FIVE.getValue());
 
-        Review review = reviewMapper.toReview(reviewCreateRequest, null, null);
+    Review review = reviewMapper.toReview(reviewCreateRequest, null, null);
 
-        Assertions.assertThat(review.getContent()).isEqualTo("너무너무 맛있어요~~");
-        Assertions.assertThat(review.getScoreType()).isEqualTo(ScoreType.FIVE);
-    }
+    Assertions.assertThat(review.getContent()).isEqualTo("너무너무 맛있어요~~");
+    Assertions.assertThat(review.getScoreType()).isEqualTo(ScoreType.FIVE);
+  }
 }

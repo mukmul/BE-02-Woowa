@@ -26,19 +26,18 @@ import com.example.woowa.admin.service.AdminService;
 import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @AutoConfigureRestDocs
@@ -48,8 +47,8 @@ import org.springframework.test.web.servlet.MockMvc;
         classes = SecurityConfig.class
     ),
 })
-@ExtendWith(MockitoExtension.class)
 @Import(RestDocsConfiguration.class)
+@MockBean(JpaMetamodelMappingContext.class)
 @WithMockUser
 class AdminControllerTest {
 
@@ -61,7 +60,7 @@ class AdminControllerTest {
 
   AdminMapper adminMapper = Mappers.getMapper(AdminMapper.class);
 
-  @MockitoBean
+  @MockBean
   private AdminService adminService;
 
   @Test
