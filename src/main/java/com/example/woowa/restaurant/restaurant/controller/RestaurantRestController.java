@@ -119,7 +119,7 @@ public class RestaurantRestController {
 
         if (currentIsOpen.equals(isOpen)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("가게 상태가 이미 "+ (isOpen ? "열림" : "닫힘") + " 상태입니다.");
+                    .body("가게 상태가 이미 "+ (isOpen ? "열림" : "닫힘") + "상태입니다.");
         }
 
         if (isOpen) {
@@ -142,9 +142,8 @@ public class RestaurantRestController {
     // 가게에 카테고리 삭제
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/remove")
     public ResponseEntity<Void> removeCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        // 오타 수정
-        final @RequestParam String cateogoryId) {
-        restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(cateogoryId));
+        final @RequestParam String categoryId) {
+        restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(categoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
