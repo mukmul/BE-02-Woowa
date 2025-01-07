@@ -133,8 +133,10 @@ public class RestaurantRestController {
 
     // 가게에 카테고리 추가
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/add")
-    public ResponseEntity<Void> addCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-                                            final @RequestParam String categoryId) {
+    public ResponseEntity<Void> addCategory(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam String categoryId) {
         restaurantService.addCategory(ownerId, restaurantId, Long.parseLong(categoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
