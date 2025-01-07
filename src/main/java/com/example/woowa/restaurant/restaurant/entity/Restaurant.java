@@ -80,7 +80,7 @@ public class Restaurant extends BaseTimeEntity {
     private Boolean isPermitted;
 
     @Column(nullable = true)
-    private LocalDateTime deleteAt;
+    private LocalDateTime deletedAt;
 
     private String description;
 
@@ -102,7 +102,7 @@ public class Restaurant extends BaseTimeEntity {
         this.reviewCount = 0;
         this.averageReviewScore = 0.0D;
         this.isPermitted = false;
-        this.deleteAt = null;
+        this.deletedAt = null;
     }
 
     public static Restaurant createRestaurant(String name, String businessNumber,
