@@ -34,7 +34,7 @@ public class Owner extends BaseLoginEntity {
     private Long id;
 
     @Column(nullable = true)
-    private LocalDateTime deleteAt;
+    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Restaurant> restaurants = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Owner extends BaseLoginEntity {
     @Builder
     public Owner(String loginId, String password, String name, String phoneNumber) {
         super(loginId, password, name, phoneNumber);
-        deleteAt = null;
+        deletedAt = null;
     }
 
     public void addRestaurant(Restaurant restaurant) {
