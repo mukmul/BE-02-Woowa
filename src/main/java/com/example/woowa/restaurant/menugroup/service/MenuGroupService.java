@@ -42,10 +42,16 @@ public class MenuGroupService {
     @Transactional
     public Long addMenuGroup(Long restaurantId, MenuGroupSaveRequest request) {
         Restaurant findRestaurant = restaurantService.findRestaurantEntityById(restaurantId);
-        MenuGroup menuGroup = MenuGroup.createMenuGroup(findRestaurant, request.getTitle(),
-                request.getDescription());
+
+        boolean exists = menuGroupRepository.existsByRestaurantIdAndTitle(restaurantId, request.getTitle());
+        if (exists) {
+            throw new IllegalArgumentException("이미 존재하는 메뉴 그룹입니다.");
+        }
+
+        MenuGroup menuGroup = MenuGroup.createMenuGroup(findRestaurant, request.getTitle(), request.getDescription());
         return menuGroupRepository.save(menuGroup).getId();
     }
+
 
     @Transactional
     public void updateMenuGroup(Long menuGroupId, MenuGroupUpdateRequest request) {
