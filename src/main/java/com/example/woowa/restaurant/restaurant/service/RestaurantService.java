@@ -111,16 +111,23 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void openRestaurant(Long ownerId, Long restaurantId) {
+    public void changeRestaurantState(Long ownerId, Long restaurantId, Boolean isOpen) {
+        // 레스토랑 엔티티 조회
         Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        restaurant.openRestaurant();
+
+        // 현재 상태와 요청된 상태 비교
+        if (restaurant.getIsOpen().equals(isOpen)) {
+            throw new IllegalArgumentException("가게 상태가 이미 " + (isOpen ? "열림" : "닫힘") + " 상태입니다.");
+        }
+
+        // 상태 변경
+        if (isOpen) {
+            restaurant.openRestaurant();
+        } else {
+            restaurant.closeRestaurant();
+        }
     }
 
-    @Transactional
-    public void closeRestaurant(Long ownerId, Long restaurantId) {
-        Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        restaurant.closeRestaurant();
-    }
 
     @Transactional
     public void addCategory(Long ownerId, Long restaurantId, Long categoryId) {
