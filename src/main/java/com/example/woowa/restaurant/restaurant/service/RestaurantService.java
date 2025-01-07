@@ -48,7 +48,6 @@ public class RestaurantService {
             restaurantMapper.toEntity(restaurantCreateRequest));
         restaurantCreateRequest.getCategoryIds().forEach(categoryId -> {
             Category category = categoryService.findCategoryEntityById(categoryId);
-            // 안 쓰고 있음
             RestaurantCategory restaurantCategory = new RestaurantCategory(restaurant, category);
         });
         owner.addRestaurant(restaurant);
@@ -124,12 +123,6 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void setPermitted(Long restaurantId) {
-        Restaurant restaurant = findRestaurantEntityById(restaurantId);
-        restaurant.setPermitted();
-    }
-
-    @Transactional
     public void addCategory(Long ownerId, Long restaurantId, Long categoryId) {
         Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
         Category category = categoryService.findCategoryEntityById(categoryId);
@@ -138,16 +131,22 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void removeCategory(Long ownerId, Long restaurantId, Long categoryId) {
-        Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        Category category = categoryService.findCategoryEntityById(categoryId);
+    public boolean removeCategory(Long ownerId, Long restaurantId, Long categoryId) {
+        findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
+        categoryService.findCategoryEntityById(categoryId);
 
         RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(
-                new RestaurantCategoryId(restaurantId, categoryId))
-            .orElseThrow(() -> new IllegalArgumentException("이 가게는 해당 카테고리에 속하지 않습니다."));
+                        new RestaurantCategoryId(restaurantId, categoryId))
+                .orElse(null);
+
+        if (restaurantCategory == null) {
+            return false;
+        }
 
         restaurantCategoryRepository.delete(restaurantCategory);
+        return true;
     }
+
 
     // 사장님이 가게를 가지고 있는지 확인하는 validation
     public Restaurant findRestaurantEntityByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {

@@ -134,16 +134,23 @@ public class RestaurantRestController {
     // 가게에 카테고리 추가
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/add")
     public ResponseEntity<Void> addCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam String categoryId) {
+                                            final @RequestParam String categoryId) {
         restaurantService.addCategory(ownerId, restaurantId, Long.parseLong(categoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // 가게에 카테고리 삭제
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/remove")
-    public ResponseEntity<Void> removeCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam String categoryId) {
-        restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(categoryId));
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> removeCategory(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam String categoryId) {
+        boolean removed = restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(categoryId));
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("이 가게는 해당 카테고리에 속하지 않습니다.");
+        }
+
+        return ResponseEntity.ok("카테고리가 성공적으로 삭제되었습니다.");
     }
 }
