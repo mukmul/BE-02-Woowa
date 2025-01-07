@@ -38,10 +38,10 @@ public class CustomerAddress extends BaseTimeEntity {
     private String nickname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name="area_code",updatable = false)
     private Customer customer;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private AreaCode areaCode;
 
     @Column

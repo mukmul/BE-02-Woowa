@@ -24,7 +24,7 @@ public class TokenProvider {
     private final Key secretKey;
 
     public TokenProvider(UserRepository userRepository,
-                         @Value("${jwt.secret}") String strSecretKey) {
+                         @Value("${jwt.secret:default_base64_key}") String strSecretKey) {
         this.userRepository = userRepository;
         this.secretKey = new SecretKeySpec(Base64.getDecoder().decode(strSecretKey), SignatureAlgorithm.HS256.getJcaName());
     }
