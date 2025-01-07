@@ -11,3 +11,6 @@ spring:
         default_batch_fetch_size: 500
   profiles:
     include: db
+
+jwt:
+  secret: bXlTdXBlclNlY3JldEtleVRoYXROZWVkc1RvQmVBdExlYXN0MzJCeXRlc0xvbmdPck1vcmVGb3JIUzI1NjY=
