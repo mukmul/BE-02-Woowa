@@ -25,8 +25,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "category")
 @Entity
-@SQLDelete(sql = "UPDATE category SET is_deleted = NOW() WHERE id = ?")
-@SQLRestriction("is_deleted IS NULL")
 public class Category extends BaseTimeEntity {
 
     @Id
@@ -38,9 +36,6 @@ public class Category extends BaseTimeEntity {
 
     @Column(unique = true, nullable = false, length = 10)
     private String name;
-
-    @Column(name = "is_deleted", nullable = true)
-    private LocalDateTime isDeleted;
 
     @Builder
     public Category(String name) {
