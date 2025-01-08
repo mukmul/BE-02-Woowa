@@ -11,7 +11,9 @@ import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.mapper.RiderMapper;
 import com.example.woowa.delivery.repository.RiderRepository;
+
 import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +41,7 @@ class RiderServiceTest {
     @DisplayName("중복된 로그인 id는 저장할 수 없다.")
     public void failSave() {
         RiderCreateRequest riderCreateRequest = new RiderCreateRequest("id", "password", "name",
-            "폰");
+                "폰");
 
         given(riderRepository.existsByLoginId(any())).willReturn(true);
 
@@ -67,6 +69,6 @@ class RiderServiceTest {
         assertThat(rider.getRiderAreaCodeList().size()).isEqualTo(3);
         assertThat(areaCode.getRiderAreaCodeList().size()).isEqualTo(1);
         assertThat(rider.getRiderAreaCodeList().get(2)).isEqualTo(
-            areaCode.getRiderAreaCodeList().get(0));
+                areaCode.getRiderAreaCodeList().get(0));
     }
 }
