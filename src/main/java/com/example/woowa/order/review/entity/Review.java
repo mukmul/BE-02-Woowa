@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PROTECTED;
 import com.example.woowa.common.base.BaseTimeEntity;
 import com.example.woowa.customer.customer.entity.Customer;
 import com.example.woowa.order.order.entity.Order;
+import com.example.woowa.order.review.enums.ReviewStatus;
 import com.example.woowa.order.review.enums.ScoreType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "review")
@@ -31,6 +33,11 @@ public class Review extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReviewStatus reviewStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

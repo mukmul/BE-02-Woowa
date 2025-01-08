@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 import com.example.woowa.customer.customer.entity.Customer;
 import com.example.woowa.customer.customer.entity.CustomerGrade;
@@ -17,6 +16,7 @@ import com.example.woowa.order.review.dto.ReviewCreateRequest;
 import com.example.woowa.order.review.dto.ReviewFindResponse;
 import com.example.woowa.order.review.dto.ReviewUpdateRequest;
 import com.example.woowa.order.review.entity.Review;
+import com.example.woowa.order.review.enums.ReviewStatus;
 import com.example.woowa.order.review.enums.ScoreType;
 import com.example.woowa.order.review.repository.ReviewRepository;
 
@@ -27,8 +27,6 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -36,8 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-@ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
+
     @Autowired
     private ReviewService reviewService;
 
@@ -63,6 +61,7 @@ class ReviewServiceTest {
         CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
         Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
         Review review = new Review("정말정말 맛있습니다.", ScoreType.FIVE, null, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
 
         given(customerService.findCustomerEntity(anyString())).willReturn(customer);
         given(delivery.getDeliveryStatus()).willReturn(DeliveryStatus.DELIVERY_FINISH);
@@ -81,8 +80,12 @@ class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 조회")
     void findReview() {
-        given(reviewRepository.findById(1L)).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
-                ScoreType.FIVE, null, null)));
+
+        Review review = new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, null, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
+
+        given(reviewRepository.findById(1L)).willReturn(Optional.of(review));
 
         // 정상적으로 조회가 되는 경우
         ReviewFindResponse reviewFindResponse = reviewService.findReview(1L);
@@ -99,16 +102,19 @@ class ReviewServiceTest {
     @Test
     @DisplayName("유저 리뷰 목록 조회")
     void findUserReview() {
+        Review review = new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, null, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
+
         CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
         Customer customer = new Customer("dev12", "Programmers123!", LocalDate.of(2000, 1, 1), customerGrade);
-        customer.addReview(new Review("정말정말 맛있습니다.",
-                ScoreType.FIVE, null, null));
+        customer.addReview(review);
         given(customerService.findCustomerEntity(anyString())).willReturn(customer);
 
         List<ReviewFindResponse> reviews = reviewService.findUserReview("dev12");
 
-        Assertions.assertThat(reviews.get(0).getContent()).isEqualTo("정말정말 맛있습니다.");
-        Assertions.assertThat(reviews.get(0).getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
+        Assertions.assertThat(reviews.getFirst().getContent()).isEqualTo("정말정말 맛있습니다.");
+        Assertions.assertThat(reviews.getFirst().getScoreType()).isEqualTo(ScoreType.FIVE.getValue());
     }
 
     @Test
@@ -117,8 +123,11 @@ class ReviewServiceTest {
         CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
         Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
 
-        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
-                ScoreType.FIVE, customer, null)));
+        Review review = new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, customer, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
+
+        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(review));
 
         ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
 
@@ -134,8 +143,11 @@ class ReviewServiceTest {
         CustomerGrade customerGrade = new CustomerGrade(5, "일반", 3000, 2);
         Customer customer = new Customer("test1234", "Test1234!", LocalDate.of(2000, 1, 1), customerGrade);
 
-        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(new Review("정말정말 맛있습니다.",
-                ScoreType.FIVE, customer, null)));
+        Review review = new Review("정말정말 맛있습니다.",
+                ScoreType.FIVE, customer, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
+
+        given(reviewRepository.findById(anyLong())).willReturn(Optional.of(review));
 
         ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
 
@@ -144,6 +156,7 @@ class ReviewServiceTest {
         Assertions.assertThat(reviewFindResponse).isNotNull();
 
         Assertions.assertThat(reviewFindResponse.getContent()).isEqualTo("정말정말 맛없습니다.");
+        Assertions.assertThat(review.getReviewStatus()).isEqualTo(ReviewStatus.EDITED);
         Assertions.assertThat(reviewFindResponse.getScoreType()).isEqualTo(ScoreType.ONE.getValue());
     }
 
@@ -155,6 +168,7 @@ class ReviewServiceTest {
 
         Review review = new Review("정말정말 맛있습니다.",
                 ScoreType.FIVE, customer, null);
+        review.setReviewStatus(ReviewStatus.REGISTERED);
 
         customer.addReview(review);
 
@@ -163,6 +177,7 @@ class ReviewServiceTest {
 
         reviewService.deleteReview("test1234", 1L);
 
-        verify(reviewRepository).delete(review);
+//        verify(reviewRepository).delete(review);
+        Assertions.assertThat(review.getReviewStatus()).isEqualTo(ReviewStatus.DELETED);
     }
 }

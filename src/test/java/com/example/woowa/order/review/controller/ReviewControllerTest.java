@@ -23,6 +23,7 @@ import com.example.woowa.RestDocsConfiguration;
 import com.example.woowa.order.review.dto.ReviewCreateRequest;
 import com.example.woowa.order.review.dto.ReviewFindResponse;
 import com.example.woowa.order.review.dto.ReviewUpdateRequest;
+import com.example.woowa.order.review.enums.ReviewStatus;
 import com.example.woowa.order.review.service.ReviewService;
 import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +74,8 @@ class ReviewControllerTest {
     @WithMockUser(username = "tester")
     void createReview() throws Exception {
 
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
 
         given(reviewService.createReview(anyString(), anyLong(), any())).willReturn(reviewFindResponse);
         ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest(reviewFindResponse.getContent(),
@@ -105,7 +107,8 @@ class ReviewControllerTest {
 
     @Test
     void findReview() throws Exception {
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
 
         given(reviewService.findReview(anyLong())).willReturn(reviewFindResponse);
 
@@ -130,8 +133,10 @@ class ReviewControllerTest {
     void findUserReview() throws Exception {
         List<ReviewFindResponse> result = new ArrayList<>();
 
-        ReviewFindResponse reviewFindResponse1 = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5);
-        ReviewFindResponse reviewFindResponse2 = new ReviewFindResponse(2L, "정말정말 맛없습니다.", 1);
+        ReviewFindResponse reviewFindResponse1 = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
+        ReviewFindResponse reviewFindResponse2 = new ReviewFindResponse(2L, "정말정말 맛없습니다.", 1,
+                ReviewStatus.REGISTERED.getDescription());
 
         result.add(reviewFindResponse1);
         result.add(reviewFindResponse2);
@@ -158,7 +163,8 @@ class ReviewControllerTest {
     @Test
     @WithMockUser(username = "tester")
     void updateReview() throws Exception {
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.EDITED.getDescription());
 
         given(reviewService.updateReview(any(), anyLong(), any())).willReturn(reviewFindResponse);
 

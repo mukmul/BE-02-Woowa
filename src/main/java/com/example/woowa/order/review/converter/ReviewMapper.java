@@ -14,12 +14,16 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL, componentModel = "spring", imports = {ScoreType.class})
 public interface ReviewMapper {
 
-  @Mapping(target = "scoreType", expression = "java(review.getScoreType().getValue())")
-  ReviewFindResponse toReviewDto(Review review);
-  @Mappings({
-      @Mapping(target = "customer", source = "customer"),
-      @Mapping(target = "scoreType", expression = "java(ScoreType.find(reviewCreateRequest.getScoreType()))"),
-      @Mapping(target = "order", ignore = true)
-  })
-  Review toReview(ReviewCreateRequest reviewCreateRequest, Customer customer, Order order);
+    @Mappings({
+            @Mapping(target = "scoreType", expression = "java(review.getScoreType().getValue())"),
+            @Mapping(target = "reviewStatus", expression = "java(review.getReviewStatus().getDescription())")
+    })
+    ReviewFindResponse toReviewDto(Review review);
+
+    @Mappings({
+            @Mapping(target = "customer", source = "customer"),
+            @Mapping(target = "scoreType", expression = "java(ScoreType.find(reviewCreateRequest.getScoreType()))"),
+            @Mapping(target = "order", ignore = true)
+    })
+    Review toReview(ReviewCreateRequest reviewCreateRequest, Customer customer, Order order);
 }
