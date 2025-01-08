@@ -35,7 +35,7 @@ public class MenuGroupApiController {
         Long menuGroupId = menuGroupService.addMenuGroup(restaurantId, request);
         MenuGroupResponse response = menuGroupService.findMenuById(menuGroupId);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 메뉴 그룹 단건 조회

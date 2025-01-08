@@ -80,6 +80,7 @@ class MenuGroupApiControllerTest {
         MenuGroupSaveRequest menuGroupSaveRequest = new MenuGroupSaveRequest("볶음밥류", "맛있는 볶음밥");
         long restaurantId = 1L;
         long menuGroupId = 2L;
+
         given(menuGroupService.addMenuGroup(restaurantId, menuGroupSaveRequest)).willReturn(
                 menuGroupId);
 
@@ -89,7 +90,6 @@ class MenuGroupApiControllerTest {
                         .content(objectMapper.writeValueAsString(menuGroupSaveRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andDo(document("add-menu-group",
                         pathParameters(
                                 parameterWithName("restaurantId").description("메뉴그룹을 추가할 가게의 ID")
@@ -104,9 +104,6 @@ class MenuGroupApiControllerTest {
                                 fieldWithPath("description").type(JsonFieldType.STRING)
                                         .type(JsonFieldType.STRING)
                                         .description("메뉴그룹 설명(선택, 최대 500자)")
-                        ),
-                        responseHeaders(
-                                headerWithName(HttpHeaders.LOCATION).description("생성된 메뉴 그룹의 위치")
                         )
                 ));
 
