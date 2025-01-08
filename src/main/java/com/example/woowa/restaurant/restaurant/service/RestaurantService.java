@@ -44,13 +44,17 @@ public class RestaurantService {
     public RestaurantCreateResponse createRestaurantByOwnerId(Long ownerId,
         RestaurantCreateRequest restaurantCreateRequest) {
         Owner owner = ownerService.findOwnerEntityById(ownerId);
-        Restaurant restaurant = restaurantRepository.save(
-            restaurantMapper.toEntity(restaurantCreateRequest));
+
+        Restaurant restaurant = restaurantMapper.toEntity(restaurantCreateRequest);
+
+        owner.addRestaurant(restaurant);
+
         restaurantCreateRequest.getCategoryIds().forEach(categoryId -> {
             Category category = categoryService.findCategoryEntityById(categoryId);
             RestaurantCategory restaurantCategory = new RestaurantCategory(restaurant, category);
         });
-        owner.addRestaurant(restaurant);
+
+        restaurantRepository.save(restaurant);
 
         return restaurantMapper.toCreateResponseDto(restaurant);
     }
