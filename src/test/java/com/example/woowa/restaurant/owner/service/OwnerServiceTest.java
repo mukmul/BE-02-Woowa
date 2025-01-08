@@ -176,4 +176,31 @@ class OwnerServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("존재하지 않는 사장님 아이디입니다.");
     }
+
+    @Test
+    @DisplayName("사장님 비밀번호를 변경한다.")
+    void changeOwnerPasswordTest() {
+        // Given
+        long ownerId = 1L;
+        String newPassword = "NewPassword123!";
+        OwnerUpdateRequest request = new OwnerUpdateRequest(
+                newPassword,
+                "홍길동",
+                "010-1234-5678"
+        );
+
+        Owner owner = new Owner("loginId", "OldPassword", "홍길동", "010-1234-5678");
+
+        given(ownerRepository.findById(ownerId)).willReturn(Optional.of(owner));
+        given(passwordEncoder.encode(newPassword)).willReturn("EncodedPassword");
+
+        // When
+        ownerService.updateOwnerById(ownerId, request);
+
+        // Then
+        then(ownerRepository).should().findById(ownerId);
+        then(passwordEncoder).should().encode(newPassword);
+        assertThat(owner.getPassword()).isEqualTo("EncodedPassword");
+    }
+
 }
