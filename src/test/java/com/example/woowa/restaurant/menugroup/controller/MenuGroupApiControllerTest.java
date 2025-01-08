@@ -263,7 +263,7 @@ class MenuGroupApiControllerTest {
                         .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isConflict()); // 409 상태 코드
 
-        Mockito.verify(menuGroupService).deleteMenuGroup(menuGroupId);
+        then(menuGroupService).should().deleteMenuGroup(menuGroupId);
     }
 
     @Test
