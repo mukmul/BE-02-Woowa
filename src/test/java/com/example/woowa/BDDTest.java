@@ -135,13 +135,12 @@ public class BDDTest {
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_ADMIN.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_RIDER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
         AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
-
-        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_ADMIN.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_RIDER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
     }
 
     @Test
