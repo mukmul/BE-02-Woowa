@@ -138,7 +138,7 @@ public class BDDTest {
         roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
         roleRepository.save(new Role(UserRole.ROLE_ADMIN.getRoleName()));
         roleRepository.save(new Role(UserRole.ROLE_RIDER.getRoleName()));
-        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
+        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.getRoleName()));
         AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
     }
