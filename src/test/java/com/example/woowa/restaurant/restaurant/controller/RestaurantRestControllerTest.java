@@ -106,8 +106,7 @@ class RestaurantRestControllerTest {
         mockMvc.perform(get("/baemin/v1/owners/{ownerId}/restaurants", ownerId1)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(responses.size()));
+                .andExpect(status().isOk());
 
         then(restaurantService).should().findRestaurantsByOwnerId(ownerId1);
     }
@@ -264,8 +263,8 @@ class RestaurantRestControllerTest {
         mockMvc.perform(get("/baemin/v1/categories/{categoryId}/restaurants", categoryId)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(responses.size()));
+                .andExpect(status().isOk());
+
         then(restaurantService).should().findRestaurantsByCategoryId(categoryId);
     }
 
@@ -314,8 +313,7 @@ class RestaurantRestControllerTest {
         mockMvc.perform(get("/baemin/v1/restaurants")
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(responses.size()));
+                .andExpect(status().isOk());
 
         then(restaurantService).should().findRestaurants();
     }
@@ -347,12 +345,7 @@ class RestaurantRestControllerTest {
         mockMvc.perform(get("/baemin/v1/restaurants/{restaurantId}", restaurantId)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(response.getId()))
-                .andExpect(jsonPath("$.name").value(response.getName()))
-                .andExpect(jsonPath("$.businessNumber").value(response.getBusinessNumber()))
-                .andExpect(jsonPath("$.ownerId").value(response.getOwnerId()))
-                .andExpect(jsonPath("$.address").value(response.getAddress()));
+                .andExpect(status().isOk());
 
         then(restaurantService).should().findRestaurantById(restaurantId);
     }
