@@ -68,9 +68,6 @@ class MenuGroupApiControllerTest {
     @MockitoBean
     MenuGroupService menuGroupService;
 
-    @MockitoBean
-    RestaurantService restaurantService;
-
     @Autowired
     ObjectMapper objectMapper;
 
