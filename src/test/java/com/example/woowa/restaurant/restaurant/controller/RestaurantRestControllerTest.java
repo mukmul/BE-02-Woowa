@@ -1,8 +1,9 @@
 package com.example.woowa.restaurant.restaurant.controller;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -13,8 +14,6 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantCreateReque
 import com.example.woowa.restaurant.restaurant.dto.request.RestaurantUpdateRequest;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
-import com.example.woowa.restaurant.restaurant.entity.Restaurant;
-import com.example.woowa.restaurant.restaurant.mapper.RestaurantMapper;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
 import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +24,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -58,6 +56,55 @@ class RestaurantRestControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Test
+    @DisplayName("레스토랑을 생성한다.")
+    void createRestaurantByOwnerIdOkTest() throws Exception {
+        // Given
+        long ownerId = 1L;
+        RestaurantCreateRequest request = new RestaurantCreateRequest(
+                "레스토랑이름",
+                "760-15-00993",
+                LocalTime.of(10, 0),
+                LocalTime.of(22, 0),
+                false,
+                "010-1234-5678",
+                "테스트용 레스토랑",
+                "서울특별시 강남구",
+                List.of()
+        );
+
+        RestaurantCreateResponse response = new RestaurantCreateResponse(
+                1L,
+                ownerId,
+                "레스토랑 이름",
+                "760-15-00993",
+                LocalTime.of(10, 0),
+                LocalTime.of(22, 0),
+                false,
+                "010-1234-5678",
+                "테스트용 레스토랑",
+                "서울특별시 강남구",
+                List.of(),
+                LocalDateTime.now()
+        );
+
+        given(restaurantService.createRestaurantByOwnerId(eq(ownerId), any())).willReturn(response);
+
+        // When & Then
+        mockMvc.perform(post("/baemin/v1/owners/{ownerId}/restaurants", ownerId)
+                        .with(csrf().asHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(response.getId()))
+                .andExpect(jsonPath("$.ownerId").value(response.getOwnerId()))
+                .andExpect(jsonPath("$.name").value(response.getName()))
+                .andExpect(jsonPath("$.businessNumber").value(response.getBusinessNumber()));
+
+        then(restaurantService).should().createRestaurantByOwnerId(eq(ownerId), any());
+    }
 
     @Test
     @DisplayName("레스토랑을 사장님을 사용하여 조회한다.")
@@ -121,7 +168,9 @@ class RestaurantRestControllerTest {
                 LocalTime.of(23, 0),
                 "010-1111-1111",
                 "서울시 동작구",
-                "테스트용 가겍입니다.");
+                "테스트용 가게입니다.");
+
+        doNothing().when(restaurantService).updateRestaurantById(eq(ownerId), eq(restaurantId), refEq(request));
 
         mockMvc.perform(put("/baemin/v1/owners/{ownerId}/restaurants/{restaurantId}", ownerId, restaurantId)
                         .with(csrf().asHeader())
@@ -130,7 +179,7 @@ class RestaurantRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        then(restaurantService).should().updateRestaurantById(ownerId, restaurantId, request);
+        then(restaurantService).should().updateRestaurantById(eq(ownerId), eq(restaurantId), refEq(request));
     }
 
     @Test
@@ -153,6 +202,7 @@ class RestaurantRestControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
+
 
     @Test
     @DisplayName("레스토랑을 삭제한다.")
