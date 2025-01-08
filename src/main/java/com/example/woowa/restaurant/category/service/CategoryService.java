@@ -58,7 +58,9 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategoryById(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 카테고리 ID %d 입니다.", categoryId)));
+        categoryRepository.delete(category);
     }
 
     public Category findCategoryEntityById(Long categoryId) {
