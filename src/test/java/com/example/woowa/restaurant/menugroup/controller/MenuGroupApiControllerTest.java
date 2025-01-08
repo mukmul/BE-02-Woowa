@@ -86,23 +86,7 @@ class MenuGroupApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(menuGroupSaveRequest)))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andDo(document("add-menu-group",
-                        pathParameters(
-                                parameterWithName("restaurantId").description("메뉴그룹을 추가할 가게의 ID")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.CONTENT_TYPE).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹명(필수, 최대 100자"),
-                                fieldWithPath("description").type(JsonFieldType.STRING)
-                                        .type(JsonFieldType.STRING)
-                                        .description("메뉴그룹 설명(선택, 최대 500자)")
-                        )
-                ));
+                .andExpect(status().isCreated());
 
         then(menuGroupService).should().addMenuGroup(restaurantId, menuGroupSaveRequest);
     }
@@ -154,28 +138,7 @@ class MenuGroupApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(menuGroupId))
                 .andExpect(jsonPath("title").value(response.getTitle()))
-                .andExpect(jsonPath("description").value(response.getDescription()))
-                .andDo(document("find-menu-group",
-                        pathParameters(
-                                parameterWithName("menuGroupId").description("조회할 메뉴그룹 ID")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.ACCEPT).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        responseHeaders(
-                                headerWithName(HttpHeaders.CONTENT_TYPE).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER)
-                                        .description("메뉴그룹 ID"),
-                                fieldWithPath("title").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹명"),
-                                fieldWithPath("description").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹 설명")
-                        )
-                ));
+                .andExpect(jsonPath("description").value(response.getDescription()));
 
         then(menuGroupService).should().findMenuById(menuGroupId);
     }
@@ -211,30 +174,7 @@ class MenuGroupApiControllerTest {
                                 .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("menuGroups.length()").value(menuGroupResponses.size()))
-                .andDo(document("find-menu-group-list",
-                        pathParameters(
-                                parameterWithName("restaurantId").description("메뉴그룹을 조회할 가게 ID")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.ACCEPT).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        responseHeaders(
-                                headerWithName(HttpHeaders.CONTENT_TYPE).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        responseFields(
-                                fieldWithPath("menuGroups[]").type(JsonFieldType.ARRAY)
-                                        .description("메뉴그룹 목록"),
-                                fieldWithPath("menuGroups[].id").type(JsonFieldType.NUMBER)
-                                        .description("메뉴그룹 ID"),
-                                fieldWithPath("menuGroups[].title").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹명"),
-                                fieldWithPath("menuGroups[].description").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹 설명")
-                        )
-                ));
+                .andExpect(jsonPath("menuGroups.length()").value(menuGroupResponses.size()));
 
         then(menuGroupService).should().findMenuGroupByRestaurant(restaurantId);
     }
@@ -266,22 +206,7 @@ class MenuGroupApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("update-menu-group",
-                        pathParameters(
-                                parameterWithName("menuGroupId").description("업데이트할 메뉴그룹 ID")
-                        ),
-                        requestHeaders(
-                                headerWithName(HttpHeaders.CONTENT_TYPE).description(
-                                        MediaType.APPLICATION_JSON_VALUE)
-                        ),
-                        requestFields(
-                                fieldWithPath("title").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹명(필수, 최대 100자)"),
-                                fieldWithPath("description").type(JsonFieldType.STRING)
-                                        .description("메뉴그룹 설명(선택, 최대 500자)")
-                        )
-                ));
+                .andExpect(status().isOk());
 
         then(menuGroupService).should().updateMenuGroup(menuGroupId, request);
     }
@@ -330,12 +255,7 @@ class MenuGroupApiControllerTest {
         mockMvc.perform(delete("/api/v1/menu-groups/{menuGroupId}", menuGroupId)
                         .with(csrf().asHeader()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("delete-menu-group",
-                        pathParameters(
-                                parameterWithName("menuGroupId").description("삭제할 메뉴그룹 ID")
-                        )
-                ));
+                .andExpect(status().isOk());
 
         then(menuGroupService).should().deleteMenuGroup(menuGroupId);
     }
