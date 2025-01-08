@@ -7,9 +7,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -105,7 +103,7 @@ class DeliveryControllerTest {
             .andExpect(status().is2xxSuccessful())
             .andDo(print())
             .andDo(document("findByWaitingDelivery",
-                    requestParameters(
+                    queryParameters(
                         parameterWithName("page").description("요청 페이지")
                     ),
                     responseFields(
@@ -168,7 +166,7 @@ class DeliveryControllerTest {
                         parameterWithName("deliveryId").description("배달 아이디"),
                         parameterWithName("riderId").description("배달기사 아이디")
                     ),
-                    requestParameters(
+                    queryParameters(
                         parameterWithName("deliveryMinute").description("배달 시간"),
                         parameterWithName("cookMinute").description("요리 시간")
                     )
@@ -189,7 +187,7 @@ class DeliveryControllerTest {
                         parameterWithName("deliveryId").description("배달 아이디"),
                         parameterWithName("riderId").description("배달기사 아이디")
                     ),
-                    requestParameters(
+                    queryParameters(
                         parameterWithName("delayMinute").description("배달 시간")
                     )
                 )

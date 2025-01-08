@@ -48,9 +48,9 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantCreateReque
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.user.Role;
-import com.example.woowa.security.user.UserRole;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.user.entity.UserRole;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -134,7 +134,7 @@ public class BDDTest {
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
-        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
+        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev10", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
 
         roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
