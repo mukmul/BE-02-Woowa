@@ -1,5 +1,6 @@
 package com.example.woowa.restaurant.owner.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doThrow;
@@ -9,6 +10,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.woowa.RestDocsConfiguration;
@@ -77,15 +79,22 @@ class OwnerRestControllerTest {
                 LocalDateTime.now()
         );
 
-        given(ownerService.createOwner(request)).willReturn(response);
+        given(ownerService.createOwner(any(OwnerCreateRequest.class))).willReturn(response);
 
         mockMvc.perform(post("/baemin/v1/owners")
-                .with(csrf().asHeader())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isCreated());
+                        .with(csrf().asHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(response.getId()))
+                .andExpect(jsonPath("$.loginId").value(response.getLoginId()))
+                .andExpect(jsonPath("$.name").value(response.getName()))
+                .andExpect(jsonPath("$.phoneNumber").value(response.getPhoneNumber()));
+
+        then(ownerService).should().createOwner(any(OwnerCreateRequest.class));
     }
+
 
     @Test
     @DisplayName("사장님을 생성할 때 이름을 누락하면 400 응답이 발생한다. ")
@@ -96,6 +105,7 @@ class OwnerRestControllerTest {
                 "",
                 "010-1234-5678"
         );
+
 
         mockMvc.perform(post("/baemin/v1/owners")
                         .with(csrf().asHeader())
