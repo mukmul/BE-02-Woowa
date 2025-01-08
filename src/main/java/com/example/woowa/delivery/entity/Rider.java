@@ -26,6 +26,14 @@ public class Rider extends BaseLoginEntity {
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isDelivery;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
+
+    public void delete() {
+        this.isDeleted = true;
+        for( Delivery delivery:this.deliveryList)
+            delivery.delete();
+    }
     @Builder
     private Rider(String loginId, String loginPassword, String name, String phoneNumber) {
         super(loginId, loginPassword, name, phoneNumber);
@@ -36,6 +44,9 @@ public class Rider extends BaseLoginEntity {
         changePhoneNumber(phoneNumber);
     }
 
+    public boolean getIsDelivery() {
+        return isDelivery;
+    }
     public static Rider createRider(String loginId, String loginPassword, String name,
         String phoneNumber) {
         return new Rider(loginId, loginPassword, name, phoneNumber);

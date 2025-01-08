@@ -16,6 +16,7 @@ import java.util.List;
 
 import com.example.woowa.security.user.service.UserService;
 import com.example.woowa.security.user.entity.UserRole;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -150,5 +151,12 @@ public class RiderService {
         } catch (Exception e) {
             throw new RuntimeException(ErrorMessage.FAIL_TO_DELETE.getMessage());
         }
+    }
+    @Transactional
+    public void deleteRider(Long riderId) {
+        Rider rider = riderRepository.findById(riderId)
+                .orElseThrow(() -> new EntityNotFoundException("Rider not found with id: " + riderId));
+
+        rider.delete();
     }
 }

@@ -78,4 +78,8 @@ public class Delivery {
         this.deliveryStatus = DeliveryStatus.DELIVERY_FINISH;
         this.arrivalTime = LocalDateTime.now();
     }
+
+    public void delete() {
+        this.deliveryStatus=DeliveryStatus.DELIVERY_DELETE;
+    }
 }

@@ -35,11 +35,14 @@ class RiderMapperTest {
     void toResponse() {
         Rider rider = TestInitUtil.initRider();
         rider.changeUpdatedAt(LocalDateTime.now());
+        rider.changeIsDelivery(true);
+        System.out.println(rider.getIsDelivery());
         RiderResponse riderResponse = riderMapper.toResponse(rider);
         int size = riderResponse.getRiderAreaList().size();
 
+
         assertThat(riderResponse.getId()).isEqualTo(rider.getId());
-        assertThat(riderResponse.getIsDelivery()).isEqualTo(rider.isDelivery());
+        assertThat(riderResponse.isDelivery()).isEqualTo(rider.getIsDelivery());
 
         assertThat(riderResponse.getLoginId()).isEqualTo(rider.getLoginId());
         assertThat(riderResponse.getPassword()).isEqualTo(rider.getPassword());

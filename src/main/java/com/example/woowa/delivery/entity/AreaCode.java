@@ -40,17 +40,15 @@ public class AreaCode {
     public void addDeliveryArea(DeliveryArea deliveryArea) {
         this.deliveryAreaList.add(deliveryArea);
     }
+    public void removeDeliveryArea(DeliveryArea deliveryArea) {this.deliveryAreaList.remove(deliveryArea);}
 
-    public void addRiderArea(RiderAreaCode riderAreaCode) {
+    public void addRiderAreaCode(RiderAreaCode riderAreaCode) {
         this.riderAreaCodeList.add(riderAreaCode);
     }
-
     public void removeRiderAreaCode(RiderAreaCode riderAreaCode)
     {
         this.riderAreaCodeList.remove(riderAreaCode);
     }
 
-    public void addRiderAreaCode(RiderAreaCode riderAreaCode) {
-        this.riderAreaCodeList.add(riderAreaCode);
-    }
+
 }

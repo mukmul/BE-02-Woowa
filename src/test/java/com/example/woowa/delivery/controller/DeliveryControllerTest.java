@@ -18,11 +18,15 @@ import com.example.woowa.delivery.entity.Delivery;
 import com.example.woowa.delivery.mapper.DeliveryMapper;
 import com.example.woowa.delivery.service.DeliveryService;
 import com.example.woowa.security.configuration.SecurityConfig;
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.user.entity.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -60,8 +64,16 @@ class DeliveryControllerTest {
     @MockitoBean
     DeliveryService deliveryService;
 
+    @MockitoBean
+    RoleRepository roleRepository;
+
     DeliveryMapper deliveryMapper = Mappers.getMapper(DeliveryMapper.class);
 
+    @BeforeEach
+    void setup() {
+        // 테스트 전에 Role을 저장
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
+    }
     @Test
     void findByDelivery() throws Exception {
         Delivery delivery = TestInitUtil.initDelivery();
@@ -168,10 +180,6 @@ class DeliveryControllerTest {
                                 pathParameters(
                                         parameterWithName("deliveryId").description("배달 아이디"),
                                         parameterWithName("riderId").description("배달기사 아이디")
-                                ),
-                                queryParameters(
-                                        parameterWithName("deliveryMinute").description("배달 시간"),
-                                        parameterWithName("cookMinute").description("요리 시간")
                                 )
                         )
                 );
@@ -179,7 +187,7 @@ class DeliveryControllerTest {
 
     @Test
     void delayDelivery() throws Exception {
-        mockMvc.perform(put("/api/v1/delivery/delay/{deliveryId}/{riderId}", 1L, 1L)
+        mockMvc.perform(put("/api/v1/delivery/delay/{deliveryId}", 1L)
                         .param("delayMinute", String.valueOf(0))
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf().asHeader())
@@ -187,11 +195,7 @@ class DeliveryControllerTest {
                 .andDo(print())
                 .andDo(document("delay-delivery",
                                 pathParameters(
-                                        parameterWithName("deliveryId").description("배달 아이디"),
-                                        parameterWithName("riderId").description("배달기사 아이디")
-                                ),
-                                queryParameters(
-                                        parameterWithName("delayMinute").description("배달 시간")
+                                        parameterWithName("deliveryId").description("배달 아이디")
                                 )
                         )
                 );
@@ -199,15 +203,14 @@ class DeliveryControllerTest {
 
     @Test
     void pickUpDelivery() throws Exception {
-        mockMvc.perform(put("/api/v1/delivery/pickup/{deliveryId}/{riderId}", 1L, 1L)
+        mockMvc.perform(put("/api/v1/delivery/pickup/{deliveryId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf())
                 ).andExpect(status().is2xxSuccessful())
                 .andDo(print())
                 .andDo(document("pickup-delivery",
                                 pathParameters(
-                                        parameterWithName("deliveryId").description("배달 아이디"),
-                                        parameterWithName("riderId").description("배달기사 아이디")
+                                        parameterWithName("deliveryId").description("배달 아이디")
                                 )
                         )
                 );
@@ -215,7 +218,7 @@ class DeliveryControllerTest {
 
     @Test
     void finishDelivery() throws Exception {
-        mockMvc.perform(put("/api/v1/delivery/pickup/{deliveryId}/{riderId}", 1L, 1L)
+        mockMvc.perform(put("/api/v1/delivery/finish/{deliveryId}/{riderId}", 1L, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf())
                 ).andExpect(status().is2xxSuccessful())
