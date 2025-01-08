@@ -14,7 +14,9 @@ import com.example.woowa.order.order.entity.Order;
 import com.example.woowa.restaurant.menu.entity.Menu;
 import com.example.woowa.restaurant.menugroup.entity.MenuGroup;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
+
 import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -39,12 +41,12 @@ class DeliveryMapperTest {
 
         DeliveryResponse deliveryResponse = deliveryMapper.toResponse(delivery);
 
-        assertThat(deliveryResponse.getId()).isEqualTo(delivery.getId());
-        assertThat(deliveryResponse.getDeliveryFee()).isEqualTo(delivery.getDeliveryFee());
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(delivery.getDeliveryStatus());
-        assertThat(deliveryResponse.getArrivalTime()).isEqualTo(delivery.getArrivalTime());
-        assertThat(deliveryResponse.getCustomerAddress()).isEqualTo(delivery.getCustomerAddress());
-        assertThat(deliveryResponse.getRestaurantAddress()).isEqualTo(
-            delivery.getRestaurantAddress());
+        assertThat(deliveryResponse.id()).isEqualTo(delivery.getId());
+        assertThat(deliveryResponse.deliveryFee()).isEqualTo(delivery.getDeliveryFee());
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(delivery.getDeliveryStatus());
+        assertThat(deliveryResponse.arrivalTime()).isEqualTo(delivery.getArrivalTime());
+        assertThat(deliveryResponse.customerAddress()).isEqualTo(delivery.getCustomerAddress());
+        assertThat(deliveryResponse.restaurantAddress()).isEqualTo(
+                delivery.getRestaurantAddress());
     }
 }

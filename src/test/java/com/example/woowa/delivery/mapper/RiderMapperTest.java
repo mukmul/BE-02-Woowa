@@ -6,7 +6,9 @@ import com.example.woowa.TestInitUtil;
 import com.example.woowa.delivery.dto.RiderCreateRequest;
 import com.example.woowa.delivery.dto.RiderResponse;
 import com.example.woowa.delivery.entity.Rider;
+
 import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -19,13 +21,13 @@ class RiderMapperTest {
     @DisplayName("MemberCreateRequest로 Rider로 변환할 수 있다.")
     void toEntity() {
         RiderCreateRequest riderCreateRequest = new RiderCreateRequest("id", "password", "name",
-            "폰");
+                "폰");
         Rider rider = riderMapper.toRider(riderCreateRequest);
 
-        assertThat(rider.getName()).isEqualTo(riderCreateRequest.getName());
-        assertThat(rider.getLoginId()).isEqualTo(riderCreateRequest.getLoginId());
-        assertThat(rider.getPassword()).isEqualTo(riderCreateRequest.getPassword());
-        assertThat(rider.getPhoneNumber()).isEqualTo(riderCreateRequest.getPhoneNumber());
+        assertThat(rider.getName()).isEqualTo(riderCreateRequest.name());
+        assertThat(rider.getLoginId()).isEqualTo(riderCreateRequest.loginId());
+        assertThat(rider.getPassword()).isEqualTo(riderCreateRequest.password());
+        assertThat(rider.getPhoneNumber()).isEqualTo(riderCreateRequest.phoneNumber());
     }
 
     @Test
@@ -37,7 +39,7 @@ class RiderMapperTest {
         int size = riderResponse.getRiderAreaList().size();
 
         assertThat(riderResponse.getId()).isEqualTo(rider.getId());
-        assertThat(riderResponse.getIsDelivery()).isEqualTo(rider.getIsDelivery());
+        assertThat(riderResponse.getIsDelivery()).isEqualTo(rider.isDelivery());
 
         assertThat(riderResponse.getLoginId()).isEqualTo(rider.getLoginId());
         assertThat(riderResponse.getPassword()).isEqualTo(rider.getPassword());
@@ -46,7 +48,7 @@ class RiderMapperTest {
 
         for (int i = 0; i < size; i++) {
             assertThat(riderResponse.getRiderAreaList().get(i)).isEqualTo(
-                rider.getRiderAreaCodeList().get(i).getAreaCode().getDefaultAddress());
+                    rider.getRiderAreaCodeList().get(i).getAreaCode().getDefaultAddress());
         }
     }
 }

@@ -48,14 +48,16 @@ import com.example.woowa.restaurant.restaurant.dto.request.RestaurantCreateReque
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantCreateResponse;
 import com.example.woowa.restaurant.restaurant.dto.response.RestaurantFindResponse;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
-import com.example.woowa.security.repository.RoleRepository;
-import com.example.woowa.security.user.Role;
-import com.example.woowa.security.user.UserRole;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.user.entity.UserRole;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -71,6 +73,7 @@ import org.springframework.data.domain.PageRequest;
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
+//@Transactional
 public class BDDTest {
 
     @Autowired
@@ -134,13 +137,15 @@ public class BDDTest {
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
-        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
-        adminService.createAdmin(adminCreateRequest);
+
 
         roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
         roleRepository.save(new Role(UserRole.ROLE_ADMIN.toString()));
         roleRepository.save(new Role(UserRole.ROLE_RIDER.toString()));
         roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
+        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
+        adminService.createAdmin(adminCreateRequest);
+
     }
 
     @Test
@@ -223,7 +228,7 @@ public class BDDTest {
     void _8() {
         CustomerAddressCreateRequest customerAddressCreateRequest = new CustomerAddressCreateRequest(
             "서울특별시 동작구 상도동", "빌라 101호", "집");
-        CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev12",
+        CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev123",
             "Programmers123!", "2000-01-01", customerAddressCreateRequest);
         customer = customerService.createCustomer(
             customerCreateRequest);
@@ -233,7 +238,7 @@ public class BDDTest {
     @DisplayName("고객은 고객 등급에 따라 정기 쿠폰을 얻을 수 있다.")
     @Order(9)
     void _9() {
-        voucherService.registerMonthlyVoucher("dev12");
+        voucherService.registerMonthlyVoucher("dev123");
     }
 
     @Test
@@ -316,7 +321,7 @@ public class BDDTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<DeliveryResponse> deliveryResponsePage = deliveryService.findWaitingDelivery(
             pageRequest);
-        deliveryId = deliveryResponsePage.stream().findFirst().get().getId();
+        deliveryId = deliveryResponsePage.stream().findFirst().get().id();
     }
 
     @Test
@@ -333,7 +338,7 @@ public class BDDTest {
         deliveryService.acceptDelivery(deliveryId, riderId, 10, 10);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_REGISTRATION);
     }
 
@@ -351,7 +356,7 @@ public class BDDTest {
         deliveryService.pickUp(riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_PICKUP);
     }
 
@@ -359,10 +364,10 @@ public class BDDTest {
     @DisplayName("라이더는 배달 완료시 배달 상태를 변경할 수 있다.")
     @Order(23)
     void _23() {
-        deliveryService.finish(riderId);
+        deliveryService.finish(deliveryId,riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
     }
 
     @Test
@@ -413,7 +418,7 @@ public class BDDTest {
     @Order(29)
     void _29() {
         ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("정말정말 맛있습니다.", 5);
-        reviewService.createReview("dev12", orderId,
+        reviewService.createReview("dev123", orderId,
             reviewCreateRequest);
     }
 
@@ -421,6 +426,6 @@ public class BDDTest {
     @DisplayName("고객은 가게 리뷰를 조회할 수 있다.")
     @Order(30)
     void _30() {
-        List<ReviewFindResponse> result = reviewService.findUserReview("dev12");
+        List<ReviewFindResponse> result = reviewService.findUserReview("dev123");
     }
 }

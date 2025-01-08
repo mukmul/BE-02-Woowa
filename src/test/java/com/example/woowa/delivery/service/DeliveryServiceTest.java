@@ -107,7 +107,7 @@ class DeliveryServiceTest {
         delivery.pickUp(30);
         given(deliveryRepository.findById(any())).willReturn(Optional.of(delivery));
 
-        deliveryService.finish(1L);
+        deliveryService.finish(1L,1L);
 
         assertThat(delivery.getDeliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
     }

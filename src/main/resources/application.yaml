@@ -1,10 +1,12 @@
-
+jwt:
+  secret:
+    5HaKUQmd9zp/GzfY/2Fr2U5reyVRNSJ0rhF5J2TGwWk=
 spring:
   jpa:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
