@@ -136,7 +136,7 @@ public class BDDTest {
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
-        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
+        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev10", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
 
         roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
