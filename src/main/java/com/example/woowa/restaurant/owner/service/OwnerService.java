@@ -72,7 +72,9 @@ public class OwnerService {
     public void updateOwnerById(Long ownerId, OwnerUpdateRequest ownerUpdateRequest) {
         Owner owner = findOwnerEntityById(ownerId);
         ownerMapper.updateEntity(ownerUpdateRequest, owner);
-        owner.changePassword(passwordEncoder.encode(owner.getPassword()));
+//        owner.changePassword(passwordEncoder.encode(owner.getPassword()));
+
+        owner.changePassword(passwordEncoder.encode(ownerUpdateRequest.getPassword()));
 
         userService.syncUser(owner);
     }
