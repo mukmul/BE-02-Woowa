@@ -67,8 +67,14 @@ public class MenuGroupApiController {
     // 메뉴 그룹 삭제
     @DeleteMapping("/api/v1/menu-groups/{menuGroupId}")
     public ResponseEntity<Void> deleteMenuGroup(@PathVariable Long menuGroupId) {
-        menuGroupService.deleteMenuGroup(menuGroupId);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            menuGroupService.deleteMenuGroup(menuGroupId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(null);
+        }
     }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.woowa.restaurant.menugroup.service;
 
 import com.example.woowa.common.exception.ErrorMessage;
 import com.example.woowa.common.exception.NotFoundException;
+import com.example.woowa.restaurant.menu.repository.MenuRepository;
 import com.example.woowa.restaurant.menugroup.mapper.MenuGroupMapper;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupListResponse;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupResponse;
@@ -23,6 +24,7 @@ public class MenuGroupService {
     private final MenuGroupRepository menuGroupRepository;
     private final RestaurantService restaurantService;
     private final MenuGroupMapper mapper;
+    private final MenuRepository menuRepository;
 
     // menuGroupId 예외 처리
     public MenuGroup findMenuGroupEntityById(Long menuGroupId) {
@@ -61,6 +63,15 @@ public class MenuGroupService {
     @Transactional
     public void deleteMenuGroup(Long menuGroupId) {
         MenuGroup findMenuGroup = findMenuGroupEntityById(menuGroupId);
+
+        // 메뉴 그룹에 속한 메뉴가 있는지 확인
+        boolean hasMenus = menuRepository.existsByMenuGroup(findMenuGroup);
+        if (hasMenus) {
+            throw new IllegalStateException("해당 메뉴 그룹에 메뉴가 존재하여 삭제할 수 없습니다.");
+        }
+
+        // 메뉴가 없으면 삭제
         menuGroupRepository.delete(findMenuGroup);
     }
+
 }
