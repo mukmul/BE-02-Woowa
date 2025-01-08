@@ -1,34 +1,8 @@
-package com.example.woowa;
+package com.example.woowa.restaurant.advertisement;
 
 import com.example.woowa.admin.dto.AdminCreateRequest;
 import com.example.woowa.admin.service.AdminService;
 import com.example.woowa.common.exception.NotFoundException;
-import com.example.woowa.customer.customer.dto.CustomerAddressCreateRequest;
-import com.example.woowa.customer.customer.dto.CustomerCreateRequest;
-import com.example.woowa.customer.customer.dto.CustomerFindResponse;
-import com.example.woowa.customer.customer.dto.CustomerGradeCreateRequest;
-import com.example.woowa.customer.customer.service.CustomerGradeService;
-import com.example.woowa.customer.customer.service.CustomerService;
-import com.example.woowa.customer.voucher.dto.VoucherFindResponse;
-import com.example.woowa.customer.voucher.service.VoucherService;
-import com.example.woowa.delivery.dto.DeliveryResponse;
-import com.example.woowa.delivery.dto.RiderCreateRequest;
-import com.example.woowa.delivery.entity.AreaCode;
-import com.example.woowa.delivery.enums.DeliveryStatus;
-import com.example.woowa.delivery.repository.AreaCodeRepository;
-import com.example.woowa.delivery.service.DeliveryService;
-import com.example.woowa.delivery.service.RiderService;
-import com.example.woowa.order.order.dto.cart.CartSaveRequest;
-import com.example.woowa.order.order.dto.customer.OrderListCustomerRequest;
-import com.example.woowa.order.order.dto.customer.OrderSaveRequest;
-import com.example.woowa.order.order.dto.restaurant.OrderAcceptRequest;
-import com.example.woowa.order.order.dto.restaurant.OrderListRestaurantRequest;
-import com.example.woowa.order.order.dto.statistics.OrderStatisticsRequest;
-import com.example.woowa.order.order.enums.PaymentType;
-import com.example.woowa.order.order.service.OrderService;
-import com.example.woowa.order.review.dto.ReviewCreateRequest;
-import com.example.woowa.order.review.dto.ReviewFindResponse;
-import com.example.woowa.order.review.service.ReviewService;
 import com.example.woowa.restaurant.advertisement.dto.request.AdvertisementCreateRequest;
 import com.example.woowa.restaurant.advertisement.dto.request.AdvertisementUpdateRequest;
 import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementCreateResponse;
@@ -39,10 +13,6 @@ import com.example.woowa.restaurant.advertisement.service.AdvertisementService;
 import com.example.woowa.restaurant.category.dto.request.CategoryCreateRequest;
 import com.example.woowa.restaurant.category.dto.response.CategoryFindResponse;
 import com.example.woowa.restaurant.category.service.CategoryService;
-import com.example.woowa.restaurant.menu.dto.MenuSaveRequest;
-import com.example.woowa.restaurant.menu.service.MenuService;
-import com.example.woowa.restaurant.menugroup.dto.MenuGroupSaveRequest;
-import com.example.woowa.restaurant.menugroup.service.MenuGroupService;
 import com.example.woowa.restaurant.owner.dto.request.OwnerCreateRequest;
 import com.example.woowa.restaurant.owner.dto.response.OwnerFindResponse;
 import com.example.woowa.restaurant.owner.service.OwnerService;
@@ -58,15 +28,9 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
-public class BDDTest2 {
+public class BDDTestAdvertisement {
 
     @Autowired
     AdminService adminService;
@@ -90,62 +54,26 @@ public class BDDTest2 {
     OwnerService ownerService;
 
     @Autowired
-    CustomerService customerService;
-
-    @Autowired
-    CustomerGradeService customerGradeService;
-
-    @Autowired
-    RiderService riderService;
-
-    @Autowired
-    VoucherService voucherService;
-
-    @Autowired
-    OrderService orderService;
-
-    @Autowired
     RestaurantService restaurantService;
 
-    @Autowired
-    DeliveryService deliveryService;
 
     @Autowired
     RoleRepository roleRepository;
 
-    @Autowired
-    AreaCodeRepository areaCodeRepository;
-
-    @Autowired
-    MenuService menuService;
-
-    @Autowired
-    MenuGroupService menuGroupService;
-
-    @Autowired
-    ReviewService reviewService;
-
     RestaurantCreateResponse restaurant;
     AdvertisementCreateResponse advertisement;
-    Long menuGroupId;
-    Long menuId;
-    CustomerFindResponse customer;
-    Long orderId;
-    Long areaCodeId;
-    Long riderId;
-    Long deliveryId;
 
     @Test
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
-        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("admin11111", "admin11111!");
-        adminService.createAdmin(adminCreateRequest);
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_ADMIN.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_RIDER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.getRoleName()));
 
-        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_ADMIN.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_RIDER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
+        AdminCreateRequest adminCreateRequest = new AdminCreateRequest("admin22222", "admin22222!");
+        adminService.createAdmin(adminCreateRequest);
     }
 
     @Test
@@ -153,9 +81,7 @@ public class BDDTest2 {
     @Order(1)
     void _1() {
         CategoryCreateRequest western = new CategoryCreateRequest("양식");
-        CategoryCreateRequest japanese = new CategoryCreateRequest("일식");
         categoryService.createCategory(western);
-        categoryService.createCategory(japanese);
     }
 
 
@@ -175,7 +101,7 @@ public class BDDTest2 {
         List<OwnerFindResponse> owners = ownerService.findOwners();
         List<Long> categoryIds = categoryService.findCategories().stream()
             .map(CategoryFindResponse::getId).collect(Collectors.toList());
-        RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest("test 가게 2",
+        RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest("test_restaurant_2",
             "760-15-00993", LocalTime.now(), LocalTime.now().plusHours(5), true, "010-1111-1234",
             "테스트용 가게", "서울특별시 동작구 상도동", categoryIds);
         restaurant = restaurantService.createRestaurantByOwnerId(
@@ -251,7 +177,7 @@ public class BDDTest2 {
         advertisementService.includeRestaurantInAdvertisement(advertisementId, restaurantId);
 
         AdvertisementFindResponse advertisementWithRestaurant = advertisementService.findAdvertisementById(advertisementId);
-        assertThat(advertisementWithRestaurant.getCurrentSize()).isGreaterThan(0);  // 광고에 가게가 추가된 것을 확인
+        assertThat(advertisementWithRestaurant.getCurrentSize()).isEqualTo(1);  // 광고에 가게가 추가된 것을 확인
     }
 
     @Test
@@ -282,7 +208,6 @@ public class BDDTest2 {
     @Order(10)
     void _10() {
         // Given: 가게와 광고 생성 및 등록
-
         RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest(
                 "Test Restaurant4", "760-15-00993",
                 LocalTime.of(9, 0), LocalTime.of(22, 0), true,
