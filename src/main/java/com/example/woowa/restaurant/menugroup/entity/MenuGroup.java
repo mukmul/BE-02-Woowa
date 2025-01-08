@@ -22,16 +22,12 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Table(name = "menu_groups")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("deleted_at IS NULL")
-@SQLDelete(sql="UPDATE menu_groups SET deleted_at = NOW() WHERE id = ?")
 public class MenuGroup extends BaseTimeEntity {
 
     @Id
@@ -52,14 +48,11 @@ public class MenuGroup extends BaseTimeEntity {
     @Column(length = 500)
     private String description;
 
-    @Column(nullable = true)
-    private LocalDateTime deletedAt;
 
     private MenuGroup(Restaurant restaurant, String title, String description) {
         this.restaurant = restaurant;
         this.title = title;
         this.description = description;
-        this.deletedAt = null;
     }
 
     public static MenuGroup createMenuGroup(Restaurant restaurant, String title,
