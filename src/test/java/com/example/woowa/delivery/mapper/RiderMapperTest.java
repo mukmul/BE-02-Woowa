@@ -6,7 +6,9 @@ import com.example.woowa.TestInitUtil;
 import com.example.woowa.delivery.dto.RiderCreateRequest;
 import com.example.woowa.delivery.dto.RiderResponse;
 import com.example.woowa.delivery.entity.Rider;
+
 import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -19,7 +21,7 @@ class RiderMapperTest {
     @DisplayName("MemberCreateRequest로 Rider로 변환할 수 있다.")
     void toEntity() {
         RiderCreateRequest riderCreateRequest = new RiderCreateRequest("id", "password", "name",
-            "폰");
+                "폰");
         Rider rider = riderMapper.toRider(riderCreateRequest);
 
         assertThat(rider.getName()).isEqualTo(riderCreateRequest.getName());
@@ -46,7 +48,7 @@ class RiderMapperTest {
 
         for (int i = 0; i < size; i++) {
             assertThat(riderResponse.getRiderAreaList().get(i)).isEqualTo(
-                rider.getRiderAreaCodeList().get(i).getAreaCode().getDefaultAddress());
+                    rider.getRiderAreaCodeList().get(i).getAreaCode().getDefaultAddress());
         }
     }
 }

@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AdminRepository extends JpaRepository<Admin, Long> {
   // 로그인 아이디로 관리자를 조회
   Optional<Admin> findByLoginId(String loginId);
+  Boolean existsAdminByLoginId(String loginId);
 }

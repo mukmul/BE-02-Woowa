@@ -14,19 +14,19 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AdminServiceTest {
   @Autowired
   private AdminService adminService;
 
-//  @MockBean
-// spring 3.4.0부터 사용중단됨 일단 @Mock으로 대체
-  @Mock
+  @MockitoBean
   private AdminRepository adminRepository;
 
   @Test

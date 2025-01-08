@@ -17,9 +17,11 @@ import com.example.woowa.restaurant.menugroup.mapper.MenuGroupMapperImpl;
 import com.example.woowa.restaurant.menugroup.repository.MenuGroupRepository;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.service.RestaurantService;
+
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +50,7 @@ class MenuGroupServiceTest {
     void init() {
         mapper = new MenuGroupMapperImpl();
         menuGroupService = new MenuGroupService(menuGroupRepository, restaurantService,
-            mapper);
+                mapper);
 
         String name = "김밥나라";
         String businessNumber = "000-00-00000";
@@ -59,8 +61,8 @@ class MenuGroupServiceTest {
         String address = "서울 특별시 강남구";
 
         restaurant = Restaurant.createRestaurant(name, businessNumber, openingTime, closingTime,
-            false, phoneNumber,
-            description, address);
+                false, phoneNumber,
+                description, address);
 
         menuGroup = MenuGroup.createMenuGroup(restaurant, "김밥류", "국내산 쌀 사용");
     }
@@ -72,7 +74,7 @@ class MenuGroupServiceTest {
         Long restaurantId = 1L;
         given(restaurantService.findRestaurantEntityById(restaurantId)).willReturn(restaurant);
         given(menuGroupRepository.findByRestaurant(restaurant)).willReturn(
-            Collections.singletonList(menuGroup));
+                Collections.singletonList(menuGroup));
 
         // When
         MenuGroupListResponse response = menuGroupService.findMenuGroupByRestaurant(restaurantId);
@@ -80,7 +82,7 @@ class MenuGroupServiceTest {
         // Then
         assertThat(response.getMenuGroups().size()).isEqualTo(1);
         assertThat(response.getMenuGroups()).usingRecursiveFieldByFieldElementComparator()
-            .isEqualTo(Collections.singletonList(mapper.toMenuGroupResponse(menuGroup)));
+                .isEqualTo(Collections.singletonList(mapper.toMenuGroupResponse(menuGroup)));
     }
 
     @Test
@@ -94,7 +96,7 @@ class MenuGroupServiceTest {
 
         // When
         menuGroupService.addMenuGroup(restaurantId, new MenuGroupSaveRequest(menuGroup.getTitle(),
-            menuGroup.getDescription()));
+                menuGroup.getDescription()));
 
         // Then
         then(menuGroupRepository).should().save(any());
@@ -129,7 +131,7 @@ class MenuGroupServiceTest {
 
         // Then
         assertThat(response).usingRecursiveComparison()
-            .isEqualTo(mapper.toMenuGroupResponse(menuGroup));
+                .isEqualTo(mapper.toMenuGroupResponse(menuGroup));
     }
 
     @Test
@@ -155,7 +157,7 @@ class MenuGroupServiceTest {
 
         // When
         menuGroupService.updateMenuGroup(menuGroupId,
-            new MenuGroupUpdateRequest(newTitle, newDescription));
+                new MenuGroupUpdateRequest(newTitle, newDescription));
 
         // Then
         MenuGroup findMenuGroup = menuGroupService.findMenuGroupEntityById(menuGroupId);
