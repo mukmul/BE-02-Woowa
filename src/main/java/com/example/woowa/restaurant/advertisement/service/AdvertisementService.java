@@ -37,15 +37,14 @@ public class AdvertisementService {
         AdvertisementValidator.validateRate(advertisementCreateRequest.getRate());
         AdvertisementValidator.validateLimitSize(advertisementCreateRequest.getLimitSize());
 
-        Optional<Advertisement> existingAdvertisement = advertisementRepository.findDeletedAdvertisementByTitle(advertisementCreateRequest.getTitle());
+        Optional<Advertisement> existingAdvertisement = advertisementRepository.findByTitle(advertisementCreateRequest.getTitle());
 
         if (existingAdvertisement.isPresent()) {
-            Advertisement advertisement = existingAdvertisement.get();
-            advertisement.restore();
-            return advertisementMapper.toCreateResponse(advertisement);
+            throw new IllegalStateException("이미 동일한 제목의 광고가 존재합니다.");
         }
-        Advertisement advertisement = advertisementRepository.save(
-            advertisementMapper.toEntity(advertisementCreateRequest));
+
+        Advertisement advertisement = advertisementMapper.toEntity(advertisementCreateRequest);
+        advertisementRepository.save(advertisement);
         return advertisementMapper.toCreateResponse(advertisement);
     }
 
@@ -78,26 +77,17 @@ public class AdvertisementService {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         Restaurant restaurant = findRestaurantEntityById(restaurantId);
 
-        Optional<RestaurantAdvertisement> existingRelation =
-                Optional.ofNullable(restaurantAdvertisementRepository.findByAdvertisementAndRestaurant(advertisement, restaurant));
+        boolean exists = restaurantAdvertisementRepository.existsByAdvertisementAndRestaurant(advertisement, restaurant);
 
-        if (existingRelation.isPresent()) {
-            RestaurantAdvertisement restaurantAdvertisement = existingRelation.get();
-            if (restaurantAdvertisement.getDeletedAt() != null) {
-                // 논리 삭제된 경우 복구 처리
-                restaurantAdvertisement.restore();
-                advertisement.incrementCurrentSize();  // 복구 시 currentSize 증가
-            } else {
-                throw new IllegalStateException(
-                        String.format("광고 ID %d와 레스토랑 ID %d의 관계가 이미 존재합니다.", advertisementId, restaurantId));
-            }
-        } else {
-            // 새로운 관계 추가
-            AdvertisementValidator.isAvailable(advertisement.getCurrentSize(), advertisement.getLimitSize());
-            RestaurantAdvertisement newRelation = new RestaurantAdvertisement(restaurant, advertisement);
-            advertisement.getRestaurantAdvertisements().add(newRelation);
-            advertisement.incrementCurrentSize();  // 새로운 가게 등록 시 currentSize 증가
+        if (exists) {
+            throw new IllegalStateException(
+                    String.format("광고 ID %d와 레스토랑 ID %d의 관계가 이미 존재합니다.", advertisementId, restaurantId));
         }
+
+        AdvertisementValidator.isAvailable(advertisement.getCurrentSize(), advertisement.getLimitSize());
+        RestaurantAdvertisement newRelation = new RestaurantAdvertisement(restaurant, advertisement);
+        advertisement.getRestaurantAdvertisements().add(newRelation);
+        advertisement.incrementCurrentSize();
 
         return advertisementMapper.toFindResponse(advertisement);
     }
@@ -107,16 +97,14 @@ public class AdvertisementService {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         AdvertisementValidator.validateCurrentSizeNotBelowZero(advertisement.getCurrentSize());
 
-        Restaurant restaurant = findRestaurantEntityById(restaurantId);
         RestaurantAdvertisement restaurantAdvertisement = restaurantAdvertisementRepository.findById(
                         new RestaurantAdvertisementId(restaurantId, advertisementId))
                 .orElseThrow(() -> new NotFoundException(
                         String.format("레스토랑 ID %d는 광고 ID %d에 포함되어 있지 않습니다.", restaurantId, advertisementId)));
 
         advertisement.getRestaurantAdvertisements().remove(restaurantAdvertisement);
-        restaurant.getRestaurantAdvertisements().remove(restaurantAdvertisement);
-
         advertisement.decrementCurrentSize();
+
         restaurantAdvertisementRepository.delete(restaurantAdvertisement);
     }
 

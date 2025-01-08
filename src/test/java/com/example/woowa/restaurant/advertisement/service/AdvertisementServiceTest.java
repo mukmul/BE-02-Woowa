@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.woowa.config.JpaAuditingConfiguration;
 import com.example.woowa.restaurant.advertisement.dto.request.AdvertisementCreateRequest;
 import com.example.woowa.restaurant.advertisement.dto.request.AdvertisementUpdateRequest;
 import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementCreateResponse;
@@ -33,8 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 @DataJpaTest
+@Import(JpaAuditingConfiguration.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AdvertisementServiceTest {
 

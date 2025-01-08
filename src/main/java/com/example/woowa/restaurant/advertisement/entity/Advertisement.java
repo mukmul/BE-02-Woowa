@@ -23,14 +23,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "advertisement")
 @Entity
-@SQLRestriction("deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE advertisement SET deleted_at = NOW() WHERE id = ?")
 public class Advertisement extends BaseTimeEntity {
 
     @Id
@@ -77,7 +74,6 @@ public class Advertisement extends BaseTimeEntity {
         this.description = description;
         this.limitSize = limitSize;
         this.currentSize = 0;
-        this.deletedAt = null;
     }
 
     public void changeTitle(String title) {
@@ -106,9 +102,5 @@ public class Advertisement extends BaseTimeEntity {
 
     public void decrementCurrentSize() {
         this.currentSize--;
-    }
-
-    public void restore() {
-        this.deletedAt = null;
     }
 }
