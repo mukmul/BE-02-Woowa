@@ -34,19 +34,12 @@ public class OwnerService {
         if (isExist) {
             throw new RuntimeException("이미 존재하는 아이디입니다.");
         }
-        // loginId 유효성 체크
 
         Owner owner = ownerMapper.toEntity(ownerCreateRequest);
         owner.changePassword(passwordEncoder.encode(owner.getPassword()));
         owner = ownerRepository.save(owner);
 
         userService.createUser(owner, UserRole.ROLE_OWNER);
-
-//        Role ownerRole = roleService.findRole(UserRole.ROLE_OWNER);
-
-//        User user = userMapper.toUser(owner, ownerRole);
-//        User user = new User(owner.getLoginId(), owner.getPassword(), owner.getName(),
-//                owner.getPhoneNumber(), ownerRole);
 
         return ownerMapper.toCreateResponse(owner);
     }
@@ -71,13 +64,16 @@ public class OwnerService {
     @Transactional
     public void updateOwnerById(Long ownerId, OwnerUpdateRequest ownerUpdateRequest) {
         Owner owner = findOwnerEntityById(ownerId);
-        ownerMapper.updateEntity(ownerUpdateRequest, owner);
-//        owner.changePassword(passwordEncoder.encode(owner.getPassword()));
 
-        owner.changePassword(passwordEncoder.encode(ownerUpdateRequest.getPassword()));
+        ownerMapper.updateEntity(ownerUpdateRequest, owner);
+
+        if (ownerUpdateRequest.getPassword() != null && !ownerUpdateRequest.getPassword().isEmpty()) {
+            owner.changePassword(passwordEncoder.encode(ownerUpdateRequest.getPassword()));
+        }
 
         userService.syncUser(owner);
     }
+
 
     public Owner findOwnerEntityById(Long ownerId) {
         return ownerRepository.findById(ownerId).

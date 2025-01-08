@@ -21,6 +21,7 @@ public interface OwnerMapper {
     default void updateEntity(OwnerUpdateRequest ownerUpdateRequest, @MappingTarget Owner owner) {
         owner.changeName(ownerUpdateRequest.getName());
         owner.changePhoneNumber(ownerUpdateRequest.getPhoneNumber());
+        owner.changePassword(ownerUpdateRequest.getPassword());
     }
 
 }
