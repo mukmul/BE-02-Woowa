@@ -251,7 +251,7 @@ class MenuGroupApiControllerTest {
 
     @Test
     @DisplayName("메뉴 그룹 하단에 메뉴가 존재해서 409 응답이 발생한다.")
-    void deleteMenuGroupWithMenusTest() throws Exception {
+    void deleteMenuGroupWithMenusConflictTest() throws Exception {
         long menuGroupId = 1L;
 
         doThrow(new IllegalStateException("해당 메뉴 그룹에 메뉴가 존재하여 삭제할 수 없습니다."))
