@@ -60,9 +60,9 @@ public class SecurityConfig {
                                         "/swagger-ui/**", "/swagger-resources/**",
                                         "/v3/api-docs/**", "/webjars/**",
                                         "/api/v1/customers", "/api/v1/rider",
-                                        "/api/v1/owner", "/api/v1/admins").permitAll()
+                                        "/api/v1/owner", "/api/v1/admins", "/api/v1/areaCode").permitAll()
                                 .requestMatchers("/baemin/v1/owners/**")
-                                .hasAnyAuthority(UserRole.ROLE_OWNER.toString())
+                                .hasAnyAuthority(UserRole.ROLE_OWNER.getRoleName())
                                 .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));

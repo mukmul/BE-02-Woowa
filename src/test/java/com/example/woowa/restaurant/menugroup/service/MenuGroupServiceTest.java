@@ -8,11 +8,13 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import com.example.woowa.common.exception.NotFoundException;
+import com.example.woowa.restaurant.menu.repository.MenuRepository;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupListResponse;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupResponse;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupSaveRequest;
 import com.example.woowa.restaurant.menugroup.dto.MenuGroupUpdateRequest;
 import com.example.woowa.restaurant.menugroup.entity.MenuGroup;
+import com.example.woowa.restaurant.menugroup.mapper.MenuGroupMapper;
 import com.example.woowa.restaurant.menugroup.mapper.MenuGroupMapperImpl;
 import com.example.woowa.restaurant.menugroup.repository.MenuGroupRepository;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
@@ -36,6 +38,9 @@ class MenuGroupServiceTest {
     MenuGroupRepository menuGroupRepository;
 
     @Mock
+    MenuRepository menuRepository;
+
+    @Mock
     RestaurantService restaurantService;
 
     MenuGroupService menuGroupService;
@@ -50,7 +55,7 @@ class MenuGroupServiceTest {
     void init() {
         mapper = new MenuGroupMapperImpl();
         menuGroupService = new MenuGroupService(menuGroupRepository, restaurantService,
-                mapper);
+                mapper, menuRepository);
 
         String name = "김밥나라";
         String businessNumber = "000-00-00000";
