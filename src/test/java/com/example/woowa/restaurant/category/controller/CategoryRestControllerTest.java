@@ -182,7 +182,7 @@ class CategoryRestControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(updateRequest))
                     .with(csrf().asHeader()))
-            .andExpect(status().isNoContent())
+            .andExpect(status().isOk())
             .andDo(document("category-update",
                 pathParameters(
                   parameterWithName("categoryId").description("저장된 카테고리 아이디")
@@ -218,7 +218,7 @@ class CategoryRestControllerTest {
                 )));
 
         ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(categoryService, times(1)).deleteCategory(idCaptor.capture());
+        verify(categoryService, times(1)).deleteCategoryById(idCaptor.capture());
 
         assertThat(idCaptor.getValue()).isEqualTo(mockSavedEntityId);
     }

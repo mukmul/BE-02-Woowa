@@ -30,6 +30,7 @@ public class RestaurantRestController {
 
     private final RestaurantService restaurantService;
 
+    // 가게 생성
     @PostMapping(value = "owners/{ownerId}/restaurants", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantCreateResponse> createRestaurantByOwnerId(final @PathVariable Long ownerId,
         final @Valid @RequestBody RestaurantCreateRequest restaurantCreateRequest) {
@@ -38,12 +39,17 @@ public class RestaurantRestController {
         return new ResponseEntity<>(newRestaurant, HttpStatus.CREATED);
     }
 
+    // 사장님 아이디로 가게 전체 조회
     @GetMapping(value = "owners/{ownerId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByOwnerId(final @PathVariable Long ownerId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByOwnerId(ownerId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 변경
     @PutMapping(value = "owners/{ownerId}/restaurants/{restaurantId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateRestaurantByOwnerIdAndRestaurantId(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
         final @Valid @RequestBody RestaurantUpdateRequest restaurantUpdateRequest) {
@@ -51,6 +57,7 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 가게 삭제 (사장님 아이디 + 레스토랑 아이디)
     @DeleteMapping(value = "owners/{ownerId}/restaurants/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteRestaurantByOwnerIdAndRestaurantId(final @PathVariable Long ownerId,
         final @PathVariable Long restaurantId) {
@@ -58,57 +65,88 @@ public class RestaurantRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 광고 아이디로 가게 전체 조회
     @GetMapping(value = "advertisements/{advertisementId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByAdvertisementId(final @PathVariable Long advertisementId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByAdvertisementId(advertisementId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 카테고리 아이디로 가게 전체 조회
     @GetMapping(value = "categories/{categoryId}/restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurantsByCategoryId(final @PathVariable Long categoryId) {
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurantsByCategoryId(categoryId);
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 전체 조회
+    // areaCodeId == null -> 전체 가게 목록 조회
+    // areaCodeId != null -> 특정 지역 가게 조회
     @GetMapping(value = "restaurants", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<RestaurantFindResponse>> findAllRestaurants(@RequestParam(required = false) Long areaCodeId) {
         if (Objects.nonNull(areaCodeId)) {
             return ResponseEntity.ok(restaurantService.findRestaurantByAreaCode(areaCodeId));
         }
         List<RestaurantFindResponse> restaurants = restaurantService.findRestaurants();
+        if (restaurants.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(restaurants, HttpStatus.OK);
     }
 
+    // 가게 단건 조회 (가게 하나만 조회)
     @GetMapping(value = "restaurants/{restaurantId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RestaurantFindResponse> findRestaurantById(final @PathVariable Long restaurantId) {
         RestaurantFindResponse restaurant = restaurantService.findRestaurantById(restaurantId);
+
         return new ResponseEntity<>(restaurant, HttpStatus.OK);
     }
 
+    // 가게 문 열기/닫기
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}")
-    public ResponseEntity<Void> changeRestaurantState(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam(value = "isOpen") Boolean isOpen) {
-        if (isOpen) {
-            restaurantService.openRestaurant(ownerId, restaurantId);
+    public ResponseEntity<String> changeRestaurantState(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam Boolean isOpen) {
+
+        try {
+            restaurantService.changeRestaurantState(ownerId, restaurantId, isOpen);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
-        else {
-            restaurantService.closeRestaurant(ownerId, restaurantId);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        return ResponseEntity.ok("가게 상태가 성공적으로 변경되었습니다.");
     }
 
+
+    // 가게에 카테고리 추가
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/add")
-    public ResponseEntity<Void> addCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam String categoryId) {
+    public ResponseEntity<Void> addCategory(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam String categoryId) {
         restaurantService.addCategory(ownerId, restaurantId, Long.parseLong(categoryId));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 가게에 카테고리 삭제
     @PatchMapping(value = "owners/{ownerId}/restaurants/{restaurantId}/categories/remove")
-    public ResponseEntity<Void> removeCategory(final @PathVariable Long ownerId, final @PathVariable Long restaurantId,
-        final @RequestParam String cateogoryId) {
-        restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(cateogoryId));
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    public ResponseEntity<String> removeCategory(
+            @PathVariable Long ownerId,
+            @PathVariable Long restaurantId,
+            @RequestParam String categoryId) {
+        boolean removed = restaurantService.removeCategory(ownerId, restaurantId, Long.parseLong(categoryId));
+        if (!removed) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("이 가게는 해당 카테고리에 속하지 않습니다.");
+        }
 
+        return ResponseEntity.ok("카테고리가 성공적으로 삭제되었습니다.");
+    }
 }

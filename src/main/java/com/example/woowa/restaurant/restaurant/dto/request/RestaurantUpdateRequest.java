@@ -1,5 +1,6 @@
 package com.example.woowa.restaurant.restaurant.dto.request;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

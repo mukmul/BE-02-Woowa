@@ -216,7 +216,7 @@ class AdvertisementRestControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(objectMapper.writeValueAsString(request))
                     .with(csrf().asHeader()))
-            .andExpect(status().isNoContent())
+            .andExpect(status().isOk())
             .andDo(print())
             .andDo(document("advertisements-update",
                 pathParameters(
@@ -273,7 +273,7 @@ class AdvertisementRestControllerTest {
         mockMvc.perform(
                 post(BASE_URL_TEMPLATE.concat("advertisements/{advertisementId}/restaurants/{restaurantId}"), mockedAdvertisementId, mockedRestaurantId)
                     .with(csrf().asHeader()))
-            .andExpect(status().isNoContent())
+            .andExpect(status().isOk())
             .andDo(print())
             .andDo(document("advertisements-include-restaurant",
                 pathParameters(

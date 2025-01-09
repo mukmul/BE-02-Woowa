@@ -6,8 +6,10 @@ import com.example.woowa.restaurant.advertisement.converter.UnitTypeConverter;
 import com.example.woowa.restaurant.advertisement.enums.RateType;
 import com.example.woowa.restaurant.advertisement.enums.UnitType;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -33,9 +35,10 @@ public class Advertisement extends BaseTimeEntity {
     private Long id;
 
     @OneToMany(mappedBy = "advertisement", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RestaurantAdvertisement> restaurantAdvertisements = new ArrayList<>();
+    private Set<RestaurantAdvertisement> restaurantAdvertisements = new HashSet<>();
 
-    @Column(unique = true, nullable = false, length = 10)
+
+    @Column(unique = true, nullable = false, length = 30)
     private String title;
 
     @Convert(converter = UnitTypeConverter.class)
@@ -58,6 +61,9 @@ public class Advertisement extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer currentSize;
 
+    @Column(nullable = true)
+    private LocalDateTime deletedAt;
+
     @Builder
     public Advertisement(String title, UnitType unitType, RateType rateType, Integer rate,
         String description, Integer limitSize) {
@@ -68,15 +74,6 @@ public class Advertisement extends BaseTimeEntity {
         this.description = description;
         this.limitSize = limitSize;
         this.currentSize = 0;
-    }
-
-    public void addRestaurantAdvertisement(RestaurantAdvertisement restaurantAdvertisement) {
-        restaurantAdvertisement.setAdvertisement(this);
-    }
-
-    public void removeRestaurantAdvertisement(RestaurantAdvertisement restaurantAdvertisement) {
-        this.getRestaurantAdvertisements().remove(restaurantAdvertisement);
-        this.decrementCurrentSize();
     }
 
     public void changeTitle(String title) {
@@ -106,9 +103,4 @@ public class Advertisement extends BaseTimeEntity {
     public void decrementCurrentSize() {
         this.currentSize--;
     }
-
-    public static boolean isAvailable(Advertisement advertisement) {
-        return advertisement.currentSize < advertisement.limitSize;
-    }
-
 }

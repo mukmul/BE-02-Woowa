@@ -11,14 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/rider")
@@ -33,6 +26,12 @@ public class RiderController {
         @Valid final RiderCreateRequest riderCreateRequest) {
         long id = riderService.save(riderCreateRequest);
         return ResponseEntity.created(URI.create("/api/v1/rider/" + id)).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRider(@PathVariable Long id) {
+        riderService.deleteRider(id);
+        return ResponseEntity.ok("Rider successfully deleted.");
     }
 
     @GetMapping
@@ -68,10 +67,16 @@ public class RiderController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{riderId}/{areaId}")
+    @PostMapping("add/{riderId}/{areaId}")
     public ResponseEntity<Void> addArea(@PathVariable final Long areaId,
         @PathVariable final Long riderId) {
         riderService.addRiderAreaCode(riderId, areaId);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("remove/{riderId}/{areaId}")
+    public ResponseEntity<Void> removeArea(@PathVariable final Long areaId,
+                                        @PathVariable final Long riderId) {
+        riderService.removeRiderAreaCode(riderId, areaId);
         return ResponseEntity.noContent().build();
     }
 }

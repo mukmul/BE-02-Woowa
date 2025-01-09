@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.woowa.order.review.enums.ReviewStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -128,7 +129,7 @@ public class Customer extends BaseLoginEntity {
     }
 
     public void removeReview(Review review) {
-        this.reviews.remove(review);
+        review.setReviewStatus(ReviewStatus.DELETED);
     }
 
     public List<CustomerAddress> getCustomerAddresses() {

@@ -13,4 +13,5 @@ spring:
     include: db
 
 jwt:
-  secret: bXlTdXBlclNlY3JldEtleVRoYXROZWVkc1RvQmVBdExlYXN0MzJCeXRlc0xvbmdPck1vcmVGb3JIUzI1NjY=
+  secret:
+    5HaKUQmd9zp/GzfY/2Fr2U5reyVRNSJ0rhF5J2TGwWk=

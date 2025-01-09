@@ -1,20 +1,21 @@
 package com.example.woowa.delivery.dto;
 
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import jakarta.validation.constraints.Size;
 
-@AllArgsConstructor
-@Getter
-public class DeliveryCreateRequest {
 
-    private final String restaurantAddress;
 
-    private final String customerAddress;
+public record DeliveryCreateRequest (
+
+    @Size(min = 1, max = 255)
+    String restaurantAddress,
+
+    @Size(min = 1, max = 255)
+    String customerAddress,
 
     @Positive(message = "배달료는 양수 입니다.")
-    private final int deliveryFee;
+    int deliveryFee,
 
     @Positive(message = "orderId는 양수 입니다.")
-    private Long orderId;
-}
+    Long orderId
+){}

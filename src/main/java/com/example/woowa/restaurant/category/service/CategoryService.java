@@ -25,6 +25,9 @@ public class CategoryService {
 
     @Transactional
     public CategoryCreateResponse createCategory(CategoryCreateRequest categoryCreateRequest) {
+        if (categoryRepository.existsByName(categoryCreateRequest.getName())) {
+            throw new IllegalArgumentException("이미 존재하는 카테고리 이름입니다.");
+        }
         Category category = categoryRepository
             .save(categoryMapper.toEntity(categoryCreateRequest));
         return categoryMapper.toCreateResponseDto(category);
@@ -38,23 +41,31 @@ public class CategoryService {
 
     public CategoryFindResponse findCategoryById(Long categoryId) {
         return categoryMapper.toFindResponseDto(categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 카테고리 아이디입니다.")));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 카테고리 ID %d 입니다.", categoryId))));
     }
 
     @Transactional
-    public void updateCategoryById(Long categoryId, CategoryUpdateRequest categoryUpdateRequest) {
+    public CategoryFindResponse updateCategoryById(Long categoryId, CategoryUpdateRequest categoryUpdateRequest) {
         Category category = findCategoryEntityById(categoryId);
-        categoryMapper.updateEntity(categoryUpdateRequest, category);
+        // 이름 중복 방지
+        if (!category.getName().equals(categoryUpdateRequest.getName()) &&
+                categoryRepository.existsByName(categoryUpdateRequest.getName())) {
+            throw new IllegalArgumentException("해당 이름으로는 변경할 수 없습니다. 이미 존재하는 카테고리 이름입니다.");
+        }
+        category.changeName(categoryUpdateRequest.getName());
+        return categoryMapper.toFindResponseDto(category);
     }
 
     @Transactional
-    public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+    public void deleteCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 카테고리 ID %d 입니다.", categoryId)));
+        categoryRepository.delete(category);
     }
 
     public Category findCategoryEntityById(Long categoryId) {
         return categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 카테고리 아이디입니다."));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 카테고리 ID %d 입니다.", categoryId)));
     }
 
 }

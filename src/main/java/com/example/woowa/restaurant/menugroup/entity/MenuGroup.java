@@ -4,6 +4,7 @@ import com.example.woowa.common.base.BaseTimeEntity;
 import com.example.woowa.restaurant.menu.entity.Menu;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
@@ -37,14 +38,16 @@ public class MenuGroup extends BaseTimeEntity {
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
+    // 메뉴 그룹이 삭제되면 그 그룹 안에 있던 메뉴들도 같이 삭제된다.
     @OneToMany(mappedBy = "menuGroup", cascade = CascadeType.REMOVE)
     private List<Menu> menus = new ArrayList<>();
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 45)
     private String title;
 
     @Column(length = 500)
     private String description;
+
 
     private MenuGroup(Restaurant restaurant, String title, String description) {
         this.restaurant = restaurant;
@@ -55,6 +58,7 @@ public class MenuGroup extends BaseTimeEntity {
     public static MenuGroup createMenuGroup(Restaurant restaurant, String title,
             String description) {
         MenuGroup menuGroup = new MenuGroup(restaurant, title, getStoreDescription(description));
+        // 두 엔티티 menuGroup 동기화
         restaurant.getMenuGroups().add(menuGroup);
         return menuGroup;
     }

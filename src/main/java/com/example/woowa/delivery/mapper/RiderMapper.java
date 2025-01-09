@@ -13,6 +13,7 @@ public interface RiderMapper {
     Rider toRider(final RiderCreateRequest riderCreateRequest);
 
     @Mapping(target = "riderAreaList", expression = "java(rider.getRiderAreaCodeList().stream().map(data -> data.getAreaCode().getDefaultAddress()).collect(java.util.stream.Collectors.toList()))")
+    @Mapping(target = "isDelivery", source = "rider.isDelivery")
     RiderResponse toResponse(final Rider rider);
 
 }

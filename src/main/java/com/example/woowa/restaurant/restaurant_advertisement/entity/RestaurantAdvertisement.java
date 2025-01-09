@@ -3,16 +3,12 @@ package com.example.woowa.restaurant.restaurant_advertisement.entity;
 import com.example.woowa.restaurant.advertisement.entity.Advertisement;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import java.util.Objects;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,10 +27,8 @@ public class RestaurantAdvertisement {
     @JoinColumn(name = "advertisement_id", nullable = false)
     private Advertisement advertisement;
 
-    public RestaurantAdvertisement(Restaurant restaurant, Advertisement advertisement) {
-        if (!Advertisement.isAvailable(advertisement))
-            throw new RuntimeException("해당 광고에는 더이상 가게를 포함할 수 없습니다.");
 
+    public RestaurantAdvertisement(Restaurant restaurant, Advertisement advertisement) {
         setRestaurant(restaurant);
         setAdvertisement(advertisement);
     }
@@ -53,7 +47,6 @@ public class RestaurantAdvertisement {
         }
         this.advertisement = advertisement;
         this.advertisement.getRestaurantAdvertisements().add(this);
-        this.advertisement.incrementCurrentSize();
     }
 
 }

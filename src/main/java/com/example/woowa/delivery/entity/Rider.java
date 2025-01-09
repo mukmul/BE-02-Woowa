@@ -4,14 +4,7 @@ import com.example.woowa.common.base.BaseLoginEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,16 +16,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Rider extends BaseLoginEntity {
 
-    @OneToMany
+    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Delivery> deliveryList = new ArrayList<>();
-    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "rider", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private final List<RiderAreaCode> riderAreaCodeList = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean isDelivery;
+    private boolean isDelivery;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isDeleted;
+
+    public void delete() {
+        this.isDeleted = true;
+        for( Delivery delivery:this.deliveryList)
+            delivery.delete();
+    }
     @Builder
     private Rider(String loginId, String loginPassword, String name, String phoneNumber) {
         super(loginId, loginPassword, name, phoneNumber);
@@ -43,6 +44,9 @@ public class Rider extends BaseLoginEntity {
         changePhoneNumber(phoneNumber);
     }
 
+    public boolean getIsDelivery() {
+        return isDelivery;
+    }
     public static Rider createRider(String loginId, String loginPassword, String name,
         String phoneNumber) {
         return new Rider(loginId, loginPassword, name, phoneNumber);
@@ -56,11 +60,12 @@ public class Rider extends BaseLoginEntity {
         this.deliveryList.add(delivery);
     }
 
-
-    public void removeRiderAreaCode(RiderAreaCode riderAreaCode) {
-        if (riderAreaCodeList.contains(riderAreaCode)) {
+    public void removeDelivery(Delivery delivery) {
+        this.deliveryList.remove(delivery);
+    }
+    public void removeRiderAreaCode(RiderAreaCode riderAreaCode)
+    {
             this.riderAreaCodeList.remove(riderAreaCode);
-        }
     }
 
     public void addRiderAreaCode(RiderAreaCode riderAreaCode) {
