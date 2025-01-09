@@ -9,4 +9,5 @@ public class ReviewFindResponse {
     private final Long id;
     private final String content;
     private final Integer scoreType;
+    private final String reviewStatus;
 }

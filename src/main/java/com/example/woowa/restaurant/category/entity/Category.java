@@ -2,22 +2,18 @@ package com.example.woowa.restaurant.category.entity;
 
 import com.example.woowa.common.base.BaseTimeEntity;
 import com.example.woowa.restaurant.restaurntat_category.entity.RestaurantCategory;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
+import jakarta.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -30,7 +26,7 @@ public class Category extends BaseTimeEntity {
     private Long id;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RestaurantCategory> restaurantCategories = new ArrayList<>();
+    private Set<RestaurantCategory> restaurantCategories = new HashSet<>();
 
     @Column(unique = true, nullable = false, length = 10)
     private String name;
@@ -41,7 +37,7 @@ public class Category extends BaseTimeEntity {
     }
 
     public void addRestaurantCategory(RestaurantCategory restaurantCategory) {
-        if (!Objects.equals(restaurantCategory.getCategory().getId(), this.getId())) {
+        if (restaurantCategories.add(restaurantCategory)) {
             restaurantCategory.setCategory(this);
         }
     }
@@ -49,5 +45,4 @@ public class Category extends BaseTimeEntity {
     public void changeName(String name) {
         this.name = name;
     }
-
 }

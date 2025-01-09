@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryRestController {
 
     private final CategoryService categoryService;
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryCreateResponse> createCategory(final @Valid @RequestBody CategoryCreateRequest categoryCreateRequest) {
         CategoryCreateResponse newCategory = categoryService.createCategory(categoryCreateRequest);
@@ -36,26 +35,29 @@ public class CategoryRestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CategoryFindResponse>> findAllCategories() {
         List<CategoryFindResponse> categories = categoryService.findCategories();
+        if (categories.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
-    @GetMapping(value = "{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryFindResponse> findCategoryById(final @PathVariable Long categoryId) {
         CategoryFindResponse category = categoryService.findCategoryById(categoryId);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @PutMapping(value = "/{categoryId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateCategoryById(final @PathVariable Long categoryId,
-        final @Valid @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
-        categoryService.updateCategoryById(categoryId, categoryUpdateRequest);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<CategoryFindResponse> updateCategoryById(final @PathVariable Long categoryId,
+                                                                   final @Valid @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
+        CategoryFindResponse category = categoryService.updateCategoryById(categoryId, categoryUpdateRequest);
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{categoryId}")
-    public ResponseEntity<Void> deleteCategoryById(final @PathVariable Long categoryId) {
-        categoryService.deleteCategory(categoryId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> deleteCategoryById(final @PathVariable Long categoryId) {
+        categoryService.deleteCategoryById(categoryId);
+        return new ResponseEntity<>("Category deleted successfully.", HttpStatus.NO_CONTENT);
     }
 
 }
