@@ -57,37 +57,16 @@ public class Customer extends BaseLoginEntity {
     private CustomerGrade customerGrade;
 
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
-    private List<CustomerAddress> customerAddresses;
+    private List<CustomerAddress> customerAddresses = new ArrayList<>();
 
     @OneToMany(orphanRemoval = true) // 단방향 사용 줄어보기
-    private List<Voucher> vouchers;
+    private List<Voucher> vouchers = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
-    private List<Order> orders;
-
-    public List<Review> getReviews() {
-        if (reviews == null) {
-            return new ArrayList<>();
-        }
-        return reviews;
-    }
-
-    public List<Voucher> getVouchers() {
-        if (vouchers == null) {
-            return new ArrayList<>();
-        }
-        return vouchers;
-    }
-
-    public List<Order> getOrders() {
-        if (orders == null) {
-            return new ArrayList<>();
-        }
-        return orders;
-    }
+    private List<Order> orders = new ArrayList<>();
 
     public Customer(final String loginId, String loginPassword, LocalDate birthdate,
         CustomerGrade customerGrade) { // 리스트에 불변성을 보장해줘야함
