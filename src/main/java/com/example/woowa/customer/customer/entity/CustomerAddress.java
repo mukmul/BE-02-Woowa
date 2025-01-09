@@ -48,20 +48,22 @@ public class CustomerAddress extends BaseTimeEntity {
     private LocalDateTime recentOrderAt;
 
     public CustomerAddress(AreaCode areaCode, String detailAddress, String nickname, Customer customer) {
-        this.detailAddress = detailAddress;
-        this.nickname = nickname;
-        this.areaCode = areaCode;
+        setAddress(areaCode, detailAddress);
+        setNickname(nickname);
         this.customer = customer;
     }
 
     public void setNickname(String nickname) {
-        assert !nickname.isBlank();
+        if (nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("Nickname cannot be blank");
+        }
         this.nickname = nickname;
     }
 
     public void setAddress(AreaCode areaCode, String detailAddress) {
-        assert areaCode != null;
-        assert !detailAddress.isBlank();
+        if (areaCode == null || detailAddress == null || detailAddress.isBlank()) {
+            throw new IllegalArgumentException("Invalid address or area code");
+        }
         this.areaCode = areaCode;
         this.detailAddress = detailAddress;
     }
@@ -72,12 +74,7 @@ public class CustomerAddress extends BaseTimeEntity {
 
     //고객의 최근 주문 주소를 정렬하기 위해 최근 업데이트 시간 속성을 참고하기로 했습니다.
     //해당 메소드는 주문을 실행할 때만 호출하는 용도로 사용된다고 예상됩니다.
-    public AreaCode getAreaCode() {
-        changeRecentOrderAt(LocalDateTime.now());
-        return areaCode;
-    }
-
-    private void changeRecentOrderAt(LocalDateTime now) {
-        this.recentOrderAt = now;
+    public void updateRecentOrderTime() {
+        this.recentOrderAt = LocalDateTime.now();
     }
 }

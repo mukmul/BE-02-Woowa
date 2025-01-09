@@ -9,6 +9,8 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,23 +29,25 @@ public class CustomerAddressController {
     private final CustomerAddressService customerAddressService;
 
     @PostMapping("/{loginId}")
-    public CustomerAddressFindResponse createCustomerAddress(@PathVariable String loginId, @RequestBody @Valid CustomerAddressCreateRequest customerAddressCreateRequest) {
-        return customerAddressService.createCustomerAddress(loginId, customerAddressCreateRequest);
+    public ResponseEntity<CustomerAddressFindResponse> createCustomerAddress(@PathVariable String loginId, @RequestBody @Valid CustomerAddressCreateRequest customerAddressCreateRequest) {
+        CustomerAddressFindResponse customerAddressFindResponse = customerAddressService.createCustomerAddress(loginId, customerAddressCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerAddressFindResponse);
     }
 
     @GetMapping("/{loginId}")
-    public List<CustomerAddressFindResponse> readCustomerAddresses(@PathVariable String loginId) {
-        return customerAddressService.findCustomerAddresses(loginId);
+    public ResponseEntity<List<CustomerAddressFindResponse>> readCustomerAddresses(@PathVariable String loginId) {
+        return ResponseEntity.ok(customerAddressService.findCustomerAddresses(loginId));
     }
 
     @PutMapping("/{id}")
-    public CustomerAddressFindResponse updateCustomerAddress(@PathVariable Long id, @RequestBody @Valid CustomerAddressUpdateRequest customerAddressUpdateRequest) {
-        return customerAddressService.updateCustomerAddress(id, customerAddressUpdateRequest);
+    public ResponseEntity<CustomerAddressFindResponse> updateCustomerAddress(@PathVariable Long id, @RequestBody @Valid CustomerAddressUpdateRequest customerAddressUpdateRequest) {
+        CustomerAddressFindResponse customerAddressFindResponse = customerAddressService.updateCustomerAddress(id, customerAddressUpdateRequest);
+        return ResponseEntity.ok(customerAddressFindResponse);
     }
 
     @DeleteMapping("/{loginId}/{id}")
-    public String deleteCustomerAddress(@PathVariable String loginId, @PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomerAddress(@PathVariable String loginId, @PathVariable Long id) {
         customerAddressService.deleteCustomerAddress(loginId, id);
-        return "delete id - " + id;
+        return ResponseEntity.noContent().build();
     }
 }

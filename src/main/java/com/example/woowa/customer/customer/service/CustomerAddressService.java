@@ -27,19 +27,16 @@ public class CustomerAddressService {
 
     @Transactional
     public CustomerAddressFindResponse createCustomerAddress(String loginId, CustomerAddressCreateRequest customerAddressCreateRequest) {
-        Customer customer = customerService.findCustomerEntity(loginId);
+        Customer customer = findCustomer(loginId);
         AreaCode areaCode = areaCodeService.findByAddress(customerAddressCreateRequest.getDefaultAddress());
         CustomerAddress customerAddress = customerMapper.toCustomerAddress(areaCode, customerAddressCreateRequest, customer);
-        customerAddress = customerAddressRepository.save(customerAddress);
+        customerAddressRepository.save(customerAddress);
         customer.addCustomerAddress(customerAddress);
         return customerMapper.toCustomerAddressDto(customerAddress);
     }
 
     public List<CustomerAddressFindResponse> findCustomerAddresses(String loginId) {
-        Customer customer = customerService.findCustomerEntity(loginId);;
-        if (customer.getCustomerAddresses().isEmpty()) {
-            return new ArrayList<>();
-        }
+        Customer customer = findCustomer(loginId);
         return customer.getCustomerAddresses().stream().map(customerMapper::toCustomerAddressDto).collect(
             Collectors.toList());
     }
@@ -59,14 +56,18 @@ public class CustomerAddressService {
 
     @Transactional
     public void deleteCustomerAddress(String loginId, Long id) {
-        Customer customer = customerService.findCustomerEntity(loginId);
+        Customer customer = findCustomer(loginId);
         CustomerAddress customerAddress = findCustomerAddressEntity(id);
         customer.removeCustomerAddress(customerAddress);
         customerAddressRepository.delete(customerAddress);
     }
 
+    private Customer findCustomer(String loginId) {
+        return customerService.findCustomerEntity(loginId);
+    }
+
     private CustomerAddress findCustomerAddressEntity(Long id) {
-        return customerAddressRepository.findById(id).orElseThrow(()-> new RuntimeException("customer address not existed"));
+        return customerAddressRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("customer address not found for id "+ id));
     }
 }
 
