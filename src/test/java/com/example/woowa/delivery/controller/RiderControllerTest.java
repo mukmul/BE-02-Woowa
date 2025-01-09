@@ -125,7 +125,7 @@ class RiderControllerTest {
             .andExpect(status().isOk())
             .andDo(print())
             .andDo(document("paging-rdier",
-                    requestParameters(
+                    queryParameters(
                         parameterWithName("page").description("요청 페이지")
                     ),
                     responseFields(
@@ -238,7 +238,7 @@ class RiderControllerTest {
                     pathParameters(
                         parameterWithName("id").description("라이더 id")
                     ),
-                    requestParameters(
+                    queryParameters(
                         parameterWithName("isDelivery").description("현재 배달 여부")
                     )
                 )
