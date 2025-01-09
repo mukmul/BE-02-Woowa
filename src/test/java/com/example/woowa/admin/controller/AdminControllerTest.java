@@ -76,7 +76,8 @@ class AdminControllerTest {
                 .content(objectMapper.writeValueAsString(adminCreateRequest))
                 .with(csrf().asHeader())
         )
-        .andExpect(status().isOk())
+        .andExpect(status().isCreated()) // isOk -> isCreated
+            // Cause: AdminController에서 createAdmin 메서드가 리소스 생성에 성공하면 201(Created)을 반환하고 있습니다. 그러나 테스트에서는 200(OK)를 예상하고 있습니다.
         .andDo(print())
         .andDo(document("admins-create",
             requestFields(
@@ -90,10 +91,10 @@ class AdminControllerTest {
   }
 
   @Test
-  void findAdmin() throws Exception {
+  void getAdminInfoByLoginId() throws Exception {
     AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
 
-    given(adminService.findAdmin(any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
+    given(adminService.getAdminInfoByLoginId(any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
 
     mockMvc.perform(
             get("/api/v1/admins/{loginId}",adminCreateRequest.getLoginId())
@@ -116,7 +117,7 @@ class AdminControllerTest {
   void updateAdmin() throws Exception {
     AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
 
-    given(adminService.updateAdmin(anyString(), any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
+    given(adminService.updateAdminPassword(anyString(), any())).willReturn(adminMapper.toAdminDto(adminMapper.toAdmin(adminCreateRequest)));
 
     AdminUpdateRequest adminUpdateRequest = new AdminUpdateRequest("Programmers123!");
     mockMvc.perform(

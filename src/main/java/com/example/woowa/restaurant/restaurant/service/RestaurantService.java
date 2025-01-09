@@ -44,13 +44,17 @@ public class RestaurantService {
     public RestaurantCreateResponse createRestaurantByOwnerId(Long ownerId,
         RestaurantCreateRequest restaurantCreateRequest) {
         Owner owner = ownerService.findOwnerEntityById(ownerId);
-        Restaurant restaurant = restaurantRepository.save(
-            restaurantMapper.toEntity(restaurantCreateRequest));
+
+        Restaurant restaurant = restaurantMapper.toEntity(restaurantCreateRequest);
+
+        owner.addRestaurant(restaurant);
+
         restaurantCreateRequest.getCategoryIds().forEach(categoryId -> {
             Category category = categoryService.findCategoryEntityById(categoryId);
             RestaurantCategory restaurantCategory = new RestaurantCategory(restaurant, category);
         });
-        owner.addRestaurant(restaurant);
+
+        restaurantRepository.save(restaurant);
 
         return restaurantMapper.toCreateResponseDto(restaurant);
     }
@@ -84,6 +88,17 @@ public class RestaurantService {
             .collect(Collectors.toList());
     }
 
+    public Boolean getRestaurantState(Long ownerId, Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findByIdAndOwnerId(restaurantId, ownerId);
+
+        if (restaurant == null) {
+            throw new IllegalArgumentException("해당 가게가 존재하지 않습니다.");
+        }
+
+        return restaurant.getIsOpen();
+    }
+
+
     @Transactional
     public void deleteRestaurantByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {
         Owner owner = ownerService.findOwnerEntityById(ownerId);
@@ -100,22 +115,23 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void openRestaurant(Long ownerId, Long restaurantId) {
+    public void changeRestaurantState(Long ownerId, Long restaurantId, Boolean isOpen) {
+        // 레스토랑 엔티티 조회
         Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        restaurant.openRestaurant();
+
+        // 현재 상태와 요청된 상태 비교
+        if (restaurant.getIsOpen().equals(isOpen)) {
+            throw new IllegalArgumentException("가게 상태가 이미 " + (isOpen ? "열림" : "닫힘") + " 상태입니다.");
+        }
+
+        // 상태 변경
+        if (isOpen) {
+            restaurant.openRestaurant();
+        } else {
+            restaurant.closeRestaurant();
+        }
     }
 
-    @Transactional
-    public void closeRestaurant(Long ownerId, Long restaurantId) {
-        Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        restaurant.closeRestaurant();
-    }
-
-    @Transactional
-    public void setPermitted(Long restaurantId) {
-        Restaurant restaurant = findRestaurantEntityById(restaurantId);
-        restaurant.setPermitted();
-    }
 
     @Transactional
     public void addCategory(Long ownerId, Long restaurantId, Long categoryId) {
@@ -126,25 +142,34 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void removeCategory(Long ownerId, Long restaurantId, Long categoryId) {
-        Restaurant restaurant = findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
-        Category category = categoryService.findCategoryEntityById(categoryId);
+    public boolean removeCategory(Long ownerId, Long restaurantId, Long categoryId) {
+        findRestaurantEntityByOwnerIdAndRestaurantId(ownerId, restaurantId);
+        categoryService.findCategoryEntityById(categoryId);
 
         RestaurantCategory restaurantCategory = restaurantCategoryRepository.findById(
-                new RestaurantCategoryId(restaurantId, categoryId))
-            .orElseThrow(() -> new IllegalArgumentException("이 가게는 해당 카테고리에 속하지 않습니다."));
+                        new RestaurantCategoryId(restaurantId, categoryId))
+                .orElse(null);
+
+        if (restaurantCategory == null) {
+            return false;
+        }
 
         restaurantCategoryRepository.delete(restaurantCategory);
+        return true;
     }
 
+
+    // 사장님이 가게를 가지고 있는지 확인하는 validation
     public Restaurant findRestaurantEntityByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {
-        return ownerService.findOwnerEntityById(ownerId).getRestaurants().stream().
-            filter(r -> r.getId() == restaurantId).
-            findFirst().
-            orElseThrow(() ->
-                new NotFoundException(
-                    "사장님(" + ownerId + ")은 가게(" + restaurantId + ")를 소유하고 있지 않습니다."));
+        Restaurant restaurant = findRestaurantEntityById(restaurantId);
+
+        if (!restaurant.getOwner().getId().equals(ownerId)) {
+            throw new NotFoundException("사장님은 해당 가게를 소유하고 있지 않습니다.");
+        }
+
+        return restaurant;
     }
+
 
     @Transactional
     public void setDeliveryArea(Long restaurantId, Long areaCodeId, Integer deleiveryFee) {
@@ -160,7 +185,7 @@ public class RestaurantService {
     }
 
     public List<RestaurantFindResponse> findRestaurantsIsPermittedIsFalse() {
-        return restaurantRepository.findRestaurantByIsPermittedIsFalse().stream()
+        return restaurantRepository.findByIsPermittedIsFalse().stream()
             .map(restaurantMapper::toFindResponseDto)
             .collect(Collectors.toList());
     }

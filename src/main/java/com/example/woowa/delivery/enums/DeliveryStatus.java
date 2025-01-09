@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum DeliveryStatus {
 
     DELIVERY_WAITING("배차 대기 중"), DELIVERY_REGISTRATION("배차 등록"),
-    DELIVERY_PICKUP("픽업 완료"), DELIVERY_FINISH("배달 완료");
+    DELIVERY_PICKUP("픽업 완료"), DELIVERY_FINISH("배달 완료"),DELIVERY_DELETE("배달 삭제");
 
     private final String description;
 }

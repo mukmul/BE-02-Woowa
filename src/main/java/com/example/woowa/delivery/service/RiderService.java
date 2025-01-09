@@ -8,11 +8,15 @@ import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.entity.RiderAreaCode;
 import com.example.woowa.delivery.mapper.RiderMapper;
+import com.example.woowa.delivery.repository.AreaCodeRepository;
+import com.example.woowa.delivery.repository.RiderAreaCodeRepository;
 import com.example.woowa.delivery.repository.RiderRepository;
 import java.util.List;
 
+
 import com.example.woowa.security.user.service.UserService;
 import com.example.woowa.security.user.entity.UserRole;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,36 +33,62 @@ public class RiderService {
     private final RiderMapper riderMapper;
     private final UserService userService;
     private final AreaCodeService areaCodeService;
+
+    private final RiderAreaCodeRepository riderAreaCodeRepository;
+
+    private final AreaCodeRepository areaCodeRepository;
+
+    @Transactional
+    public void deleteAll() {
+        try {
+            if (riderRepository.count() == 0) {
+                throw new RuntimeException(ErrorMessage.NOT_FOUND_DATA.getMessage());
+            }
+            riderRepository.deleteAll();
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_DELETE.getMessage());
+        }
+    }
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long save(RiderCreateRequest riderCreateRequest) {
+        try {
+            Rider rider = riderMapper.toRider(riderCreateRequest);
+            boolean isId = riderRepository.existsByLoginId(riderCreateRequest.loginId());
+            if (isId) {
+                throw new RuntimeException(ErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
+            }
 
-        boolean isId = riderRepository.existsByLoginId(riderCreateRequest.getLoginId());
-        if (isId) {
-            throw new RuntimeException(ErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
+            rider.changePassword(passwordEncoder.encode(rider.getPassword()));
+            riderRepository.save(rider);
+
+            userService.createUser(rider, UserRole.ROLE_RIDER);
+
+            return rider.getId();
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
         }
-
-        Rider rider = riderMapper.toRider(riderCreateRequest);
-
-        rider.changePassword(passwordEncoder.encode(rider.getPassword()));
-        riderRepository.save(rider);
-
-        userService.createUser(rider, UserRole.ROLE_RIDER);
-
-        return rider.getId();
     }
 
     @Transactional
     public void update(Long id, RiderUpdateRequest riderUpdateRequest) {
-        Rider rider = findEntityById(id);
-        rider.update(riderUpdateRequest.getName(), riderUpdateRequest.getPhoneNumber());
-        userService.syncUser(rider);
+        try {
+            Rider rider = findEntityById(id);
+            rider.update(riderUpdateRequest.getName(), riderUpdateRequest.getPhoneNumber());
+            userService.syncUser(rider);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_UPDATE.getMessage());
+        }
     }
 
     @Transactional
     public void changeIsDelivery(Long id, Boolean isDelivery) {
-        findEntityById(id).changeIsDelivery(isDelivery);
+        try {
+            findEntityById(id).changeIsDelivery(isDelivery);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("배달 상태"+ErrorMessage.FAIL_TO_UPDATE.getMessage());
+        }
     }
 
     @Transactional
@@ -79,22 +109,54 @@ public class RiderService {
     }
 
     public Page<RiderResponse> findAll(PageRequest pageRequest) {
-        return riderRepository.findAllBy(pageRequest).map(riderMapper::toResponse);
+        try {
+            return riderRepository.findAllBy(pageRequest).map(riderMapper::toResponse);
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_RETRIEVE.getMessage());
+        }
     }
 
     @Transactional
     public void addRiderAreaCode(Long riderId, Long areaCodeId) {
-        Rider rider = findEntityById(riderId);
-        AreaCode areaCode = areaCodeService.findEntityById(areaCodeId);
-        RiderAreaCode riderAreaCode = new RiderAreaCode(rider, areaCode);
+        try {
+            Rider rider = findEntityById(riderId);
+            AreaCode areaCode = areaCodeService.findEntityById(areaCodeId);
+
+            RiderAreaCode riderAreaCode = new RiderAreaCode(rider, areaCode);
+            areaCode.addRiderAreaCode(riderAreaCode);
+            rider.addRiderAreaCode(riderAreaCode);
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
+        }
     }
 
     @Transactional
     public void removeRiderAreaCode(Long riderId, Long areaCodeId) {
-        Rider rider = findEntityById(riderId);
-        List<RiderAreaCode> riderAreaCodeList = rider.getRiderAreaCodeList();
-        riderAreaCodeList.stream()
-            .filter(riderAreaCode -> riderAreaCode.getAreaCode().getId() == areaCodeId).findFirst()
-            .ifPresent(riderAreaCodeList::remove);
+        try {
+            Rider rider = findEntityById(riderId);
+            List<RiderAreaCode> riderAreaCodeList = rider.getRiderAreaCodeList();
+            riderAreaCodeList.stream()
+                    .filter(riderAreaCode -> riderAreaCode.getAreaCode().getId().equals(areaCodeId))
+                    .findFirst()
+                    .ifPresent(riderAreaCode -> {
+                        rider.removeRiderAreaCode(riderAreaCode);
+
+                        AreaCode areaCode = riderAreaCode.getAreaCode();
+                        areaCode.removeRiderAreaCode(riderAreaCode);
+                        areaCodeRepository.save(areaCode);
+
+                        // 중간 엔티티 삭제
+                        riderAreaCodeRepository.delete(riderAreaCode);
+                    });
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_DELETE.getMessage());
+        }
+    }
+    @Transactional
+    public void deleteRider(Long riderId) {
+        Rider rider = riderRepository.findById(riderId)
+                .orElseThrow(() -> new EntityNotFoundException("Rider not found with id: " + riderId));
+
+        rider.delete();
     }
 }

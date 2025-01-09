@@ -36,26 +36,35 @@ public class DeliveryArea {
     @Column(nullable = false)
     private int deliveryFee;
 
-    public DeliveryArea(AreaCode areaCode, Restaurant restaurant) {
-        this.areaCode = areaCode;
-        this.restaurant = restaurant;
-        this.deliveryFee = 0;
-    }
 
+    public DeliveryArea(AreaCode areaCode, Restaurant restaurant)
+    {
+        this(areaCode, restaurant, 0);
+    }
     public DeliveryArea(AreaCode areaCode, Restaurant restaurant, int deliveryFee) {
-        this.areaCode = areaCode;
-        this.restaurant = restaurant;
+        setAreaCode(areaCode);
+        setRestaurant(restaurant);
         this.deliveryFee = deliveryFee;
-        areaCode.addDeliveryArea(this);
-        restaurant.addDeliveryArea(this);
     }
 
     public void setRestaurant(Restaurant restaurant) {
-        if (Objects.nonNull(this.restaurant)) {
+        if (this.restaurant != null) {
             this.restaurant.getDeliveryAreas().remove(this);
         }
-        this.restaurant = restaurant;
-        this.restaurant.getDeliveryAreas().add(this);
+        if (restaurant != null) {
+            this.restaurant = restaurant;
+            this.restaurant.getDeliveryAreas().add(this);
+        }
+    }
+
+    public void setAreaCode(AreaCode areaCode) {
+        if (this.areaCode != null) {
+            this.areaCode.getDeliveryAreas().remove(this);
+        }
+        if (areaCode != null) {
+            this.areaCode = areaCode;
+            this.areaCode.getDeliveryAreas().add(this);
+        }
     }
 
 }

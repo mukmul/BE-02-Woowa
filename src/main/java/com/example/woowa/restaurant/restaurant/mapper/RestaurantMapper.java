@@ -14,25 +14,25 @@ import org.mapstruct.ReportingPolicy;
 public interface RestaurantMapper {
 
     @Mapping(target = "categories",
-        expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
+            expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
     @Mapping(target = "ownerId", expression = "java(restaurant.getOwner().getId())")
     RestaurantCreateResponse toCreateResponseDto(Restaurant restaurant);
 
     @Mapping(target = "categories",
-        expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
+            expression = "java(restaurant.getRestaurantCategories().stream().map(restaurantCategory -> restaurantCategory.getCategory().getName()).collect(java.util.stream.Collectors.toList()))")
     @Mapping(target = "ownerId", expression = "java(restaurant.getOwner().getId())")
     RestaurantFindResponse toFindResponseDto(Restaurant restaurant);
 
     default Restaurant toEntity(RestaurantCreateRequest restaurantCreateRequest) {
         return Restaurant.createRestaurant(
-            restaurantCreateRequest.getName(),
-            restaurantCreateRequest.getBusinessNumber(),
-            restaurantCreateRequest.getOpeningTime(),
-        restaurantCreateRequest.getClosingTime(),
-            restaurantCreateRequest.getIsOpen(),
-            restaurantCreateRequest.getPhoneNumber(),
-            restaurantCreateRequest.getDescription(),
-            restaurantCreateRequest.getAddress());
+                restaurantCreateRequest.getName(),
+                restaurantCreateRequest.getBusinessNumber(),
+                restaurantCreateRequest.getOpeningTime(),
+                restaurantCreateRequest.getClosingTime(),
+                restaurantCreateRequest.getIsOpen(),
+                restaurantCreateRequest.getPhoneNumber(),
+                restaurantCreateRequest.getDescription(),
+                restaurantCreateRequest.getAddress());
     }
 
     default void updateEntity(RestaurantUpdateRequest restaurantUpdateRequest, @MappingTarget Restaurant restaurant) {

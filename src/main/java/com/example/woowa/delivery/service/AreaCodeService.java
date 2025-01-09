@@ -4,6 +4,7 @@ import com.example.woowa.common.exception.ErrorMessage;
 import com.example.woowa.common.util.FileUtil;
 import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.repository.AreaCodeRepository;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,31 +19,57 @@ public class AreaCodeService {
 
     public AreaCode findEntityById(Long id) {
         return areaCodeRepository.findById(id).orElseThrow(
-            () -> new RuntimeException(ErrorMessage.NOT_FOUND_AREA_CODE_ID.getMessage()));
+            () -> new RuntimeException(ErrorMessage.NOT_FOUND_AREA_CODE.getMessage()));
     }
 
     @Transactional
     public void deleteAll() {
-        areaCodeRepository.deleteAll();
+        try {
+            if (areaCodeRepository.count() == 0) {
+                throw new RuntimeException(ErrorMessage.NOT_FOUND_DATA.getMessage());
+            }
+            areaCodeRepository.deleteAll();
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_DELETE.getMessage());
+        }
     }
 
     public List<AreaCode> findAll() {
-        return areaCodeRepository.findAll();
+        try {
+            List<AreaCode> areaCodes = areaCodeRepository.findAll();
+            if (areaCodes.isEmpty()) {
+                throw new RuntimeException(ErrorMessage.NOT_FOUND_DATA.getMessage());
+            }
+            return areaCodes;
+        } catch (Exception e) {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_RETRIEVE.getMessage());
+
+        }
     }
 
     public AreaCode findByAddress(String defaultAddress) {
         return areaCodeRepository.findByDefaultAddress(defaultAddress)
-            .orElseThrow(() -> new RuntimeException("없는 행정구역 입니다."));
+            .orElseThrow(() -> new RuntimeException(ErrorMessage.NOT_FOUND_AREA_CODE_ADDRESS.getMessage()));
     }
 
-    @Transactional
     public void init() {
-        List<AreaCode> areaCodeList = FileUtil.parseAreaCodeList();
-        areaCodeRepository.saveAll(areaCodeList);
+        try {
+            List<AreaCode> areaCodeList = FileUtil.parseAreaCodeList();
+
+
+            if (areaCodeList.isEmpty()) {
+                throw new RuntimeException(ErrorMessage.NOT_FOUND_DATA.getMessage());
+            }
+
+            areaCodeRepository.saveAll(areaCodeList);
+        } catch (Exception e) {
+
+            throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
+        }
     }
 
     public AreaCode findByCode(String code) {
         return areaCodeRepository.findByCode(code)
-            .orElseThrow(() -> new RuntimeException("없는 행정구역 입니다."));
+            .orElseThrow(() -> new RuntimeException(ErrorMessage.NOT_FOUND_AREA_CODE_ADDRESS.getMessage()));
     }
 }
