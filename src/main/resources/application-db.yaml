@@ -1,14 +1,5 @@
 spring:
   datasource:
-    url: jdbc:h2:file:./data/testdb;MODE=MYSQL;DB_CLOSE_ON_EXIT=FALSE;
-    username: sa
-    password: ""
-    driver-class-name: org.h2.Driver
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-  h2:
-    console:
-      enabled: true
-
+    url: jdbc:mysql://localhost:3306/woowa
+    username: root
+    password: 1234

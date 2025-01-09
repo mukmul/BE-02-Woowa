@@ -18,7 +18,6 @@ import com.example.woowa.delivery.entity.Delivery;
 import com.example.woowa.delivery.enums.DeliveryStatus;
 import com.example.woowa.delivery.service.DeliveryAreaService;
 import com.example.woowa.delivery.service.DeliveryEntityService;
-import com.example.woowa.delivery.service.RiderService;
 import com.example.woowa.order.order.dto.cart.CartResponse;
 import com.example.woowa.order.order.dto.cart.CartSaveRequest;
 import com.example.woowa.order.order.dto.cart.CartSummeryResponse;
@@ -90,9 +89,6 @@ class OrderServiceTest {
     @Mock
     OrderMapper orderMapper;
 
-    @Mock
-    RiderService riderService;
-
     OrderService orderService;
 
     Order order;
@@ -109,7 +105,7 @@ class OrderServiceTest {
     void init() {
         orderService = new OrderService(orderRepository, customerService, restaurantService,
                 voucherEntityService, deliveryAreaService, deliveryEntityService,
-                orderMapper, cartMapper,riderService);
+                orderMapper, cartMapper);
         customer = initCustomer();
         restaurant = initRestaurant();
         menus = initMenus();

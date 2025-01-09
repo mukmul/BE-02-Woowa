@@ -58,14 +58,17 @@ public class OrderService {
     private final CartMapper cartMapper;
     private final RiderService riderService;
 
-
+    /**
+     * 현재 주문에 쿠폰 사용 여부를(voucherId 의 null check 부분)
+     * VoucherEntityService 로 뺌
+     */
     @Transactional
     public Long addOrder(OrderSaveRequest request) {
         Customer findCustomer = customerService.findCustomerEntity(request.getLoginId());
         Restaurant findRestaurant = restaurantService.findRestaurantEntityById(request.getRestaurantId());
+
         Long voucherId = request.getVoucherId();
-        Voucher findVoucher =
-                Objects.isNull(voucherId) ? null : voucherEntityService.findVoucherById(voucherId);
+        Voucher findVoucher = voucherEntityService.findVoucherById(voucherId);
 
         List<Cart> carts = request.getCarts().stream().map(cartMapper::toCart)
                 .collect(Collectors.toList());

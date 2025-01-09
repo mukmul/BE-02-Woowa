@@ -8,12 +8,14 @@ import com.example.woowa.restaurant.advertisement.dto.response.AdvertisementFind
 import com.example.woowa.restaurant.advertisement.entity.Advertisement;
 import com.example.woowa.restaurant.advertisement.mapper.AdvertisementMapper;
 import com.example.woowa.restaurant.advertisement.repository.AdvertisementRepository;
+import com.example.woowa.restaurant.advertisement.validate.AdvertisementValidator;
 import com.example.woowa.restaurant.restaurant.entity.Restaurant;
 import com.example.woowa.restaurant.restaurant.repository.RestaurantRepository;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisement;
 import com.example.woowa.restaurant.restaurant_advertisement.entity.RestaurantAdvertisementId;
 import com.example.woowa.restaurant.restaurant_advertisement.repository.RestaurantAdvertisementRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,8 +34,17 @@ public class AdvertisementService {
 
     @Transactional
     public AdvertisementCreateResponse createAdvertisement(AdvertisementCreateRequest advertisementCreateRequest) {
-        Advertisement advertisement = advertisementRepository.save(
-            advertisementMapper.toEntity(advertisementCreateRequest));
+        AdvertisementValidator.validateRate(advertisementCreateRequest.getRate());
+        AdvertisementValidator.validateLimitSize(advertisementCreateRequest.getLimitSize());
+
+        Optional<Advertisement> existingAdvertisement = advertisementRepository.findByTitle(advertisementCreateRequest.getTitle());
+
+        if (existingAdvertisement.isPresent()) {
+            throw new IllegalStateException("이미 동일한 제목의 광고가 존재합니다.");
+        }
+
+        Advertisement advertisement = advertisementMapper.toEntity(advertisementCreateRequest);
+        advertisementRepository.save(advertisement);
         return advertisementMapper.toCreateResponse(advertisement);
     }
 
@@ -48,45 +59,64 @@ public class AdvertisementService {
     }
 
     @Transactional
-    public void updateAdvertisementById(Long advertisementId, AdvertisementUpdateRequest advertisementUpdateRequest) {
+    public AdvertisementFindResponse updateAdvertisementById(Long advertisementId, AdvertisementUpdateRequest advertisementUpdateRequest) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         advertisementMapper.updateEntity(advertisementUpdateRequest, advertisement);
+        return advertisementMapper.toFindResponse(advertisement);
     }
 
     @Transactional
     public void deleteAdvertisementById(Long advertisementId) {
-        advertisementRepository.deleteById(advertisementId);
+        Advertisement advertisement = findAdvertisementEntityById(advertisementId);
+        restaurantAdvertisementRepository.deleteByAdvertisement(advertisement);
+        advertisementRepository.deleteById(advertisement.getId());
     }
 
     @Transactional
-    public void includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
+    public AdvertisementFindResponse includeRestaurantInAdvertisement(Long advertisementId, Long restaurantId) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
         Restaurant restaurant = findRestaurantEntityById(restaurantId);
 
-        RestaurantAdvertisement restaurantAdvertisement = new RestaurantAdvertisement(restaurant, advertisement);
+        boolean exists = restaurantAdvertisementRepository.existsByAdvertisementAndRestaurant(advertisement, restaurant);
+
+        if (exists) {
+            throw new IllegalStateException(
+                    String.format("광고 ID %d와 레스토랑 ID %d의 관계가 이미 존재합니다.", advertisementId, restaurantId));
+        }
+
+        AdvertisementValidator.isAvailable(advertisement.getCurrentSize(), advertisement.getLimitSize());
+        RestaurantAdvertisement newRelation = new RestaurantAdvertisement(restaurant, advertisement);
+        advertisement.getRestaurantAdvertisements().add(newRelation);
+        advertisement.incrementCurrentSize();
+
+        return advertisementMapper.toFindResponse(advertisement);
     }
 
     @Transactional
     public void excludeRestaurantOutOfAdvertisement(Long advertisementId, Long restaurantId) {
         Advertisement advertisement = findAdvertisementEntityById(advertisementId);
-        Restaurant restaurant = findRestaurantEntityById(restaurantId);
+        AdvertisementValidator.validateCurrentSizeNotBelowZero(advertisement.getCurrentSize());
 
         RestaurantAdvertisement restaurantAdvertisement = restaurantAdvertisementRepository.findById(
-                new RestaurantAdvertisementId(restaurantId, advertisementId))
-            .orElseThrow(() -> new NotFoundException("가게(" + restaurantId + ")가 광고(" + restaurantId + ")에 포함되어 있지 않습니다."));
+                        new RestaurantAdvertisementId(restaurantId, advertisementId))
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("레스토랑 ID %d는 광고 ID %d에 포함되어 있지 않습니다.", restaurantId, advertisementId)));
 
-        advertisement.removeRestaurantAdvertisement(restaurantAdvertisement);
-        restaurant.getRestaurantAdvertisements().remove(restaurantAdvertisement);
+        advertisement.getRestaurantAdvertisements().remove(restaurantAdvertisement);
+        advertisement.decrementCurrentSize();
+
+        restaurantAdvertisementRepository.delete(restaurantAdvertisement);
     }
+
 
     public Advertisement findAdvertisementEntityById(Long advertisementId) {
         return advertisementRepository.findById(advertisementId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 광고 아이디입니다."));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 광고 ID %d 입니다.", advertisementId)));
     }
 
     public Restaurant findRestaurantEntityById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 restaurantId 입니다."));
+            .orElseThrow(() -> new NotFoundException(String.format("존재하지 않는 가게 ID %d 입니다.", restaurantId)));
     }
 
 }

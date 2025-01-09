@@ -57,7 +57,6 @@ import java.util.stream.Collectors;
 import com.example.woowa.security.role.entity.Role;
 import com.example.woowa.security.role.repository.RoleRepository;
 import com.example.woowa.security.user.entity.UserRole;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -73,7 +72,6 @@ import org.springframework.data.domain.PageRequest;
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 @TestInstance(Lifecycle.PER_CLASS)
-//@Transactional
 public class BDDTest {
 
     @Autowired
@@ -137,15 +135,12 @@ public class BDDTest {
     @DisplayName("관리자를 생성한다.")
     @Order(0)
     void _0() {
-
-
-        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_ADMIN.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_RIDER.toString()));
-        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.toString()));
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_ADMIN.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_RIDER.getRoleName()));
+        roleRepository.save(new Role(UserRole.ROLE_CUSTOMER.getRoleName()));
         AdminCreateRequest adminCreateRequest = new AdminCreateRequest("dev12", "Programmers12!");
         adminService.createAdmin(adminCreateRequest);
-
     }
 
     @Test
@@ -175,11 +170,11 @@ public class BDDTest {
         List<OwnerFindResponse> owners = ownerService.findOwners();
         List<Long> categoryIds = categoryService.findCategories().stream()
             .map(CategoryFindResponse::getId).collect(Collectors.toList());
-        RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest("한식",
+        RestaurantCreateRequest restaurantCreateRequest = new RestaurantCreateRequest("test 가게",
             "760-15-00993", LocalTime.now(), LocalTime.now().plusHours(5), true, "010-1111-1234",
             "테스트용 가게", "서울특별시 동작구 상도동", categoryIds);
         restaurant = restaurantService.createRestaurantByOwnerId(
-            owners.get(0).getId(), restaurantCreateRequest);
+            owners.getFirst().getId(), restaurantCreateRequest);
     }
 
     @Test
@@ -187,7 +182,7 @@ public class BDDTest {
     @Order(4)
     void _4() {
         List<RestaurantFindResponse> restauransNotPermitted = restaurantService.findRestaurantsIsPermittedIsFalse();
-        Long newRestaurant = restauransNotPermitted.get(0).getId();
+        Long newRestaurant = restauransNotPermitted.getFirst().getId();
         adminService.permitRestaurant(newRestaurant);
     }
 
@@ -195,8 +190,8 @@ public class BDDTest {
     @DisplayName("어드민이 광고 상품을 등록한다")
     @Order(5)
     void _5() {
-        AdvertisementCreateRequest ultraCall = new AdvertisementCreateRequest("울트라콜",
-            UnitType.MOTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
+        AdvertisementCreateRequest ultraCall = new AdvertisementCreateRequest("울트라콜1",
+            UnitType.MONTHLY.getType(), RateType.FLAT.getType(), 88000, "울트라콜 광고", 10);
         AdvertisementCreateRequest openList = new AdvertisementCreateRequest("오픈리스트",
             UnitType.PER_ORDER.getType(), RateType.PERCENT.getType(), 10, "오픈리스트 광고", 10);
         advertisementService.createAdvertisement(ultraCall);
@@ -228,7 +223,7 @@ public class BDDTest {
     void _8() {
         CustomerAddressCreateRequest customerAddressCreateRequest = new CustomerAddressCreateRequest(
             "서울특별시 동작구 상도동", "빌라 101호", "집");
-        CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev123",
+        CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("cus12",
             "Programmers123!", "2000-01-01", customerAddressCreateRequest);
         customer = customerService.createCustomer(
             customerCreateRequest);
@@ -238,7 +233,7 @@ public class BDDTest {
     @DisplayName("고객은 고객 등급에 따라 정기 쿠폰을 얻을 수 있다.")
     @Order(9)
     void _9() {
-        voucherService.registerMonthlyVoucher("dev123");
+        voucherService.registerMonthlyVoucher("cus12");
     }
 
     @Test
@@ -254,6 +249,7 @@ public class BDDTest {
     @DisplayName("사장은 가게에 메뉴를 추가할 수 있다.")
     @Order(11)
     void _11() {
+        System.out.println("menuGroupId : " + menuGroupId);
         MenuSaveRequest request = new MenuSaveRequest(menuGroupId, "참치 김밥", "맛있는 참치 김밥입니다.",
             4500);
         menuId = menuService.addMenu(request);
@@ -281,7 +277,7 @@ public class BDDTest {
             customer.getLoginId());
         CartSaveRequest cartSaveRequest = new CartSaveRequest(menuId, 3);
         OrderSaveRequest orderSaveRequest = new OrderSaveRequest(customer.getLoginId(),
-            restaurant.getId(), vouchers.get(0).getId(), 0,
+            restaurant.getId(), vouchers.getFirst().getId(), 0,
             PaymentType.CREDIT_CARD, "서울특별시 동작구 상도동", Collections.singletonList(cartSaveRequest)
         );
 
@@ -321,7 +317,7 @@ public class BDDTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<DeliveryResponse> deliveryResponsePage = deliveryService.findWaitingDelivery(
             pageRequest);
-        deliveryId = deliveryResponsePage.stream().findFirst().get().id();
+        deliveryId = deliveryResponsePage.stream().findFirst().get().getId();
     }
 
     @Test
@@ -338,7 +334,7 @@ public class BDDTest {
         deliveryService.acceptDelivery(deliveryId, riderId, 10, 10);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_REGISTRATION);
     }
 
@@ -356,7 +352,7 @@ public class BDDTest {
         deliveryService.pickUp(riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_PICKUP);
     }
 
@@ -364,10 +360,10 @@ public class BDDTest {
     @DisplayName("라이더는 배달 완료시 배달 상태를 변경할 수 있다.")
     @Order(23)
     void _23() {
-        deliveryService.finish(deliveryId,riderId);
+        deliveryService.finish(riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
+        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
     }
 
     @Test
@@ -418,7 +414,7 @@ public class BDDTest {
     @Order(29)
     void _29() {
         ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest("정말정말 맛있습니다.", 5);
-        reviewService.createReview("dev123", orderId,
+        reviewService.createReview("cus12", orderId,
             reviewCreateRequest);
     }
 
@@ -426,6 +422,6 @@ public class BDDTest {
     @DisplayName("고객은 가게 리뷰를 조회할 수 있다.")
     @Order(30)
     void _30() {
-        List<ReviewFindResponse> result = reviewService.findUserReview("dev123");
+        List<ReviewFindResponse> result = reviewService.findUserReview("cus12");
     }
 }

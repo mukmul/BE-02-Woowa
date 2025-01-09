@@ -16,19 +16,23 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.woowa.RestDocsConfiguration;
 import com.example.woowa.order.review.dto.ReviewCreateRequest;
 import com.example.woowa.order.review.dto.ReviewFindResponse;
 import com.example.woowa.order.review.dto.ReviewUpdateRequest;
+import com.example.woowa.order.review.enums.ReviewStatus;
 import com.example.woowa.order.review.service.ReviewService;
 import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +44,9 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,7 +60,6 @@ import org.springframework.test.web.servlet.MockMvc;
 })
 @Import(RestDocsConfiguration.class)
 @ExtendWith(MockitoExtension.class)
-@WithMockUser
 class ReviewControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -65,15 +71,18 @@ class ReviewControllerTest {
     private ReviewService reviewService;
 
     @Test
+    @WithMockUser(username = "tester")
     void createReview() throws Exception {
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1l, "정말정말 맛있습니다.", 5);
+
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
 
         given(reviewService.createReview(anyString(), anyLong(), any())).willReturn(reviewFindResponse);
         ReviewCreateRequest reviewCreateRequest = new ReviewCreateRequest(reviewFindResponse.getContent(),
                 reviewFindResponse.getScoreType());
 
         mockMvc.perform(
-                        post("/api/v1/reviews/{loginId}/{orderId}", "dev12", 1)
+                        post("/api/v1/reviews/{orderId}", 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(reviewCreateRequest))
                                 .with(csrf().asHeader())
@@ -82,7 +91,6 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("reviews-create",
                         pathParameters(
-                                parameterWithName("loginId").description("고객 로그인 ID"),
                                 parameterWithName("orderId").description("리뷰할 주문 ID")
                         ),
                         requestFields(
@@ -99,7 +107,8 @@ class ReviewControllerTest {
 
     @Test
     void findReview() throws Exception {
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1l, "정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
 
         given(reviewService.findReview(anyLong())).willReturn(reviewFindResponse);
 
@@ -123,8 +132,12 @@ class ReviewControllerTest {
     @Test
     void findUserReview() throws Exception {
         List<ReviewFindResponse> result = new ArrayList<>();
-        ReviewFindResponse reviewFindResponse1 = new ReviewFindResponse(1l, "정말정말 맛있습니다.", 5);
-        ReviewFindResponse reviewFindResponse2 = new ReviewFindResponse(2l, "정말정말 맛없습니다.", 1);
+
+        ReviewFindResponse reviewFindResponse1 = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.REGISTERED.getDescription());
+        ReviewFindResponse reviewFindResponse2 = new ReviewFindResponse(2L, "정말정말 맛없습니다.", 1,
+                ReviewStatus.REGISTERED.getDescription());
+
         result.add(reviewFindResponse1);
         result.add(reviewFindResponse2);
 
@@ -148,10 +161,13 @@ class ReviewControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "tester")
     void updateReview() throws Exception {
-        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1l, "정말정말 맛있습니다.", 5);
+        ReviewFindResponse reviewFindResponse = new ReviewFindResponse(1L, "정말정말 맛있습니다.", 5,
+                ReviewStatus.EDITED.getDescription());
 
-        given(reviewService.updateReview(anyLong(), any())).willReturn(reviewFindResponse);
+        given(reviewService.updateReview(any(), anyLong(), any())).willReturn(reviewFindResponse);
+
         ReviewUpdateRequest reviewUpdateRequest = new ReviewUpdateRequest("정말정말 맛없습니다.", 1);
 
         mockMvc.perform(
@@ -176,21 +192,25 @@ class ReviewControllerTest {
                                 fieldWithPath("scoreType").type(JsonFieldType.NUMBER).description("평점")
                         )
                 ));
+
     }
 
     @Test
+    @WithMockUser(username = "tester")
     void deleteReview() throws Exception {
         mockMvc.perform(
-                        delete("/api/v1/reviews/{loginId}/{id}", "dev12", 1)
+                        delete("/api/v1/reviews/{id}", 1)
                                 .with(csrf().asHeader())
                 )
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("reviews-delete",
-                        pathParameters(
-                                parameterWithName("loginId").description("삭제할 리뷰를 가진 고객의 로그인 ID"),
-                                parameterWithName("id").description("삭제할 리뷰 ID")
+                                pathParameters(
+                                        parameterWithName("id").description("삭제할 리뷰 ID")
+                                )
                         )
-                ));
+                )
+                .andExpect(content().string("delete id - 1")
+                );
     }
 }
