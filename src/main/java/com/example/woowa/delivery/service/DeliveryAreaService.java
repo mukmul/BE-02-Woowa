@@ -15,8 +15,15 @@ public class DeliveryAreaService {
 
     private final DeliveryAreaRepository deliveryAreaRepository;
 
-    public void save(DeliveryArea deliveryArea) {
-        deliveryAreaRepository.save(deliveryArea);
+    public void save(DeliveryArea deliveryArea)
+    {
+      try
+      {
+          deliveryAreaRepository.save(deliveryArea);
+      } catch (Exception e)
+      {
+          throw new RuntimeException(ErrorMessage.FAIL_TO_SAVE.getMessage());
+      }
     }
 
     public int getDeliveryFee(Restaurant restaurant, String defaultAddress) {
@@ -26,7 +33,20 @@ public class DeliveryAreaService {
                 .getDeliveryFee();
     }
 
-    public List<DeliveryArea> findDeliveryAreaEntityWithRestaurant(AreaCode areaCode) {
-        return deliveryAreaRepository.findByAreaCode(areaCode);
+    public List<DeliveryArea> findDeliveryAreaEntityWithRestaurant(AreaCode areaCode)
+    {
+        try
+        {
+            List<DeliveryArea> deliveryAreaList= deliveryAreaRepository.findByAreaCode(areaCode);
+            if(deliveryAreaList.isEmpty())
+            {
+                throw new RuntimeException(ErrorMessage.NOT_FOUND_DATA.getMessage());
+            }
+            return deliveryAreaList;
+        } catch (Exception e)
+        {
+            throw new RuntimeException(ErrorMessage.FAIL_TO_RETRIEVE.getMessage());
+        }
+
     }
 }

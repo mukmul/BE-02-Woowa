@@ -143,8 +143,8 @@ public class TestInitUtil {
         Rider rider = Rider.createRider("RiderId", "RiderPassword", "rider", "010-1234-5678");
         AreaCode firstAreaCode = new AreaCode("12344", "서울시 관악구 신림동", true);
         AreaCode secondAreaCode = new AreaCode("12345", "서울시 관악구 봉천동", true);
-        RiderAreaCode firstRiderAreaCode = new RiderAreaCode(rider, firstAreaCode);
-        RiderAreaCode secondRiderAreaCode = new RiderAreaCode(rider, secondAreaCode);
+        //RiderAreaCode firstRiderAreaCode = new RiderAreaCode(rider, firstAreaCode);
+        //RiderAreaCode secondRiderAreaCode = new RiderAreaCode(rider, secondAreaCode);
 
         return rider;
     }

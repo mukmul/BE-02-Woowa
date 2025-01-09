@@ -24,10 +24,10 @@ class RiderMapperTest {
                 "폰");
         Rider rider = riderMapper.toRider(riderCreateRequest);
 
-        assertThat(rider.getName()).isEqualTo(riderCreateRequest.getName());
-        assertThat(rider.getLoginId()).isEqualTo(riderCreateRequest.getLoginId());
-        assertThat(rider.getPassword()).isEqualTo(riderCreateRequest.getPassword());
-        assertThat(rider.getPhoneNumber()).isEqualTo(riderCreateRequest.getPhoneNumber());
+        assertThat(rider.getName()).isEqualTo(riderCreateRequest.name());
+        assertThat(rider.getLoginId()).isEqualTo(riderCreateRequest.loginId());
+        assertThat(rider.getPassword()).isEqualTo(riderCreateRequest.password());
+        assertThat(rider.getPhoneNumber()).isEqualTo(riderCreateRequest.phoneNumber());
     }
 
     @Test
@@ -35,11 +35,14 @@ class RiderMapperTest {
     void toResponse() {
         Rider rider = TestInitUtil.initRider();
         rider.changeUpdatedAt(LocalDateTime.now());
+        rider.changeIsDelivery(true);
+        System.out.println(rider.getIsDelivery());
         RiderResponse riderResponse = riderMapper.toResponse(rider);
         int size = riderResponse.getRiderAreaList().size();
 
+
         assertThat(riderResponse.getId()).isEqualTo(rider.getId());
-        assertThat(riderResponse.getIsDelivery()).isEqualTo(rider.getIsDelivery());
+        assertThat(riderResponse.isDelivery()).isEqualTo(rider.getIsDelivery());
 
         assertThat(riderResponse.getLoginId()).isEqualTo(rider.getLoginId());
         assertThat(riderResponse.getPassword()).isEqualTo(rider.getPassword());
