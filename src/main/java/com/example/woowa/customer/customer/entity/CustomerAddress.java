@@ -41,7 +41,8 @@ public class CustomerAddress extends BaseTimeEntity {
     @JoinColumn(nullable = false)
     private Customer customer;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_code", unique = false)
     private AreaCode areaCode;
 
     @Column
