@@ -56,7 +56,6 @@ public class OrderService {
     private final DeliveryEntityService deliveryEntityService;
     private final OrderMapper orderMapper;
     private final CartMapper cartMapper;
-    private final RiderService riderService;
 
     /**
      * 현재 주문에 쿠폰 사용 여부를(voucherId 의 null check 부분)

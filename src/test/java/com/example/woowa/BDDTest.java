@@ -183,7 +183,7 @@ public class BDDTest {
     void _4() {
         List<RestaurantFindResponse> restauransNotPermitted = restaurantService.findRestaurantsIsPermittedIsFalse();
         Long newRestaurant = restauransNotPermitted.getFirst().getId();
-        adminService.permitRestaurant(newRestaurant);
+        adminService.authorizeRestaurant(newRestaurant);
     }
 
     @Test
@@ -317,7 +317,7 @@ public class BDDTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<DeliveryResponse> deliveryResponsePage = deliveryService.findWaitingDelivery(
             pageRequest);
-        deliveryId = deliveryResponsePage.stream().findFirst().get().getId();
+        deliveryId = deliveryResponsePage.stream().findFirst().get().id();
     }
 
     @Test
@@ -334,7 +334,7 @@ public class BDDTest {
         deliveryService.acceptDelivery(deliveryId, riderId, 10, 10);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_REGISTRATION);
     }
 
@@ -352,7 +352,7 @@ public class BDDTest {
         deliveryService.pickUp(riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(
             DeliveryStatus.DELIVERY_PICKUP);
     }
 
@@ -360,10 +360,10 @@ public class BDDTest {
     @DisplayName("라이더는 배달 완료시 배달 상태를 변경할 수 있다.")
     @Order(23)
     void _23() {
-        deliveryService.finish(riderId);
+        deliveryService.finish(deliveryId,riderId);
         DeliveryResponse deliveryResponse = deliveryService.findResponseById(deliveryId);
 
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(DeliveryStatus.DELIVERY_FINISH);
     }
 
     @Test
