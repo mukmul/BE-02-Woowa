@@ -2,4 +2,4 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/woowa
     username: root
-    password: gusdnd12
+    password: 1234
