@@ -161,13 +161,15 @@ public class RestaurantService {
 
     // 사장님이 가게를 가지고 있는지 확인하는 validation
     public Restaurant findRestaurantEntityByOwnerIdAndRestaurantId(Long ownerId, Long restaurantId) {
-        return ownerService.findOwnerEntityById(ownerId).getRestaurants().stream().
-            filter(r -> r.getId() == restaurantId).
-            findFirst().
-            orElseThrow(() ->
-                new NotFoundException(
-                    "사장님(" + ownerId + ")은 가게(" + restaurantId + ")를 소유하고 있지 않습니다."));
+        Restaurant restaurant = findRestaurantEntityById(restaurantId);
+
+        if (!restaurant.getOwner().getId().equals(ownerId)) {
+            throw new NotFoundException("사장님은 해당 가게를 소유하고 있지 않습니다.");
+        }
+
+        return restaurant;
     }
+
 
     @Transactional
     public void setDeliveryArea(Long restaurantId, Long areaCodeId, Integer deleiveryFee) {
