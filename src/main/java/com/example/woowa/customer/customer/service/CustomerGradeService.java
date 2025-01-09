@@ -22,36 +22,31 @@ public class CustomerGradeService {
         CustomerGradeCreateRequest customerGradeCreateRequest) {
         CustomerGrade customerGrade = customerMapper.toCustomerGrade(
             customerGradeCreateRequest);
-        customerGrade = customerGradeRepository.save(customerGrade);
-        return customerMapper.toCustomerGradeDto(customerGrade);
+        CustomerGrade savedGrade = customerGradeRepository.save(customerGrade);
+        return customerMapper.toCustomerGradeDto(savedGrade);
     }
 
     public CustomerGradeFindResponse findCustomerGrade(Long id) {
-        CustomerGrade customerGrade = customerGradeRepository.findById(id).orElseThrow(() -> new RuntimeException("customer grade not existed"));
+        CustomerGrade customerGrade = findGradeById(id);
         return customerMapper.toCustomerGradeDto(customerGrade);
     }
 
     @Transactional
     public CustomerGradeFindResponse updateCustomerGrade(Long id, CustomerGradeUpdateRequest updateCustomerGradeDto) {
-        CustomerGrade customerGrade = customerGradeRepository.findById(id).orElseThrow(() -> new RuntimeException("customer grade not existed"));
-        if (updateCustomerGradeDto.getTitle() != null) {
-            customerGrade.setGrade(updateCustomerGradeDto.getTitle());
-        }
-        if (updateCustomerGradeDto.getOrderCount() != null) {
-            customerGrade.setOrderCount(updateCustomerGradeDto.getOrderCount());
-        }
-        if (updateCustomerGradeDto.getDiscountPrice() != null) {
-            customerGrade.setDiscountPrice(updateCustomerGradeDto.getDiscountPrice());
-        }
-        if (updateCustomerGradeDto.getVoucherCount() != null) {
-            customerGrade.setVoucherCount(updateCustomerGradeDto.getVoucherCount());
-        }
+        CustomerGrade customerGrade = findGradeById(id);
+        customerGrade.updateGrade(
+                updateCustomerGradeDto.getTitle(),
+                updateCustomerGradeDto.getOrderCount(),
+                updateCustomerGradeDto.getDiscountPrice(),
+                updateCustomerGradeDto.getVoucherCount()
+        );
+
         return customerMapper.toCustomerGradeDto(customerGrade);
     }
 
     @Transactional
     public void deleteCustomerGrade(Long id) {
-        CustomerGrade customerGrade = customerGradeRepository.findById(id).orElseThrow(() -> new RuntimeException("customer grade not existed"));
+        CustomerGrade customerGrade = findGradeById(id);
         customerGradeRepository.delete(customerGrade);
     }
 
@@ -61,5 +56,9 @@ public class CustomerGradeService {
 
     public CustomerGrade findCustomerGradeByOrderPerMonthCount(int orderCount) {
         return customerGradeRepository.findFirstByOrderCountLessThanEqualOrderByOrderCountDesc(orderCount).orElse(findDefaultCustomerGrade());
+    }
+
+    private CustomerGrade findGradeById(Long id) {
+        return customerGradeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("customer grade not found for ID: "+id));
     }
 }
