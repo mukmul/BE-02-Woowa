@@ -30,40 +30,64 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Customer extends BaseLoginEntity {
+    private static final int DEFAULT_ORDER_COUNT = 0;
+    private static final boolean DEFAULT_IS_ISSUED_STATUS = false;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer orderPerMonth;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer orderPerLastMonth;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE" + DEFAULT_IS_ISSUED_STATUS)
     private Boolean isIssued;
 
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer point;
 
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "customer_grade_id", nullable = true)
     private CustomerGrade customerGrade;
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
-    private List<Review> reviews = new ArrayList<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    private List<Review> reviews;
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
-    private List<CustomerAddress> customerAddresses = new ArrayList<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    private List<CustomerAddress> customerAddresses;
 
     @OneToMany(orphanRemoval = true) // 단방향 사용 줄어보기
-    private List<Voucher> vouchers = new ArrayList<>();
+    private List<Voucher> vouchers;
 
-    @OneToMany(mappedBy = "customer", orphanRemoval = true) // 단방향 사용 줄여보기
-    private List<Order> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "customer", orphanRemoval = true)
+    private List<Order> orders;
+
+    public List<Review> getReviews() {
+        if (reviews == null) {
+            return new ArrayList<>();
+        }
+        return reviews;
+    }
+
+    public List<Voucher> getVouchers() {
+        if (vouchers == null) {
+            return new ArrayList<>();
+        }
+        return vouchers;
+    }
+
+    public List<Order> getOrders() {
+        if (orders == null) {
+            return new ArrayList<>();
+        }
+        return orders;
+    }
 
     public Customer(final String loginId, String loginPassword, LocalDate birthdate,
         CustomerGrade customerGrade) { // 리스트에 불변성을 보장해줘야함
@@ -130,15 +154,7 @@ public class Customer extends BaseLoginEntity {
     }
 
     public List<CustomerAddress> getCustomerAddresses() {
-        List<CustomerAddress> orderCustomerAddresses = this.customerAddresses.stream().filter((e)->e.getRecentOrderAt() != null).sorted(
-            Comparator.comparing(CustomerAddress::getRecentOrderAt).reversed()).collect(
-            Collectors.toList());
-        List<CustomerAddress> notOrderCustomerAddresses = this.customerAddresses.stream().filter((e)->e.getRecentOrderAt() == null).collect(
-            Collectors.toList());
-        List<CustomerAddress> recentCustomerAddresses = new ArrayList<>();
-        recentCustomerAddresses.addAll(orderCustomerAddresses);
-        recentCustomerAddresses.addAll(notOrderCustomerAddresses);
-        return recentCustomerAddresses;
+        return this.customerAddresses.stream().sorted(Comparator.comparing(CustomerAddress::getRecentOrderAt,Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
     } // 가독성 향상을 위해 분리, 최근 주문한 주소를 상위로 분리하는, 리펙토링
 
     public void addCustomerAddress(CustomerAddress customerAddress) {
@@ -158,7 +174,6 @@ public class Customer extends BaseLoginEntity {
     }
 
     public void addOrder(Order order) {
-        this.customerAddresses.remove(order);
+        this.orders.add(order);
     }
-    //이거 잘못 쓰
 }

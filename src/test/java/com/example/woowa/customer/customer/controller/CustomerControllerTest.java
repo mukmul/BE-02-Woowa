@@ -28,15 +28,19 @@ import com.example.woowa.security.configuration.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,6 +52,7 @@ import org.springframework.test.web.servlet.MockMvc;
                 classes = SecurityConfig.class
         ),
 })
+
 @Import(RestDocsConfiguration.class)
 @ExtendWith(MockitoExtension.class)
 @WithMockUser
@@ -69,6 +74,7 @@ class CustomerControllerTest {
         given(customerService.createCustomer(any())).willReturn(customerFindResponse);
         CustomerAddressCreateRequest customerAddressCreateRequest = new CustomerAddressCreateRequest("서울특별시 서초구 서초동", "1000-1 101호", "집");
         CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev12", "Programmers12!", "2000-01-01", customerAddressCreateRequest);
+
 
         mockMvc.perform(
                         post("/api/v1/customers")
