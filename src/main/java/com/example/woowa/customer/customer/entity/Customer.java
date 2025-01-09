@@ -31,7 +31,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 public class Customer extends BaseLoginEntity {
     private static final int DEFAULT_ORDER_COUNT = 0;
-    private static final boolean DEFAULT_IS_ISSUED_STATUS = false;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +42,7 @@ public class Customer extends BaseLoginEntity {
     @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer orderPerLastMonth;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE" + DEFAULT_IS_ISSUED_STATUS)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isIssued;
 
     @Column(nullable = false)

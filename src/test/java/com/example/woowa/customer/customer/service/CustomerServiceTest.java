@@ -13,6 +13,7 @@ import com.example.woowa.customer.customer.entity.Customer;
 import com.example.woowa.customer.customer.entity.CustomerGrade;
 import com.example.woowa.customer.customer.repository.CustomerAddressRepository;
 import com.example.woowa.customer.customer.repository.CustomerRepository;
+import com.example.woowa.delivery.entity.AreaCode;
 import com.example.woowa.delivery.service.AreaCodeService;
 
 import java.time.LocalDate;
@@ -51,6 +52,7 @@ class CustomerServiceTest {
     @DisplayName("유저 생성")
     void createUser() {
         given(customerGradeService.findDefaultCustomerGrade()).willReturn(new CustomerGrade(5, "일반", 3000, 2));
+        given(areaCodeService.findByAddress("서울특별시 동작구 상도동")).willReturn(new AreaCode("11", "서울특별시 동작구 상도동", true));
 
         CustomerAddressCreateRequest customerAddressCreateRequest = new CustomerAddressCreateRequest("서울특별시 동작구 상도동", "빌라 101호", "집");
         CustomerCreateRequest customerCreateRequest = new CustomerCreateRequest("dev12", "Programmers123!", "2000-01-01", customerAddressCreateRequest);
