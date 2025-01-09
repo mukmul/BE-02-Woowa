@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 //회원가입, 개인정보 동의, 로그인, 로그아웃, 이메일 인증, 아이디 중복 확인, 아이디 및 비밀번호 찾기, 파비콘
+                                .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/baemin/v1/login/**", "/baemin/v1/owners",
                                         "/swagger-ui/**", "/swagger-resources/**",
                                         "/v3/api-docs/**", "/webjars/**",
@@ -62,8 +64,8 @@ public class SecurityConfig {
                                 .requestMatchers("/baemin/v1/owners/**")
                                 .hasAnyAuthority(UserRole.ROLE_OWNER.getRoleName())
                                 .anyRequest().authenticated()
-                );
-
+                )
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
         return httpSecurity.build();
     }
 

@@ -13,7 +13,7 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     public Role findRole(UserRole userRole) {
-        return roleRepository.findByUserRole(userRole.ROLE_OWNER)
+        return roleRepository.findByUserRole(userRole)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 역할입니다."));
     }
 

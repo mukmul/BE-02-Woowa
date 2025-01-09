@@ -41,12 +41,12 @@ class DeliveryMapperTest {
 
         DeliveryResponse deliveryResponse = deliveryMapper.toResponse(delivery);
 
-        assertThat(deliveryResponse.getId()).isEqualTo(delivery.getId());
-        assertThat(deliveryResponse.getDeliveryFee()).isEqualTo(delivery.getDeliveryFee());
-        assertThat(deliveryResponse.getDeliveryStatus()).isEqualTo(delivery.getDeliveryStatus());
-        assertThat(deliveryResponse.getArrivalTime()).isEqualTo(delivery.getArrivalTime());
-        assertThat(deliveryResponse.getCustomerAddress()).isEqualTo(delivery.getCustomerAddress());
-        assertThat(deliveryResponse.getRestaurantAddress()).isEqualTo(
+        assertThat(deliveryResponse.id()).isEqualTo(delivery.getId());
+        assertThat(deliveryResponse.deliveryFee()).isEqualTo(delivery.getDeliveryFee());
+        assertThat(deliveryResponse.deliveryStatus()).isEqualTo(delivery.getDeliveryStatus());
+        assertThat(deliveryResponse.arrivalTime()).isEqualTo(delivery.getArrivalTime());
+        assertThat(deliveryResponse.customerAddress()).isEqualTo(delivery.getCustomerAddress());
+        assertThat(deliveryResponse.restaurantAddress()).isEqualTo(
                 delivery.getRestaurantAddress());
     }
 }

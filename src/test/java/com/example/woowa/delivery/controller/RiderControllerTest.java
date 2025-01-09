@@ -24,11 +24,15 @@ import com.example.woowa.delivery.entity.Rider;
 import com.example.woowa.delivery.mapper.RiderMapper;
 import com.example.woowa.delivery.service.RiderService;
 import com.example.woowa.security.configuration.SecurityConfig;
+import com.example.woowa.security.role.entity.Role;
+import com.example.woowa.security.role.repository.RoleRepository;
+import com.example.woowa.security.user.entity.UserRole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -71,7 +75,14 @@ class RiderControllerTest {
     @MockitoBean
     RiderService riderService;
 
+    @MockitoBean
+    RoleRepository roleRepository;
 
+    @BeforeEach
+    void setup() {
+        // 테스트 전에 Role을 저장
+        roleRepository.save(new Role(UserRole.ROLE_OWNER.toString()));
+    }
     @Test
     void sign() throws Exception {
         RiderCreateRequest riderCreateRequest = new RiderCreateRequest("testId1234", "passwordA1!",
@@ -88,7 +99,7 @@ class RiderControllerTest {
                         .with(csrf().asHeader())
                 )
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/rider/0"))
+                .andExpect(header().string("Location", "/api/v1/rider/1"))
                 .andDo(print())
                 .andDo(document("sign-rider",
                                 requestFields(
@@ -235,16 +246,14 @@ class RiderControllerTest {
         mockMvc.perform(put("/api/v1/rider/{id}/status", 1L)
                         .with(csrf().asHeader())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("isDelivery", String.valueOf(true))
-                ).andExpect(status().is2xxSuccessful())
+                        .param("isDelivery",String.valueOf(true))
+                ).andExpect(status().isNoContent())
                 .andDo(print())
                 .andDo(document("changeStatus-rider",
                                 pathParameters(
                                         parameterWithName("id").description("라이더 id")
-                                ),
-                                queryParameters(
-                                        parameterWithName("isDelivery").description("현재 배달 여부")
                                 )
+
                         )
                 );
     }
@@ -252,7 +261,7 @@ class RiderControllerTest {
     @Test
     @WithMockUser
     void addArea() throws Exception {
-        mockMvc.perform(post("/api/v1/rider/{riderId}/{areaId}", 1L, 1L)
+        mockMvc.perform(post("/api/v1/rider/add/{riderId}/{areaId}", 1L, 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf().asHeader())
                 ).andExpect(status().is2xxSuccessful())

@@ -69,7 +69,7 @@ public class OrderApiController {
     @PatchMapping("/orders/{orderId}/accept")
     public ResponseEntity<Void> acceptOrder(@PathVariable Long orderId, @RequestBody @Validated
     OrderAcceptRequest request) {
-        orderService.acceptOrder(orderId, request);
+        orderService.acceptOrder(orderId,request);
         return ResponseEntity.ok().build();
     }
 

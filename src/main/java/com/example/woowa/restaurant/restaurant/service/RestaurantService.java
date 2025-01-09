@@ -185,7 +185,7 @@ public class RestaurantService {
     }
 
     public List<RestaurantFindResponse> findRestaurantsIsPermittedIsFalse() {
-        return restaurantRepository.findRestaurantByIsPermittedIsFalse().stream()
+        return restaurantRepository.findByIsPermittedIsFalse().stream()
             .map(restaurantMapper::toFindResponseDto)
             .collect(Collectors.toList());
     }
