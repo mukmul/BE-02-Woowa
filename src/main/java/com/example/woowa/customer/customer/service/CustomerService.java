@@ -36,12 +36,9 @@ public class CustomerService {
 
         boolean isExist = customerRepository.existsCustomerByLoginId(customerCreateRequest.getLoginId());
         if (isExist) {
-            throw new RuntimeException("이미 존재하는 아이디입니다.");
+            throw new IllegalArgumentException(ErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
         }
 
-        /**
-         * 리팩토링 필요
-         */
         Customer customer = customerMapper.toCustomer(customerCreateRequest,
                 customerGradeService.findDefaultCustomerGrade());
 
@@ -60,13 +57,14 @@ public class CustomerService {
     }
 
     public CustomerFindResponse findCustomer(String loginId) {
-        Customer customer = findCustomerEntity(loginId);
+        Customer customer = customerRepository.findByLoginId(loginId).orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다. "+loginId));
         return customerMapper.toCustomerDto(customer);
     }
 
     @Transactional
     public CustomerFindResponse updateCustomer(String loginId, CustomerUpdateRequest customerUpdateRequest) {
-        Customer customer = findCustomerEntity(loginId);
+        Customer customer = customerRepository.findByLoginId(loginId).orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CUSTOMER));
+
         if (customerUpdateRequest.getLoginPassword() != null) {
             customer.changePassword(customerUpdateRequest.getLoginPassword());
         }
@@ -78,15 +76,15 @@ public class CustomerService {
 
     @Transactional
     public void deleteCustomer(String loginId) {
-        Customer customer = findCustomerEntity(loginId);
+        Customer customer = customerRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CUSTOMER.getMessage()));
+
         customerRepository.delete(customer);
         userService.deleteUser(loginId);
     }
 
     public Customer findCustomerEntity(String loginId) {
-        Customer customer = customerRepository.findByLoginId(loginId).orElseThrow(() -> new NotFoundException(
-                ErrorMessage.NOT_FOUND_CUSTOMER.getMessage()));
-        return customer;
+       return customerRepository.findByLoginId(loginId).orElseThrow(() -> new NotFoundException("Customer", loginId));
     }
 
     @Transactional
@@ -97,7 +95,7 @@ public class CustomerService {
 
     @Transactional
     public CustomerFindResponse updateCustomerStatusOnFirstDay(String loginId) {
-        Customer customer = findCustomerEntity(loginId);
+        Customer customer = customerRepository.findByLoginId(loginId).orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CUSTOMER.getMessage()));
         customer.updateCustomerStatusOnFirstDay();
         return customerMapper.toCustomerDto(customer);
     }

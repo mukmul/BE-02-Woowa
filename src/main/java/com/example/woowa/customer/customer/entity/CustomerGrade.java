@@ -36,29 +36,33 @@ public class CustomerGrade extends BaseTimeEntity {
 
     public CustomerGrade(Integer orderCount, String title, Integer discountPrice,
         Integer voucherCount) {
+        validateInputs(orderCount, title, discountPrice, voucherCount);
         this.orderCount = orderCount;
         this.title = title;
         this.discountPrice = discountPrice;
         this.voucherCount = voucherCount;
     }
 
-    public void setOrderCount(int orderCount) {
-        assert orderCount > 0;
-        this.orderCount = orderCount;
-    }
-
-    public void setGrade(String title) {
-        assert !title.isBlank() && (title.length() <= 10);
+    public void updateGrade(String title, Integer orderCount, Integer discountPrice, Integer voucherCount) {
+        validateInputs(orderCount, title, discountPrice, voucherCount);
         this.title = title;
-    }
-
-    public void setDiscountPrice(int discountPrice) {
-        assert discountPrice > 0;
+        this.orderCount = orderCount;
         this.discountPrice = discountPrice;
+        this.voucherCount = voucherCount;
     }
 
-    public void setVoucherCount(int voucherCount) {
-        assert voucherCount > 0;
-        this.voucherCount = voucherCount;
+    public void validateInputs(Integer orderCount, String title, Integer discountPrice, Integer voucherCount) {
+        if (orderCount == null || orderCount <= 0) {
+            throw new IllegalArgumentException("Order count must be greater than 0");
+        }
+        if (title == null || title.isBlank() || title.length() > 10) {
+            throw new IllegalArgumentException("Title must be non-blank and at most 10 characters");
+        }
+        if (discountPrice == null || discountPrice <= 0) {
+            throw new IllegalArgumentException("Discount price must be greater than 0");
+        }
+        if (voucherCount == null || voucherCount <= 0) {
+            throw new IllegalArgumentException("Voucher count must be greater than 0");
+        }
     }
 }

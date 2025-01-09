@@ -77,7 +77,7 @@ class CustomerAddressControllerTest {
                                 .content(objectMapper.writeValueAsString(customerAddressCreateRequest))
                                 .with(csrf().asHeader())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andDo(print())
                 .andDo(document("customers-addresses-create",
                         pathParameters(
@@ -157,7 +157,7 @@ class CustomerAddressControllerTest {
                         delete("/api/v1/customers/addresses/{loginId}/{id}", " dev12", 1)
                                 .with(csrf().asHeader())
                 )
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andDo(print())
                 .andDo(document("customers-addresses-delete",
                         pathParameters(

@@ -31,14 +31,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Customer extends BaseLoginEntity {
+    private static final int DEFAULT_ORDER_COUNT = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer orderPerMonth;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer orderPerLastMonth;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
@@ -47,7 +49,7 @@ public class Customer extends BaseLoginEntity {
     @Column(nullable = false)
     private LocalDate birthdate;
 
-    @Column(columnDefinition = "INT DEFAULT 0")
+    @Column(columnDefinition = "INT DEFAULT " + DEFAULT_ORDER_COUNT)
     private Integer point;
 
     @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
@@ -60,14 +62,14 @@ public class Customer extends BaseLoginEntity {
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
     private List<CustomerAddress> customerAddresses = new ArrayList<>();
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true) // 단방향 사용 줄어보기
     private List<Voucher> vouchers = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer", orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
-    public Customer(String loginId, String loginPassword, LocalDate birthdate,
-        CustomerGrade customerGrade) {
+    public Customer(final String loginId, String loginPassword, LocalDate birthdate,
+        CustomerGrade customerGrade) { // 리스트에 불변성을 보장해줘야함
         super(loginId, loginPassword, "", "");
         this.orderPerMonth = 0;
         this.orderPerLastMonth = 0;
@@ -131,16 +133,8 @@ public class Customer extends BaseLoginEntity {
     }
 
     public List<CustomerAddress> getCustomerAddresses() {
-        List<CustomerAddress> orderCustomerAddresses = this.customerAddresses.stream().filter((e)->e.getRecentOrderAt() != null).sorted(
-            Comparator.comparing(CustomerAddress::getRecentOrderAt).reversed()).collect(
-            Collectors.toList());
-        List<CustomerAddress> notOrderCustomerAddresses = this.customerAddresses.stream().filter((e)->e.getRecentOrderAt() == null).collect(
-            Collectors.toList());
-        List<CustomerAddress> recentCustomerAddresses = new ArrayList<>();
-        recentCustomerAddresses.addAll(orderCustomerAddresses);
-        recentCustomerAddresses.addAll(notOrderCustomerAddresses);
-        return recentCustomerAddresses;
-    }
+        return this.customerAddresses.stream().sorted(Comparator.comparing(CustomerAddress::getRecentOrderAt,Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+    } // 가독성 향상을 위해 분리, 최근 주문한 주소를 상위로 분리하는, 리펙토링
 
     public void addCustomerAddress(CustomerAddress customerAddress) {
         this.customerAddresses.add(customerAddress);
@@ -159,6 +153,6 @@ public class Customer extends BaseLoginEntity {
     }
 
     public void addOrder(Order order) {
-        this.customerAddresses.remove(order);
+        this.orders.add(order);
     }
 }
