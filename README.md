@@ -10,10 +10,11 @@
 ### Tool
 <img src="https://img.shields.io/badge/IntelliJ IDEA-8A3391?style=flat-square&logo=IntelliJ IDEA&logoColor=black"/> <img src="https://img.shields.io/badge/Notion-FFFFFF?style=flat-square&logo=Notion&logoColor=black"/> <img src="https://img.shields.io/badge/Github-000000?style=flat-square&logo=Github&logoColor=white"/> <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=white"/> 
 
+
 ### Team
 |Team leader|member|member|member|member|member|
 |--|--|--|--|--|--|
-|<img width="100" alt="현이" src="https://github.com/user-attachments/assets/bdf2b57e-6a61-49da-a61f-6e6d77bf4dd8" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/19b464b0-e3d8-42fe-b2c9-236fa8b73fb6" />|<img width="100" alt="지민" src="https://github.com/user-attachments/assets/9fe4be4d-28f4-40ce-a225-af9113459ae4" />|<img width="100" alt="효민" src="https://github.com/user-attachments/assets/9fe4be4d-28f4-40ce-a225-af9113459ae4" />|<img width="100" alt="지은" src="https://github.com/user-attachments/assets/d49bc088-32b1-4c5a-8313-18fd12a75e15" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/d1095f54-0e29-428e-a73a-ee819a283ed0" />|
+|<img width="100" alt="현이" src="https://github.com/user-attachments/assets/bdf2b57e-6a61-49da-a61f-6e6d77bf4dd8" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/19b464b0-e3d8-42fe-b2c9-236fa8b73fb6" />|<img width="100" alt="지민" src="https://github.com/user-attachments/assets/9fe4be4d-28f4-40ce-a225-af9113459ae4" />|<img width="100" alt="효민" src="https://github.com/user-attachments/assets/23165382-a736-4b75-9a4e-2367adc996df" />|<img width="100" alt="지은" src="https://github.com/user-attachments/assets/d49bc088-32b1-4c5a-8313-18fd12a75e15" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/d1095f54-0e29-428e-a73a-ee819a283ed0" />|
 |[노현이](https://github.com/Hyunoi)|[김중환](https://github.com/kimjunghwannn)|[김지민](https://github.com/ijnim1121)|[김효민](https://github.com/Hm-source)|[박지은](https://github.com/JinjinBread)|[순진호](https://github.com/jinhosoon)|
 
 ## Project Description
