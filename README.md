@@ -46,7 +46,8 @@
 
 ### 3. ERD
 
-![](https://velog.velcdn.com/images/y005/post/23e6f786-91aa-4fed-913c-b6d800e6d5fe/image.png)
+![image](https://github.com/user-attachments/assets/b83d16e3-63e6-4ff9-9852-a0a0755116a6)
+
 
 ### 4. [REST API 문서](https://prgrms-be-devcourse.github.io/BE-02-Woowa/)
 
