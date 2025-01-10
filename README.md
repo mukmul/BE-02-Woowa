@@ -1,8 +1,8 @@
-## BE-02-Woowa
-배달의 민족 서비스 클론 코딩
+## 먹물의 민족
+배달의 민족 서비스 클론 코딩 버깅/디버깅 프로젝트
 
 ### Tech
-<img src="https://img.shields.io/badge/Java-FC4C02?style=flat-square&logo=Java&logoColor=white"/> <img src="https://img.shields.io/badge/Spring boot-6DB33F?style=flat-square&logo=Spring boot&logoColor=white"/> <img src="https://img.shields.io/badge/Maven-C71A36?style=flat-square&logo=ApacheMaven&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Data JPA-0078D4?style=flat-square&logo=Spring Data JPA&logoColor=white"/> <img src="https://img.shields.io/badge/Mapstruct-C70D2C?style=flat-square&logo=mapstruct&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-2AB1AC?style=flat-square&logo=MySQL&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=flat-square&logo=amazon aws&logoColor=yellow"/> <img src="https://img.shields.io/badge/Junit-25A162?style=flat-square&logo=Junit5&logoColor=white"/>   
+<img src="https://img.shields.io/badge/Java-FC4C02?style=flat-square&logo=Java&logoColor=white"/> <img src="https://img.shields.io/badge/Spring boot-6DB33F?style=flat-square&logo=Spring boot&logoColor=white"/> <img src="https://img.shields.io/badge/gradle-02303A?style=flat-square&logo=ApacheMaven&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Data JPA-0078D4?style=flat-square&logo=Spring Data JPA&logoColor=white"/> <img src="https://img.shields.io/badge/Mapstruct-C70D2C?style=flat-square&logo=mapstruct&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-2AB1AC?style=flat-square&logo=MySQL&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=flat-square&logo=amazon aws&logoColor=yellow"/> <img src="https://img.shields.io/badge/Junit-25A162?style=flat-square&logo=Junit5&logoColor=white"/>   
 
 ### Deploy
 <img src="https://img.shields.io/badge/Github Actions-2088FF?style=flat-square&logo=github&logoColor=black"/> <img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=flat-square&logo=amazonec2&logoColor=black"/> <img src="https://img.shields.io/badge/Amazon CodeDeploy-EF2D5E?style=flat-square&logo=amazonaws&logoColor=black"/> <img src="https://img.shields.io/badge/Amazon CodePipeline-4A154B?style=flat-square&logo=amazon aws&logoColor=yellow"/> <img src="https://img.shields.io/badge/Amazon S3-E34F26?style=flat-square&logo=Amazon S3&logoColor=white"/> 
@@ -11,13 +11,17 @@
 <img src="https://img.shields.io/badge/IntelliJ IDEA-8A3391?style=flat-square&logo=IntelliJ IDEA&logoColor=black"/> <img src="https://img.shields.io/badge/Notion-FFFFFF?style=flat-square&logo=Notion&logoColor=black"/> <img src="https://img.shields.io/badge/Github-000000?style=flat-square&logo=Github&logoColor=white"/> <img src="https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=Slack&logoColor=white"/> 
 
 ### Team
-|Project Owner|Scrum Master|Developer|Developer|Mentor|
-|--|--|--|--|--|
-|<img src="https://velog.velcdn.com/images/y005/post/db2a6fde-44b4-41aa-ae09-6f99fafbb721/image.png" width="100" height="100"/>|<img src="https://velog.velcdn.com/images/y005/post/36366d42-86ab-4698-9d29-ed0e0c1a1c97/image.jpg" width="100" height="100"/>|<img src="https://velog.velcdn.com/images/y005/post/8bf37748-eb8d-4369-a4be-ca65cfc4115a/image.png" width="100" height="100"/>|<img src="https://velog.velcdn.com/images/y005/post/8120a050-ebfd-472a-96d2-36388cbd246c/image.jpg" width="100" height="100"/>|<img src="https://velog.velcdn.com/images/y005/post/d4963ec1-6079-4e6b-9559-467c62e6d29a/image.jpg" width="100" height="100"/>|
-|[최현웅](https://github.com/choi1204)|[문정현](https://github.com/y005)|[정해민](https://github.com/haemin-jeong)|[최지훈](https://github.com/chlwlgns524)|[흑구](https://github.com/WooSungHwan)|
+|Team leader|member|member|member|member|member|
+|--|--|--|--|--|--|
+|<img width="100" alt="현이" src="https://github.com/user-attachments/assets/bdf2b57e-6a61-49da-a61f-6e6d77bf4dd8" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/19b464b0-e3d8-42fe-b2c9-236fa8b73fb6" />|<img width="100" alt="지민" src="https://github.com/user-attachments/assets/9fe4be4d-28f4-40ce-a225-af9113459ae4" />|<img width="100" alt="효민" src="https://github.com/user-attachments/assets/9fe4be4d-28f4-40ce-a225-af9113459ae4" />|<img width="100" alt="지은" src="https://github.com/user-attachments/assets/d49bc088-32b1-4c5a-8313-18fd12a75e15" />|<img width="100" alt="중환" src="https://github.com/user-attachments/assets/d1095f54-0e29-428e-a73a-ee819a283ed0" />|
+|[노현이](https://github.com/Hyunoi)|[김중환](https://github.com/kimjunghwannn)|[김지민](https://github.com/ijnim1121)|[김효민](https://github.com/Hm-source)|[박지은](https://github.com/JinjinBread)|[순진호](https://github.com/jinhosoon)|
 
 ## Project Description
  배달의 민족 서비스 기능을 REST API로 제공할 수 있는 프로젝트입니다.
+ - Springboot version up (2.7.0 -> 3.4.0)
+ - migration (maven to gradle)
+ - domain 별 리팩토링
+ - 클리 코드 지향
 
 
 ### 1. 목표
@@ -51,4 +55,5 @@
 
 ### 4. [REST API 문서](https://prgrms-be-devcourse.github.io/BE-02-Woowa/)
 
-### 5. [프로젝트 회고록](https://deluxe-mahogany-9ff.notion.site/daf8f5966ba44cf88758e5cb544ea182)
+### 5. 프로젝트 회고
+
