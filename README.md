@@ -22,7 +22,7 @@
  - Springboot version up (2.7.0 -> 3.4.0)
  - migration (maven to gradle)
  - domain 별 리팩토링
- - 클리 코드 지향
+ - 클린 코드 지향
 
 
 ### 1. 목표
